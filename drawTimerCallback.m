@@ -5,6 +5,6 @@ function drawTimerCallback(app)
     timeNow = (86400 * now);
     app.LocationXEditField.Value = round(app.particleArrayLocation(1, 1), 3);
     app.LocationYEditField.Value = round(app.particleArrayLocation(1, 2), 3);
-    plot(timeNow, abs(app.particleArrayVelocity(1,1)) + abs(app.particleArrayVelocity(1,2)), 'b.');
+    plot(timeNow, abs(app.particleArrayForce(1,1)) + abs(app.particleArrayForce(1,2)), 'b.');
     hold on
 end
