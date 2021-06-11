@@ -1,13 +1,12 @@
 function timerCallback(app)
         %Here we 'zero' the force by writing over it with the magnetic Force.
-    app.particleArrayForce = app.particleFunctions.calculateMagneticForce(app.particleArrayLocation, [app.X1AGauge.Value * 0.001 app.Y1AGauge.Value * 0.001], [app.X2AGauge.Value * 0.001 app.Y2AGauge.Value * 0.001]);
+    app.particleArrayForce = app.particleFunctions.calculateMagneticForce(app.particleArrayLocation, [app.X1AGauge.Value app.Y1AGauge.Value], [app.X2AGauge.Value app.Y2AGauge.Value]);
         %dipole force %does this fit here or later?
     app.particleArrayForce = app.particleArrayForce - app.particleFunctions.calculateDipoleForce(app.particleArrayLocation, app.particleArrayForce);
         %drag
     app.particleArrayForce = app.particleArrayForce - app.particleFunctions.calculateDragForce(app.particleArrayForce);
-        %halt any CURRENT movement of particles in contact with the walls. Make
-        %sure they don't keep moving though...
-    [wallContact app.particleArrayLocation app.particleArrayVelocity] = app.particleFunctions.isParticleOnWall(app.particleArrayLocation, app.particleArrayVelocity);
+        %halt any CURRENT movement of particles in contact with the walls
+    [wallContact, app.particleArrayLocation, app.particleArrayVelocity] = app.particleFunctions.isParticleOnWall(app.particleArrayLocation, app.particleArrayVelocity);
         %friction
     app.particleArrayForce = app.particleArrayForce - app.particleFunctions.calculateFrictionForce(app.particleArrayVelocity, app.particleArrayForce, wallContact);
         %calculate the new velocity

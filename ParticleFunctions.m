@@ -2,16 +2,18 @@ classdef ParticleFunctions
     properties
         magneticForceConstant; %TODO ALL of these need to be calculated at a relevant point
                 %(obj.permFreeSpace * xOneCurrent * xRadius^2) / (2*(xRadius^2 + (obj.particleLocation(1)+0.1)^2)^(3/2));
-        dragForceConstant;%fluidViscocity*particleDiameter)
+        dragForceConstant;
         dipoleForceConstant;
         particleDiameter; 
         staticFrictionCoefficient;
         movingFrictionCoefficient;
         particleMass;
+        workspaceSizePositive;%use for the positive limits!
+        workspaceSizeMinus; %use for negative limits
     end
     methods (Access = public)
         %Constructor
-        function obj = ParticleFunctions(permeabilityOfFreeSpace, particleDiameter, particleMass, fluidViscocity, staticFrictionCoefficient, motionFrictionCoefficient)
+        function obj = ParticleFunctions(permeabilityOfFreeSpace, particleDiameter, particleMass, fluidViscocity, staticFrictionCoefficient, motionFrictionCoefficient, workspaceSize)
             obj.magneticForceConstant = double(permeabilityOfFreeSpace * (particleDiameter/2)^2 * 10^6);
             obj.dragForceConstant = double(3*pi*fluidViscocity * particleDiameter);
             obj.dipoleForceConstant = double(3*permeabilityOfFreeSpace / 4*pi);
@@ -19,14 +21,28 @@ classdef ParticleFunctions
             obj.movingFrictionCoefficient = motionFrictionCoefficient;
             obj.particleMass = particleMass;
             obj.particleDiameter = particleDiameter;
+            obj.workspaceSizePositive = workspaceSize;
+            obj.workspaceSizeMinus = -1 * workspaceSize
+        end
+        %So user can change parameters on the fly
+        function obj = ChangeMetaValue(obj, permeabilityOfFreeSpace, particleDiameter, particleMass, fluidViscocity, staticFrictionCoefficient, motionFrictionCoefficient, workspaceSize)
+            obj.magneticForceConstant = double(permeabilityOfFreeSpace * (particleDiameter/2)^2 * 10^6);
+            obj.dragForceConstant = double(3*pi*fluidViscocity * particleDiameter);
+            obj.dipoleForceConstant = double(3*permeabilityOfFreeSpace / 4*pi);
+            obj.staticFrictionCoefficient = staticFrictionCoefficient;
+            obj.movingFrictionCoefficient = motionFrictionCoefficient;
+            obj.particleMass = particleMass;
+            obj.particleDiameter = particleDiameter;
+            obj.workspaceSizePositive = workspaceSize;
+            obj.workspaceSizeMinus = -1 * workspaceSize
         end
         %public functions
         function force = calculateMagneticForce(obj, particleLocation, aCoils, bCoils)
             %a coils 'push' in the positive direction, b coils 'push' in
             %the negative direction
-            particleLocation(particleLocation<-0.1) = -0.1; %limit values
-            particleLocation(particleLocation>0.1) = 0.1;
-            force = double(10000000 .*(obj.magneticForceConstant .* aCoils) ./ ((particleLocation + 0.999).^1.5) + (obj.magneticForceConstant .* bCoils) ./ ((0.2 - (particleLocation + 0.999)).^ 1.5));
+            particleLocation(particleLocation < obj.workspaceSizeMinus) = obj.workspaceSizeMinus; %limit values
+            particleLocation(particleLocation > obj.workspaceSizePositive) = obj.workspaceSizePositive;
+            force = double(10 .*(obj.magneticForceConstant .* aCoils) ./ ((particleLocation + (0.999 * obj.workspaceSizePositive)).^1.5) + (obj.magneticForceConstant .* bCoils) ./ (((2 * obj.workspaceSizePositive) - (particleLocation + (0.999 * obj.workspaceSizePositive))).^ 1.5));
             force(isinf(force)) = 0;
             force(isnan(force)) = 0;
         end
@@ -47,12 +63,12 @@ classdef ParticleFunctions
             force = particleVelocity .* obj.dragForceConstant;
         end
         function [wallContact, particleLocation, particleVelocity] = isParticleOnWall(obj, particleLocation, particleVelocity) %TODO - issue when hitting negative walls...
-            wallContactN = (particleLocation <= -0.1) .* -1;
-            wallContactP = (particleLocation >= 0.1);
+            wallContactN = (particleLocation <= obj.workspaceSizeMinus) .* -1;
+            wallContactP = (particleLocation >= obj.workspaceSizePositive);
             particlesAllowedToMove = double((~wallContactN & (particleVelocity < 0)) | (~wallContactP & (particleVelocity > 0)));
             particleVelocity = double(particleVelocity .* particlesAllowedToMove);
             wallContact = wallContactN + wallContactP; %combine negative and positive directions + as there should be no case where a particle can touch both walls simultaneously
-            particleLocation = ((wallContact == 0 ) .* particleLocation ) + (wallContact .* 0.1);
+            particleLocation = ((wallContact == 0 ) .* particleLocation ) + (wallContact .* obj.workspaceSizePositive);
         end
         function force = calculateFrictionForce(obj, particleVelocity, particleForce, wallContact)
             totalVelocity = sum(abs(particleVelocity),2);
@@ -89,12 +105,11 @@ classdef ParticleFunctions
             distances(isnan(distances)) = 0;
             actualCollisions = distances < obj.particleDiameter;            
             %we have the collisions above, now move the particles...
-            resetParticlesToCorrectLocations = sum(actualCollisions .* -1 .* distances ./ 2,2)
-            (particleVelocity ./ sum(particleVelocity,2))
+            resetParticlesToCorrectLocations = sum(actualCollisions .* -1 .* distances ./ 2,2);
             vectoredResetParticlesToCorrectLocations = (particleVelocity ./ sum(particleVelocity,2)) .* resetParticlesToCorrectLocations;
-            vectoredResetParticlesToCorrectLocations(isnan(vectoredResetParticlesToCorrectLocations)) = 0
-            vectoredResetParticlesToCorrectLocations(isinf(vectoredResetParticlesToCorrectLocations)) = 0
-            newLocations = newParticleLocation + vectoredResetParticlesToCorrectLocations
+            vectoredResetParticlesToCorrectLocations(isnan(vectoredResetParticlesToCorrectLocations)) = 0;
+            vectoredResetParticlesToCorrectLocations(isinf(vectoredResetParticlesToCorrectLocations)) = 0;
+            newLocations = newParticleLocation + vectoredResetParticlesToCorrectLocations;
             %Now just reduce the velocity
             newVelocity = particleVelocity;
             %particleDistanceDifferences = sum(oldParticleLocation - newParticleLocation,2)
