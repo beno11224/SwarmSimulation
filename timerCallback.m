@@ -16,5 +16,5 @@ function timerCallback(app)
     app.lastUpdate = timeNow;
     app.particleArrayVelocity = app.particleArrayVelocity + app.particleFunctions.calculateParticleVelocity(app.particleArrayForce, 1 , timeSinceLastUpdate); %app.ParticleMasskgEditField.Value
         %calculate the new locations
-    app.particleArrayLocation = app.particleFunctions.moveParticle(app.particleArrayLocation, app.particleArrayVelocity, timeSinceLastUpdate);
+    [app.particleArrayLocation, app.particleArrayVelocity] = app.particleFunctions.moveParticle(app.particleArrayLocation, app.particleArrayVelocity, timeSinceLastUpdate);
 end

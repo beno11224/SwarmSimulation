@@ -4,7 +4,7 @@ classdef ParticleFunctions
                 %(obj.permFreeSpace * xOneCurrent * xRadius^2) / (2*(xRadius^2 + (obj.particleLocation(1)+0.1)^2)^(3/2));
         dragForceConstant;%fluidViscocity*particleDiameter)
         dipoleForceConstant;
-        %app.ParticleDiametermEditField, 
+        particleDiameter; 
         staticFrictionCoefficient;
         movingFrictionCoefficient;
         particleMass;
@@ -18,6 +18,7 @@ classdef ParticleFunctions
             obj.staticFrictionCoefficient = staticFrictionCoefficient;
             obj.movingFrictionCoefficient = motionFrictionCoefficient;
             obj.particleMass = particleMass;
+            obj.particleDiameter = particleDiameter;
         end
         %public functions
         function force = calculateMagneticForce(obj, particleLocation, aCoils, bCoils)
@@ -63,18 +64,52 @@ classdef ParticleFunctions
         function velocity = calculateParticleVelocity(obj, particleForce, particleMass, timeSinceLastUpdate)
             velocity = (particleForce ./ particleMass) * timeSinceLastUpdate;
         end        
-        function collisions = calculateCollisions(obj, particleLocation, particleVelocity, timeModifier)
+        function collisions = calculateCollisionsBefore(obj, particleLocation, particleVelocity, timeModifier)
+            collisions  = zeroes(particleLocation);            
+            %DIPOLE FORCE code
+            %xYDistances = particleLocation - permute(particleLocation,[3,2,1]);
+            %distances = permute(sqrt(abs(xYDistances(:,1,:).^2 + xYDistances(:,2,:).^2)),[1,3,2]);
+            %distances(isnan(distances)) = 0;
+            %dipoleMoments = double(sum(particleTorque,2) .* distances);
+            %dipoleMoments = dipoleMoments .* dipoleMoments.';
+            %normalisedDipoleMoment = dipoleMoments ./ distances.^-4;
+            %combinedForce = obj.dipoleForceConstant .* sum(normalisedDipoleMoment,2); %sum along '2'axis to make it 5x1
+            %distSum = permute(sum(xYDistances,1),[3,2,1]);
+            %force = combinedForce .* distSum;
+            
             %just the collisions - if particles are inelastic there are no
             %contact/adhesion forces - just dipole force holds them
             %together
             %NaNs for no contact, values for collision points (cartesian...)
-            soooo
         end
-        function location = moveParticle(obj, particleLocation, particleVelocity, timeModifier)
-            collidedParticles = calculateCollisions(particleLocation, particleVelocity, timeModifier)
-            possibleLocation = particleLocation + particleVelocity.* timeModifier;
-            fullMoveParticles = possibleLocation .* isNan(collidedparticles)
-            location = fullMoveParticles + collidedParticles;
+        function [newLocations, newVelocity] = calculateCollisionsAfter(obj, oldParticleLocation, newParticleLocation, particleVelocity, timeModifier)
+            %get distances between each particle and all the others:            
+            xYDistances = newParticleLocation - permute(newParticleLocation,[3,2,1]);
+            distances = permute(sqrt(abs(xYDistances(:,1,:).^2 + xYDistances(:,2,:).^2)),[1,3,2]);
+            distances(isnan(distances)) = 0;
+            actualCollisions = distances < obj.particleDiameter;            
+            %we have the collisions above, now move the particles...
+            resetParticlesToCorrectLocations = sum(actualCollisions .* -1 .* distances ./ 2,2)
+            (particleVelocity ./ sum(particleVelocity,2))
+            vectoredResetParticlesToCorrectLocations = (particleVelocity ./ sum(particleVelocity,2)) .* resetParticlesToCorrectLocations;
+            vectoredResetParticlesToCorrectLocations(isnan(vectoredResetParticlesToCorrectLocations)) = 0
+            vectoredResetParticlesToCorrectLocations(isinf(vectoredResetParticlesToCorrectLocations)) = 0
+            newLocations = newParticleLocation + vectoredResetParticlesToCorrectLocations
+            %Now just reduce the velocity
+            newVelocity = particleVelocity;
+            %particleDistanceDifferences = sum(oldParticleLocation - newParticleLocation,2)
+            %newVelocity = particleVelocity - (resetParticlesToCorrectLocations ./ particleDistanceDifferences); %What is this?? This is so not right...
+        end
+        function [location, newVelocity] = moveParticle(obj, particleLocation, particleVelocity, timeModifier)
+            %Below for if calculating collisions before
+            %collidedParticles = calculateCollisions(particleLocation, particleVelocity, timeModifier)
+            %possibleLocation = particleLocation + particleVelocity.* timeModifier;
+            %fullMoveParticles = possibleLocation .* isNan(collidedparticles)
+            %location = fullMoveParticles + collidedParticles;
+            
+            %Below if calculating collisions after
+            unCheckedLocation = particleLocation + particleVelocity .* timeModifier;
+            [location,newVelocity] = calculateCollisionsAfter(obj, particleLocation, unCheckedLocation, particleVelocity, timeModifier);
         end
     end
     methods (Access = private)        
