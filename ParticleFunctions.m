@@ -14,7 +14,7 @@ classdef ParticleFunctions
     methods (Access = public)
         %Constructor
         function obj = ParticleFunctions(permeabilityOfFreeSpace, particleDiameter, particleMass, fluidViscocity, staticFrictionCoefficient, motionFrictionCoefficient, workspaceSize)
-            obj.magneticForceConstant = double(permeabilityOfFreeSpace * (particleDiameter/2)^2 * 10^10);
+            obj.magneticForceConstant = double(permeabilityOfFreeSpace * (particleDiameter/2)^2 * 10^11);
             obj.dragForceConstant = double(3*pi*fluidViscocity * particleDiameter) * 10^6;
             obj.dipoleForceConstant = double(3*permeabilityOfFreeSpace / 4*pi);
             obj.staticFrictionCoefficient = staticFrictionCoefficient;
@@ -107,9 +107,11 @@ classdef ParticleFunctions
             actualCollisions = triu(actualCollisions,1);%everything above main diagonal. - means only one particle in a collision is moved
             %we have the collisions above, now move the particles...
             resetParticlesToCorrectLocations = sum(actualCollisions .* -1 .* distances,2);
-            %(particleVelocity ./ sum(particleVelocity,2)) %the fraction
+            componentFraction = (particleVelocity ./ sum(particleVelocity,2)); %the fraction
+            componentFraction(isnan(componentFraction)) = 0;
+            componentFraction(isinf(componentFraction)) = 0;
             %occupied by each x/y component
-            vectoredResetParticlesToCorrectLocations = (particleVelocity ./ sum(particleVelocity,2)) .* resetParticlesToCorrectLocations;
+            vectoredResetParticlesToCorrectLocations = componentFraction .* resetParticlesToCorrectLocations;
             vectoredResetParticlesToCorrectLocations(isnan(vectoredResetParticlesToCorrectLocations)) = 0;
             vectoredResetParticlesToCorrectLocations(isinf(vectoredResetParticlesToCorrectLocations)) = 0;
             
