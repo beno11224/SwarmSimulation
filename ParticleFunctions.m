@@ -14,8 +14,8 @@ classdef ParticleFunctions
     methods (Access = public)
         %Constructor
         function obj = ParticleFunctions(permeabilityOfFreeSpace, particleDiameter, particleMass, fluidViscocity, staticFrictionCoefficient, motionFrictionCoefficient, workspaceSize)
-            obj.magneticForceConstant = double(permeabilityOfFreeSpace * (particleDiameter/2)^2 * 10^6);
-            obj.dragForceConstant = double(3*pi*fluidViscocity * particleDiameter);
+            obj.magneticForceConstant = double(permeabilityOfFreeSpace * (particleDiameter/2)^2 * 10^10);
+            obj.dragForceConstant = double(3*pi*fluidViscocity * particleDiameter) * 10^6;
             obj.dipoleForceConstant = double(3*permeabilityOfFreeSpace / 4*pi);
             obj.staticFrictionCoefficient = staticFrictionCoefficient;
             obj.movingFrictionCoefficient = motionFrictionCoefficient;
@@ -42,7 +42,7 @@ classdef ParticleFunctions
             %the negative direction
             particleLocation(particleLocation < obj.workspaceSizeMinus) = obj.workspaceSizeMinus; %limit values
             particleLocation(particleLocation > obj.workspaceSizePositive) = obj.workspaceSizePositive;
-            force = double(10 .*(obj.magneticForceConstant .* aCoils) ./ ((particleLocation + (0.999 * obj.workspaceSizePositive)).^1.5) + (obj.magneticForceConstant .* bCoils) ./ (((2 * obj.workspaceSizePositive) - (particleLocation + (0.999 * obj.workspaceSizePositive))).^ 1.5));
+            force = double((obj.magneticForceConstant .* aCoils) ./ ((particleLocation + (0.999 * obj.workspaceSizePositive)).^1.5) + (obj.magneticForceConstant .* bCoils) ./ (((2 * obj.workspaceSizePositive) - (particleLocation + (0.999 * obj.workspaceSizePositive))).^ 1.5));
             force(isinf(force)) = 0;
             force(isnan(force)) = 0;
         end
@@ -104,9 +104,11 @@ classdef ParticleFunctions
             distances = permute(sqrt(abs(xYDistances(:,1,:).^2 + xYDistances(:,2,:).^2)),[1,3,2]);
             distances(isnan(distances)) = 0;
             actualCollisions = distances < obj.particleDiameter / 2; %/2 for the radius
-            actualCollisions = triu(actualCollisions,1);%everything above main diagonal...
+            actualCollisions = triu(actualCollisions,1);%everything above main diagonal. - means only one particle in a collision is moved
             %we have the collisions above, now move the particles...
-            resetParticlesToCorrectLocations = sum(actualCollisions .* -1 .* distances,2); %just move the one for the time being
+            resetParticlesToCorrectLocations = sum(actualCollisions .* -1 .* distances,2);
+            %(particleVelocity ./ sum(particleVelocity,2)) %the fraction
+            %occupied by each x/y component
             vectoredResetParticlesToCorrectLocations = (particleVelocity ./ sum(particleVelocity,2)) .* resetParticlesToCorrectLocations;
             vectoredResetParticlesToCorrectLocations(isnan(vectoredResetParticlesToCorrectLocations)) = 0;
             vectoredResetParticlesToCorrectLocations(isinf(vectoredResetParticlesToCorrectLocations)) = 0;

@@ -1,1 +1,1 @@
-particleSimulation(5);
+particleSimulation(100);
