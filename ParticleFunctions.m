@@ -22,7 +22,7 @@ classdef ParticleFunctions
             obj.particleMass = particleMass;
             obj.particleDiameter = particleDiameter;
             obj.workspaceSizePositive = workspaceSize;
-            obj.workspaceSizeMinus = -1 * workspaceSize
+            obj.workspaceSizeMinus = -1 * workspaceSize;
         end
         %So user can change parameters on the fly
         function obj = ChangeMetaValue(obj, permeabilityOfFreeSpace, particleDiameter, particleMass, fluidViscocity, staticFrictionCoefficient, motionFrictionCoefficient, workspaceSize)
@@ -34,7 +34,7 @@ classdef ParticleFunctions
             obj.particleMass = particleMass;
             obj.particleDiameter = particleDiameter;
             obj.workspaceSizePositive = workspaceSize;
-            obj.workspaceSizeMinus = -1 * workspaceSize
+            obj.workspaceSizeMinus = -1 * workspaceSize;
         end
         %public functions
         function force = calculateMagneticForce(obj, particleLocation, aCoils, bCoils)
@@ -70,6 +70,17 @@ classdef ParticleFunctions
             wallContact = wallContactN + wallContactP; %combine negative and positive directions + as there should be no case where a particle can touch both walls simultaneously
             particleLocation = ((wallContact == 0 ) .* particleLocation ) + (wallContact .* obj.workspaceSizePositive);
         end
+        function [wallContact,particleLocation,particleVelocity] = isParticleOnWallFunction(obj,particleLocation,particleVelocity, wallFunction)
+            resultOfAllFunctions = particleLocation .* wallFunction
+            wallContact = any(resultOfAllFunctions,3)
+            %new page for result of each function - use position - if there
+            %is one different position on each page, use that one (IDK how
+            %to do that...)
+            %perform the function on each xy value - is it the wrong side
+            %of the function?
+            %this should just result in the wallContact bit.
+            %Only perform the further calculations on location and vel once!
+        end
         function force = calculateFrictionForce(obj, particleVelocity, particleForce, wallContact)
             totalVelocity = sum(abs(particleVelocity),2);
             movingParticles = totalVelocity > 0;
@@ -80,24 +91,6 @@ classdef ParticleFunctions
         function velocity = calculateParticleVelocity(obj, particleForce, particleMass, timeSinceLastUpdate)
             velocity = (particleForce ./ particleMass) * timeSinceLastUpdate;
         end        
-        function collisions = calculateCollisionsBefore(obj, particleLocation, particleVelocity, timeModifier)
-            collisions  = zeroes(particleLocation);            
-            %DIPOLE FORCE code
-            %xYDistances = particleLocation - permute(particleLocation,[3,2,1]);
-            %distances = permute(sqrt(abs(xYDistances(:,1,:).^2 + xYDistances(:,2,:).^2)),[1,3,2]);
-            %distances(isnan(distances)) = 0;
-            %dipoleMoments = double(sum(particleTorque,2) .* distances);
-            %dipoleMoments = dipoleMoments .* dipoleMoments.';
-            %normalisedDipoleMoment = dipoleMoments ./ distances.^-4;
-            %combinedForce = obj.dipoleForceConstant .* sum(normalisedDipoleMoment,2); %sum along '2'axis to make it 5x1
-            %distSum = permute(sum(xYDistances,1),[3,2,1]);
-            %force = combinedForce .* distSum;
-            
-            %just the collisions - if particles are inelastic there are no
-            %contact/adhesion forces - just dipole force holds them
-            %together
-            %NaNs for no contact, values for collision points (cartesian...)
-        end
         function [newLocations, newVelocity] = calculateCollisionsAfter(obj, oldParticleLocation, newParticleLocation, particleVelocity, timeModifier)
             %get distances between each particle and all the others:            
             xYDistances = newParticleLocation - permute(newParticleLocation,[3,2,1]);

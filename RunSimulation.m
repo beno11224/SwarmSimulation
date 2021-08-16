@@ -1,1 +1,2 @@
-particleSimulation(100);
+function RunSimulation()
+    particleSimulation(5);

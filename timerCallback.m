@@ -7,6 +7,7 @@ function timerCallback(app)
     app.particleArrayForce = app.particleArrayForce - app.particleFunctions.calculateDragForce(app.particleArrayVelocity);
         %halt any CURRENT movement of particles in contact with the walls
     [wallContact, app.particleArrayLocation, app.particleArrayVelocity] = app.particleFunctions.isParticleOnWall(app.particleArrayLocation, app.particleArrayVelocity);
+    isParticleOnWallFunction(app.particleArrayLocation, app.particleArrayVelocity, @y>x + 1)
         %friction
     app.particleArrayForce = app.particleArrayForce - app.particleFunctions.calculateFrictionForce(app.particleArrayVelocity, app.particleArrayForce, wallContact);
         %calculate the new velocity
@@ -16,4 +17,5 @@ function timerCallback(app)
     app.particleArrayVelocity = app.particleArrayVelocity + app.particleFunctions.calculateParticleVelocity(app.particleArrayForce, 1 , timeSinceLastUpdate); %app.ParticleMasskgEditField.Value
         %calculate the new locations
     [app.particleArrayLocation, app.particleArrayVelocity] = app.particleFunctions.moveParticle(app.particleArrayLocation, app.particleArrayVelocity, timeSinceLastUpdate);
+    fprintf(app.fileID,  datestr(now,'HH_MM_SS_FFF') + sprintf(",%d,%d,%d,%d,", app.X1AGauge.Value,app.Y1AGauge.Value,app.X2AGauge.Value,app.Y2AGauge.Value) + mat2str(app.particleArrayLocation) + mat2str(app.particleArrayVelocity) + "\r\n");
 end
