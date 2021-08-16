@@ -71,8 +71,16 @@ classdef ParticleFunctions
             particleLocation = ((wallContact == 0 ) .* particleLocation ) + (wallContact .* obj.workspaceSizePositive);
         end
         function [wallContact,particleLocation,particleVelocity] = isParticleOnWallFunction(obj,particleLocation,particleVelocity, wallFunction)
-            resultOfAllFunctions = particleLocation .* wallFunction
+            resultOfAllFunctions = bsxfun(wallFunction, particleLocation(:,1), particleLocation(:,2))%( particleLocation[ : , 1 ], particleLocation[ : , 2 ])
             wallContact = any(resultOfAllFunctions,3)
+            
+            %resultOfAllFunctions = app.testfunc(0,2)%(particleLocation[ : , 1 ], particleLocation[ : , 2 ])
+            %wallContact = any(resultOfAllFunctions,3)
+            
+            wallContact = 0;
+            particleLocation = particleLocation;
+            particleVelocity = particleVelocity;
+            
             %new page for result of each function - use position - if there
             %is one different position on each page, use that one (IDK how
             %to do that...)

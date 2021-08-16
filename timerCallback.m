@@ -7,7 +7,10 @@ function timerCallback(app)
     app.particleArrayForce = app.particleArrayForce - app.particleFunctions.calculateDragForce(app.particleArrayVelocity);
         %halt any CURRENT movement of particles in contact with the walls
     [wallContact, app.particleArrayLocation, app.particleArrayVelocity] = app.particleFunctions.isParticleOnWall(app.particleArrayLocation, app.particleArrayVelocity);
-    isParticleOnWallFunction(app.particleArrayLocation, app.particleArrayVelocity, @y>x + 1)
+    func1 = @(x,y) (y>(x ));
+    %func1(1,2)
+    app.particleFunctions.isParticleOnWallFunction(app.particleArrayLocation, app.particleArrayVelocity, func1)
+    %app.particleFunctions.isParticleOnWallFunction(app.particleArrayLocation, app.particleArrayVelocity)
         %friction
     app.particleArrayForce = app.particleArrayForce - app.particleFunctions.calculateFrictionForce(app.particleArrayVelocity, app.particleArrayForce, wallContact);
         %calculate the new velocity
