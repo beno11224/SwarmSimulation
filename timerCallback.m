@@ -6,11 +6,9 @@ function timerCallback(app)
         %drag
     app.particleArrayForce = app.particleArrayForce - app.particleFunctions.calculateDragForce(app.particleArrayVelocity);
         %halt any CURRENT movement of particles in contact with the walls
-    [wallContact, app.particleArrayLocation, app.particleArrayVelocity] = app.particleFunctions.isParticleOnWall(app.particleArrayLocation, app.particleArrayVelocity);
-    func1 = @(x,y) (y>(x ));
-    %func1(1,2)
-    app.particleFunctions.isParticleOnWallFunction(app.particleArrayLocation, app.particleArrayVelocity, func1)
-    %app.particleFunctions.isParticleOnWallFunction(app.particleArrayLocation, app.particleArrayVelocity)
+    [wallContact, app.particleArrayLocation, app.particleArrayVelocity] = app.particleFunctions.isParticleOnWallPIP(app.particleArrayLocation, app.particleArrayVelocity, app.polygon.currentPoly);
+    %[wallContact, app.particleArrayLocation, app.particleArrayVelocity] = app.particleFunctions.isParticleOnWall(app.particleArrayLocation, app.particleArrayVelocity);
+    %[wallContact, app.particleArrayLocation, app.particleArrayVelocity] = app.particleFunctions.isParticleOnWallFunction(app.particleArrayLocation, app.particleArrayVelocity, app.lines.linearray(1,1), app.UIAxes.XLim(2));
         %friction
     app.particleArrayForce = app.particleArrayForce - app.particleFunctions.calculateFrictionForce(app.particleArrayVelocity, app.particleArrayForce, wallContact);
         %calculate the new velocity

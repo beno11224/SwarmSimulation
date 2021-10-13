@@ -62,6 +62,40 @@ classdef ParticleFunctions
         function force = calculateDragForce(obj, particleVelocity)
             force = particleVelocity .* obj.dragForceConstant;
         end
+        function [wallContact, particleLocation, particleVelocity] = isParticleOnWallPIP(obj, particleLocation, particleVelocity, poly)
+            %poly = [xlim, xlim; -xlim, xlim; -xlim, -xlim; -xlim, xlim]; % Make Poly an app.poly thing so it can be changed. Change line drawing too.
+            in = inpolygon(particleLocation(:,1), particleLocation(:,2), poly(:,1), poly(:,2));
+            %distanceMatrix = poly(n,1),poly(1,2)... 
+            %Try to do this in matrix not in for loop.
+            distances = zeros(length(particleLocation(:,2)),length(poly));
+            for lineCount = 1:length(poly)
+                if(~in(lineCount))
+                    for pointCount = 1:length(particleLocation(:,2))
+                        a = poly(lineCount,:) - poly(lineCount + 1,:); %what about last one? needs to link to start.
+                        a(3) = 0;
+                        b = particleLocation(pointCount,:) - poly(lineCount + 1,:);
+                        b(3) = 0;
+                        d = norm(cross(a,b)) / norm(a);
+                        distances(pointCount,lineCount) = d;
+                    end
+                end
+            end
+            distances = min(distances(:,2)); %now just pick the minimum distance - this is how far back the particle Needs to go.
+            
+            %Below - sort out so that particles past the wall are moved to
+            %the wall.
+            componentFraction = (abs(particleVelocity) ./ abs(sum(particleVelocity,2))) %the fraction
+            componentFraction(isnan(componentFraction)) = 0;
+            componentFraction(isinf(componentFraction)) = 0;
+            removeVelocity = (distances .* ~in .* componentFraction) %todo do this as a function of the distance...
+            removeVelocity(isinf(removeVelocity)) = 0;
+            removeVelocity(isnan(removeVelocity)) = 0;
+            
+            particleLocation = particleLocation - removeVelocity;
+            %particleVelocity = particleVelocity .* ~resultOfAllFunctions; %TODO - this is too simplistic - negate the component perpendicular to the wall, nothing else.
+                
+            wallContact = ~in;
+        end
         function [wallContact, particleLocation, particleVelocity] = isParticleOnWall(obj, particleLocation, particleVelocity) %TODO - issue when hitting negative walls...
             wallContactN = (particleLocation <= obj.workspaceSizeMinus) .* -1;
             wallContactP = (particleLocation >= obj.workspaceSizePositive);
@@ -70,16 +104,33 @@ classdef ParticleFunctions
             wallContact = wallContactN + wallContactP; %combine negative and positive directions + as there should be no case where a particle can touch both walls simultaneously
             particleLocation = ((wallContact == 0 ) .* particleLocation ) + (wallContact .* obj.workspaceSizePositive);
         end
-        function [wallContact,particleLocation,particleVelocity] = isParticleOnWallFunction(obj,particleLocation,particleVelocity, wallFunction)
-            resultOfAllFunctions = bsxfun(wallFunction, particleLocation(:,1), particleLocation(:,2))%( particleLocation[ : , 1 ], particleLocation[ : , 2 ])
-            wallContact = any(resultOfAllFunctions,3)
+        function [wallContact,particleLocation,particleVelocity] = isParticleOnWallFunction(obj,particleLocation,particleVelocity, wallFunctions, xLim)
+            resultOfAllFunctions = zeros(length(particleLocation),1);
+            distances = zeros(length(particleLocation),1);
+            for i = 1:length(wallFunctions)
+                %list of lines through origin for particle?
+                positionOfParticleRelavtiveToWall = wallFunctions{i}(particleLocation(:,1), particleLocation(:,2),xLim);
+                resultOfAllFunctions = resultOfAllFunctions | (positionOfParticleRelavtiveToWall < 0); %check particles don't get stuck...
+                positionOfParticleRelavtiveToWall(positionOfParticleRelavtiveToWall > 0) = 0;
+                distances = distances + positionOfParticleRelavtiveToWall;
+                %instead of magic number, use particeDiameter/2.                
+            end
             
             %resultOfAllFunctions = app.testfunc(0,2)%(particleLocation[ : , 1 ], particleLocation[ : , 2 ])
             %wallContact = any(resultOfAllFunctions,3)
+            componentFraction = (abs(particleVelocity) ./ abs(sum(particleVelocity,2))) %the fraction
+            componentFraction(isnan(componentFraction)) = 0;
+            componentFraction(isinf(componentFraction)) = 0;
+            removeVelocity = (distances .* resultOfAllFunctions .* componentFraction) %todo do this as a function of the distance...
+            removeVelocity(isinf(removeVelocity)) = 0;
+            removeVelocity(isnan(removeVelocity)) = 0;
             
-            wallContact = 0;
-            particleLocation = particleLocation;
-            particleVelocity = particleVelocity;
+            particleLocation = particleLocation - removeVelocity;
+            particleVelocity = particleVelocity .* ~resultOfAllFunctions; %TODO - this is too simplistic - negate the component perpendicular to the wall, nothing else.
+                
+            wallContact = resultOfAllFunctions;
+            %particleLocation = particleLocation;
+            %particleVelocity = particleVelocity;
             
             %new page for result of each function - use position - if there
             %is one different position on each page, use that one (IDK how
