@@ -4,6 +4,7 @@ classdef Polygons
     
     properties (Access = public)
         allPolys;
+        currentPolyVector;
         currentPoly;
         padding;
     end
@@ -90,10 +91,18 @@ classdef Polygons
                -len len*0.9];
            
             obj.currentPoly = squeeze(obj.allPolys(1,:,:));
+            
+            %TODO remember to change this if needed.
+            for i = 1:length(obj.currentPoly)-1 
+                obj.currentPolyVector(i,:) = obj.currentPoly(i,:) - obj.currentPoly(i+1,:);
+            end
         end
         
         function obj = change(obj,num)
             obj.currentPoly = squeeze(obj.allPolys(num,:,:));
+            for i = 1:length(obj.currentPoly)-1 
+                obj.currentPolyVector(i,:) = obj.currentPoly(i,:) - obj.currentPoly(i+1,:);
+            end
         end
     end
 end

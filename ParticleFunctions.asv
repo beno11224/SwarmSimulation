@@ -63,24 +63,46 @@ classdef ParticleFunctions
             force = particleVelocity .* obj.dragForceConstant;
         end
         function [wallContact, particleLocation, particleVelocity] = isParticleOnWallPIP(obj, particleLocation, particleVelocity, polygon, tMax)
+            %poly = [xlim, xlim; -xlim, xlim; -xlim, -xlim; -xlim, xlim]; % Make Poly an app.poly thing so it can be changed. Change line drawing too.
             in = inpolygon(particleLocation(:,1), particleLocation(:,2), polygon.currentPoly(:,1), polygon.currentPoly(:,2));
-
+            %distanceMatrix = poly(n,1),poly(1,2)... 
             %https://stackoverflow.com/questions/563198/how-do-you-detect-where-two-line-segments-intersect
+            %Try to do this in matrix not in for loop.
             s = repmat(particleVelocity.*tMax,[1,1,length(polygon.currentPolyVector)]);
             r = repmat(polygon.currentPolyVector', [1,1,length(particleVelocity)]);
             r = permute(r,[3,1,2]);
             q = repmat(particleLocation,[1,1,length(polygon.currentPolyVector)]); %Dodgy using other vars for length here, but hopefully won't be an issue as they must be the same length
             p = repmat(polygon.currentPoly(1:end-1,:)', [1,1,length(particleVelocity)]);
             p = permute(p,[3,1,2]);
-            t = (q - p) .* (r ./ (s .* r));
-            tMin = squeeze(min(t,[],3));
-            tMin(isinf(tMin)) = 0;
-            tMin(isnan(tMin)) = 0;
-
-            negatives = particleVelocity<0;
-            %particleVelocity = particleVelocity - tMin;
-            %particleVelocity(negatives ~= (particleVelocity<0) ) = 0; %set all values that don't match sign to 0 - inelastic.            
-            %particleLocation = particleLocation - tMin;
+            t = (q - p) .* r ./(s .* r);
+            
+            %TODO check below this line.
+            %distances = zeros(length(particleLocation(:,2)),length(poly));
+            %for lineCount = 1:length(poly)
+            %    if(~in(lineCount))
+            %        for pointCount = 1:length(particleLocation(:,2))
+            %            a = poly(lineCount,:) - poly(lineCount + 1,:); %what about last one? needs to link to start.
+            %            a(3) = 0;
+            %            b = particleLocation(pointCount,:) - poly(lineCount + 1,:);
+            %            b(3) = 0;
+            %            d = norm(cross(a,b)) / norm(a);
+            %            distances(pointCount,lineCount) = d;
+            %        end
+            %    end
+            %end
+            %distances = min(distances(:,2)); %now just pick the minimum distance - this is how far back the particle Needs to go.
+            
+            %Below - sort out so that particles past the wall are moved to
+            %the wall.
+            %componentFraction = (abs(particleVelocity) ./ abs(sum(particleVelocity,2))); %the fraction
+            %componentFraction(isnan(componentFraction)) = 0;
+            %componentFraction(isinf(componentFraction)) = 0;
+            %removeVelocity = (distances .* ~in .* componentFraction); %todo do this as a function of the distance...
+            %removeVelocity(isinf(removeVelocity)) = 0;
+            %removeVelocity(isnan(removeVelocity)) = 0;
+            
+            %particleLocation = particleLocation - removeVelocity;
+            %particleVelocity = particleVelocity .* ~resultOfAllFunctions; %TODO - this is too simplistic - negate the component perpendicular to the wall, nothing else.
                 
             wallContact = ~in;
         end
@@ -93,8 +115,8 @@ classdef ParticleFunctions
             force = ForceOnMovingParticles + ForceOnStationaryParticles; %uncertain if this is working fully correct
         end
         
-        function velocity = calculateParticleVelocity(obj, particleForce, timeSinceLastUpdate)
-            velocity = (particleForce ./ obj.particleMass) * timeSinceLastUpdate;
+        function velocity = calculateParticleVelocity(obj, particleForce, particleMass, timeSinceLastUpdate)
+            velocity = (particleForce ./ particleMass) * timeSinceLastUpdate;
         end   
         
         function [newLocations, newVelocity] = calculateCollisionsAfter(obj, oldParticleLocation, newParticleLocation, particleVelocity, timeModifier)
