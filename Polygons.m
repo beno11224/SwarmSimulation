@@ -53,21 +53,21 @@ classdef Polygons
                -len len*0.9];  
            
            obj.allPolys(3,:,:) = [-len len*0.9; %Ex2
-               -len*0.15 0;
+               -len*0.05 len*0.4;
+               len*0.1 len*0.1;
+               -len*0.4 -len
                -len*0.2 -len;
-               -len*0.1 -len
-               0 -len;
-               len*0.05 -len*0.1;  
-               len*0.9 -len;
-               len -len*0.9;
-               len*0.05 len*0.05;
+               len*0.2 -len*0.1;  
+               len*0.6 -len;
+               len*0.8 -len;
+               len*0.15 len*0.4;
                len len*0.9;
                len*0.9 len;
-               -len*0.05 len*0.1;                            
-               -len*0.5 len*0.52; 
-               -len*0.6 len*0.63;
-               -len*0.7 len*0.75;
-               -len*0.8 len*0.87;
+               len*0.05 len*0.5;                            
+               -len*0.5 len*0.8; 
+               -len*0.6 len*0.85;
+               -len*0.7 len*0.9;
+               -len*0.8 len*0.95;
                -len*0.9 len;
                -len len*0.9];
            

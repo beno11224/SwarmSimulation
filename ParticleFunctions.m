@@ -14,8 +14,8 @@ classdef ParticleFunctions
     methods (Access = public)
         %Constructor
         function obj = ParticleFunctions(permeabilityOfFreeSpace, particleDiameter, particleMass, fluidViscocity, staticFrictionCoefficient, motionFrictionCoefficient, workspaceSize)
-            obj.magneticForceConstant = double(permeabilityOfFreeSpace * (particleDiameter/2)^2 * 10^11);
-            obj.dragForceConstant = double(3*pi*fluidViscocity * particleDiameter) * 10^6;
+            obj.magneticForceConstant = double(permeabilityOfFreeSpace * (particleDiameter/2)^2 * 10^6);
+            obj.dragForceConstant = double(3*pi*fluidViscocity * particleDiameter); %TODO was * 10^6
             obj.dipoleForceConstant = double(3*permeabilityOfFreeSpace / 4*pi);
             obj.staticFrictionCoefficient = staticFrictionCoefficient;
             obj.movingFrictionCoefficient = motionFrictionCoefficient;
@@ -60,7 +60,7 @@ classdef ParticleFunctions
             %force = dipoleConstant * sum(1-5.*(normalisedDipoleMoment).^2 .* distances + 2.*(normalisedDipoleMoment).*particleTorque,3); %can't do Mci * Mcj/r^4 in this way
         end
         function force = calculateDragForce(obj, particleVelocity)
-            force = particleVelocity .* obj.dragForceConstant;
+            force = particleVelocity .* obj.dragForceConstant; %Something here is broken - Drag force can't force the particle the wrong way??
         end
         function [wallContact, particleLocation, particleVelocity] = isParticleOnWallPIP(obj, particleLocation, particleVelocity, polygon, tMax)
             in = inpolygon(particleLocation(:,1), particleLocation(:,2), polygon.currentPoly(:,1), polygon.currentPoly(:,2));
@@ -72,17 +72,43 @@ classdef ParticleFunctions
             q = repmat(particleLocation,[1,1,length(polygon.currentPolyVector)]); %Dodgy using other vars for length here, but hopefully won't be an issue as they must be the same length
             p = repmat(polygon.currentPoly(1:end-1,:)', [1,1,length(particleVelocity)]);
             p = permute(p,[3,1,2]);
-            t = (q - p) .* (r ./ (s .* r));
+            t = (q - p) .* (r ./ (s .* r)); %TODO are you sure this works???
             tMin = squeeze(min(t,[],3));
             tMin(isinf(tMin)) = 0;
             tMin(isnan(tMin)) = 0;
-
+            tMin(abs(tMin) > 1 ) = 0; %cap the change at 1 so it doesn't try to do anything wrong
             negatives = particleVelocity<0;
-            %particleVelocity = particleVelocity - tMin;
-            %particleVelocity(negatives ~= (particleVelocity<0) ) = 0; %set all values that don't match sign to 0 - inelastic.            
-            %particleLocation = particleLocation - tMin;
+            particleVelocity = particleVelocity - particleVelocity .* tMin; %<><><><><><><><><><><><><><><><><><><><><><><><><>TODO This isn't quite right? Need to look into it.
+            particleVelocity(negatives ~= (particleVelocity<0) ) = 0; %set all values that don't match sign to 0 - inelastic.
+            particleLocation = particleLocation - particleVelocity .* tMin;
                 
             wallContact = ~in;
+        end
+        
+        function force = calculateFlowForce(obj, particleLocation, flowChart)
+            %f = spline(flowChart, particleLocation(1,:))
+            for particleCount = 1:length(particleLocation(1,:))
+                searchArray = flowChart(1,:);
+                while(length(searchArray) > 2)
+                    a = particleLocation(particleCount,1);
+                    midpoint = floor(length(searchArray)/2);
+                    c = searchArray(midpoint);
+                    if (particleLocation(particleCount,1) > searchArray(midpoint))
+                        searchArray = searchArray(midpoint : length(searchArray));
+                    else
+                        searchArray = searchArray(1 : midpoint);
+                    end
+                end
+                if(length(searchArray) == 2)
+                    if(searchArray(1) > particleLocation(particleCount,1)) %TODO use the actual distance here, that will make it work
+                        answer = searchArray(2);
+                    else
+                        answer = searchArray(1);
+                    end
+                else
+                    answer = searchArray(1);
+                end
+            end
         end
        
         function force = calculateFrictionForce(obj, particleVelocity, particleForce, wallContact)
@@ -94,7 +120,7 @@ classdef ParticleFunctions
         end
         
         function velocity = calculateParticleVelocity(obj, particleForce, timeSinceLastUpdate)
-            velocity = (particleForce ./ obj.particleMass) * timeSinceLastUpdate;
+            velocity = (particleForce ./ obj.particleMass) .* timeSinceLastUpdate;
         end   
         
         function [newLocations, newVelocity] = calculateCollisionsAfter(obj, oldParticleLocation, newParticleLocation, particleVelocity, timeModifier)
