@@ -63,7 +63,7 @@ classdef ParticleFunctions
         function force = calculateDragForce(obj, particleVelocity)
             force = particleVelocity .* obj.dragForceConstant; %Something here is broken - Drag force can't force the particle the wrong way??
         end
-        function [wallContact, particleLocation, particleVelocity, particleForce] = isParticleOnWallPIP(obj, particleLocation, particleVelocity, particleForce, polygon, tMax)
+        function [wallContact, particleLocation, particleVelocity] = isParticleOnWallPIP(obj, particleLocation, particleVelocity, particleForce, polygon, tMax)
             in = inpolygon(particleLocation(:,1), particleLocation(:,2), polygon.currentPoly(:,1), polygon.currentPoly(:,2));
 
             %https://stackoverflow.com/questions/563198/how-do-you-detect-where-two-line-segments-intersect
@@ -74,18 +74,29 @@ classdef ParticleFunctions
             p = repmat(polygon.currentPoly(1:end-1,:)', [1,1,length(particleVelocity)]);
             p = permute(p,[3,1,2]);
             t = (q - p) .* (r ./ (s .* r));
-            tMin = squeeze(min(t,[],3));
+            [tMin,loc] = min(t,[],3);
+            a = s(loc); %Um, loc doesn't produce the correct thing.
+            b = t(loc);
+            correctRow = s(:,:,loc(2));
+            correctRow = correctRow .* ~in;
+            wallContact = correctRow(:,:)./norm(correctRow(:,:)); %TODO !?!?!?!?!??!?!?!?!?!?!?!?!?!?!??! don't think this is getting the unit vectors correctly - want it to be by row.
+            wallContact(isnan(wallContact)) = 0;
+            wallContact(isinf(wallContact)) = 0;
+            tMin = squeeze(tMin);
             tMin(isinf(tMin)) = 0;
             tMin(isnan(tMin)) = 0;
             tMin(abs(tMin) > 1 ) = 0; %cap the change at 1 so it doesn't try to do anything wrong
             negatives = particleVelocity<0;
-            particleVelocity = particleVelocity - particleVelocity .* tMin; %<><><><><><><><><><><><><><><><><><><><><><><><><>TODO This isn't quite right? Need to look into it.
+            particleVelocity = particleVelocity - particleVelocity .* tMin;
             particleVelocity(negatives ~= (particleVelocity<0) ) = 0; %set all values that don't match sign to 0 - inelastic.
             particleLocation = particleLocation - particleVelocity .* tMin;
-            %TODO reset force here? Don't want to, just need to reset
-            %location and then not add any more velocity...
                 
-            wallContact = ~in;
+            
+            %WallContact should show the perpendicular direction to the
+            %wall (going out from the wall? can swap if needed) this means
+            %can determine what force to mitigate
+
+            %In short, wall contact is the wall normal force?
         end
         
         function force = calculateFlowForce(obj, particleLocation, flowChart)
