@@ -10,9 +10,10 @@ function timerCallback(app)
     app.tMax = timeNow - app.lastUpdate;
     app.lastUpdate = timeNow;
     
-    f = app.particleFunctions.calculateFlowForce(app.particleArrayLocation, [0.01,0.02,0.03, 0.04, 0.05, 0.06, 0.07, 0.08, 0.09, 0.95]);
+    %f = app.particleFunctions.calculateFlowForce(app.particleArrayLocation, [0.01,0.02,0.03, 0.04, 0.05, 0.06, 0.07, 0.08, 0.09, 0.95]);
     	%particles are inelastic - no bouncing.
-    [wallContact, app.particleArrayLocation, app.particleArrayVelocity] = app.particleFunctions.isParticleOnWallPIP(app.particleArrayLocation, app.particleArrayVelocity, app.polygon, app.tMax);
+    %wallContact = app.particleArrayLocation > 0.0101; %cheat method for now.
+    [wallContact, app.particleArrayLocation, app.particleArrayVelocity, app.particleArrayForce] = app.particleFunctions.isParticleOnWallPIP(app.particleArrayLocation, app.particleArrayVelocity, app.particleArrayForce, app.polygon, app.tMax);
         %friction
     app.particleArrayForce = app.particleArrayForce - app.particleFunctions.calculateFrictionForce(app.particleArrayVelocity, app.particleArrayForce, wallContact);
         %calculate the new velocity

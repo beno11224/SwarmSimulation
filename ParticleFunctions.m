@@ -14,8 +14,8 @@ classdef ParticleFunctions
     methods (Access = public)
         %Constructor
         function obj = ParticleFunctions(permeabilityOfFreeSpace, particleDiameter, particleMass, fluidViscocity, staticFrictionCoefficient, motionFrictionCoefficient, workspaceSize)
-            obj.magneticForceConstant = double(permeabilityOfFreeSpace * (particleDiameter/2)^2 * 10^6);
-            obj.dragForceConstant = double(3*pi*fluidViscocity * particleDiameter); %TODO was * 10^6
+            obj.magneticForceConstant = double(permeabilityOfFreeSpace * (particleDiameter/2)^2 * 10^5);
+            obj.dragForceConstant = double(3*pi*fluidViscocity * particleDiameter);
             obj.dipoleForceConstant = double(3*permeabilityOfFreeSpace / 4*pi);
             obj.staticFrictionCoefficient = staticFrictionCoefficient;
             obj.movingFrictionCoefficient = motionFrictionCoefficient;
@@ -40,8 +40,9 @@ classdef ParticleFunctions
         function force = calculateMagneticForce(obj, particleLocation, aCoils, bCoils)
             %a coils 'push' in the positive direction, b coils 'push' in
             %the negative direction
-            particleLocation(particleLocation < obj.workspaceSizeMinus) = obj.workspaceSizeMinus; %limit values
+            particleLocation(particleLocation < obj.workspaceSizeMinus) = obj.workspaceSizeMinus; %pretend that the particles don't reach the magnetic centres, or it messes up calculations.
             particleLocation(particleLocation > obj.workspaceSizePositive) = obj.workspaceSizePositive;
+            %good breakpoint condition: any(any(particleLocation > obj.workspaceSizePositive))
             force = double((obj.magneticForceConstant .* aCoils) ./ ((particleLocation + (0.999 * obj.workspaceSizePositive)).^1.5) + (obj.magneticForceConstant .* bCoils) ./ (((2 * obj.workspaceSizePositive) - (particleLocation + (0.999 * obj.workspaceSizePositive))).^ 1.5));
             force(isinf(force)) = 0;
             force(isnan(force)) = 0;
@@ -62,7 +63,7 @@ classdef ParticleFunctions
         function force = calculateDragForce(obj, particleVelocity)
             force = particleVelocity .* obj.dragForceConstant; %Something here is broken - Drag force can't force the particle the wrong way??
         end
-        function [wallContact, particleLocation, particleVelocity] = isParticleOnWallPIP(obj, particleLocation, particleVelocity, polygon, tMax)
+        function [wallContact, particleLocation, particleVelocity, particleForce] = isParticleOnWallPIP(obj, particleLocation, particleVelocity, particleForce, polygon, tMax)
             in = inpolygon(particleLocation(:,1), particleLocation(:,2), polygon.currentPoly(:,1), polygon.currentPoly(:,2));
 
             %https://stackoverflow.com/questions/563198/how-do-you-detect-where-two-line-segments-intersect
@@ -72,7 +73,7 @@ classdef ParticleFunctions
             q = repmat(particleLocation,[1,1,length(polygon.currentPolyVector)]); %Dodgy using other vars for length here, but hopefully won't be an issue as they must be the same length
             p = repmat(polygon.currentPoly(1:end-1,:)', [1,1,length(particleVelocity)]);
             p = permute(p,[3,1,2]);
-            t = (q - p) .* (r ./ (s .* r)); %TODO are you sure this works???
+            t = (q - p) .* (r ./ (s .* r));
             tMin = squeeze(min(t,[],3));
             tMin(isinf(tMin)) = 0;
             tMin(isnan(tMin)) = 0;
@@ -81,6 +82,8 @@ classdef ParticleFunctions
             particleVelocity = particleVelocity - particleVelocity .* tMin; %<><><><><><><><><><><><><><><><><><><><><><><><><>TODO This isn't quite right? Need to look into it.
             particleVelocity(negatives ~= (particleVelocity<0) ) = 0; %set all values that don't match sign to 0 - inelastic.
             particleLocation = particleLocation - particleVelocity .* tMin;
+            %TODO reset force here? Don't want to, just need to reset
+            %location and then not add any more velocity...
                 
             wallContact = ~in;
         end
