@@ -175,20 +175,10 @@ classdef ParticleFunctions
             [location,newVelocity] = calculateCollisionsAfter(obj, particleLocation, unCheckedLocation, particleVelocity, timeModifier);
         end
         
-        function particleLocations = generateParticleLocations(obj, poly, particleLocationsLength)
+        function particleLocations = generateParticleLocations(poly, particleLocationsLength)
             [xlim ylim] = boundingbox(poly);
             particleLocationIndex = 1;
-            while(particleLocationIndex <= particleLocationsLength)
-                particleLocations(particleLocationIndex) = [xlim,ylim] .* rand(numParticles, 2);
-                if(inpolyon(particleLocations(particleLocationIndex), poly))
-                    particleLocationIndex = particleLocationIndex + 1;
-                end
-            end
-        end
-        
-        function inGoalZone = isParticleInEndZone(poly, particleLocations)
-            inGoalZone = inpolyon(particleLocations, poly);
-            %TODO maybe put other goal zone logic in here?
+            while(particleLocationIndex <= particleLocat
         end
     end
     methods (Access = private)        
