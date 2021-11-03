@@ -99,22 +99,26 @@ classdef Polygons
             obj.allStartZones(1,:,:) = [len*0.25, len*0.25;
                 -len*0.25, len*0.25;
                 -len*0.25, -len*0.25;
-                len*0.25, -len*0.25];
+                len*0.25, -len*0.25;
+                len*0.25, len*0.25];
             
             obj.allStartZones(2,:,:) = [-len len*0.9; %Ex1
                -len*0.5 len*0.1;
                len*0.6 len*0.8
-               -len*0.9 len];
+               -len*0.9 len;
+               -len len*0.9];
            
            obj.allStartZones(2,:,:) = [-len len*0.9; %Ex1
                -len*0.5 len*0.1;
                len*0.6 len*0.8
-               -len*0.9 len];
+               -len*0.9 len;
+               -len len*0.9];
            
            obj.allStartZones(2,:,:) = [-len len*0.9; %Ex1
                -len*0.5 len*0.1;
                len*0.6 len*0.8
-               -len*0.9 len];
+               -len*0.9 len;
+               -len len*0.9];
            
            obj.currentStartZone = squeeze(obj.allStartZones(1,:,:));
            

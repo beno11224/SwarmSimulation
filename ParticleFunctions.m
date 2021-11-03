@@ -75,7 +75,7 @@ classdef ParticleFunctions
             p = permute(p,[3,1,2]);
             t = (q - p) .* (r ./ (s .* r));
             [tMin,loc] = min(t,[],3);
-            a = s(loc); %Um, loc doesn't produce the correct thing.
+            a = s(loc); %Um, loc doesn't produce what I'm thinking it does - please try to work this out!
             b = t(loc);
             correctRow = s(:,:,loc(2));
             correctRow = correctRow .* ~in;
@@ -176,11 +176,13 @@ classdef ParticleFunctions
         end
         
         function particleLocations = generateParticleLocations(obj, poly, particleLocationsLength)
-            [xlim ylim] = boundingbox(poly);
+            [xlim ylim] = boundingbox(polyshape(poly));
             particleLocationIndex = 1;
             while(particleLocationIndex <= particleLocationsLength)
-                particleLocations(particleLocationIndex) = [xlim,ylim] .* rand(numParticles, 2);
-                if(inpolyon(particleLocations(particleLocationIndex), poly))
+                particleLocations(particleLocationIndex,:) = [xlim(1), ylim(1)] + [xlim(2)-xlim(1),ylim(2)-xlim(1)] .* rand(1, 2);
+                a = particleLocations(particleLocationIndex,1);
+                b = particleLocations(particleLocationIndex,2);
+                if(inpolygon(a,b,poly(:,1), poly(:,2)))
                     particleLocationIndex = particleLocationIndex + 1;
                 end
             end

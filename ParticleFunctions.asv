@@ -75,7 +75,7 @@ classdef ParticleFunctions
             p = permute(p,[3,1,2]);
             t = (q - p) .* (r ./ (s .* r));
             [tMin,loc] = min(t,[],3);
-            a = s(loc); %Um, loc doesn't produce the correct thing.
+            a = s(loc); %Um, loc doesn't produce what I'm thinking it does - please try to work this out!
             b = t(loc);
             correctRow = s(:,:,loc(2));
             correctRow = correctRow .* ~in;
@@ -175,10 +175,23 @@ classdef ParticleFunctions
             [location,newVelocity] = calculateCollisionsAfter(obj, particleLocation, unCheckedLocation, particleVelocity, timeModifier);
         end
         
-        function particleLocations = generateParticleLocations(poly, particleLocationsLength)
-            [xlim ylim] = boundingbox(poly);
+        function particleLocations = generateParticleLocations(obj, poly, particleLocationsLength)
+            [xlim ylim] = boundingbox(polyshape(poly));
             particleLocationIndex = 1;
-            while(particleLocationIndex <= particleLocat
+            while(particleLocationIndex <= particleLocationsLength)
+                c = sum(xlim)
+                particleLocations(particleLocationIndex,:) = [xlim(1), ylim(1)] + [xlim(2)-xlim(1),sum(ylim)] .* rand(1, 2);
+                a = particleLocations(particleLocationIndex,1);
+                b = particleLocations(particleLocationIndex,2);
+                if(inpolygon(a,b,poly(:,1), poly(:,2)))
+                    particleLocationIndex = particleLocationIndex + 1;
+                end
+            end
+        end
+        
+        function inGoalZone = isParticleInEndZone(poly, particleLocations)
+            inGoalZone = inpolyon(particleLocations, poly);
+            %TODO maybe put other goal zone logic in here?
         end
     end
     methods (Access = private)        
