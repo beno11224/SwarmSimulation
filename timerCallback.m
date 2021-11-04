@@ -12,13 +12,14 @@ function timerCallback(app)
     
     %f = app.particleFunctions.calculateFlowForce(app.particleArrayLocation, [0.01,0.02,0.03, 0.04, 0.05, 0.06, 0.07, 0.08, 0.09, 0.95]);
     	%particles are inelastic - no bouncing.
-    %wallContact = app.particleArrayLocation > 0.0101; %cheat method for now.
     [wallContact, app.particleArrayLocation, app.particleArrayVelocity] = app.particleFunctions.isParticleOnWallPIP(app.particleArrayLocation, app.particleArrayVelocity, app.particleArrayForce, app.polygon, app.tMax);
         %friction
     app.particleArrayForce = app.particleArrayForce - app.particleFunctions.calculateFrictionForce(app.particleArrayVelocity, app.particleArrayForce, wallContact);
         %calculate the new velocity
-    app.particleArrayVelocity = app.particleArrayVelocity + app.particleFunctions.calculateParticleVelocity(app.particleArrayForce, app.tMax);
-        %calculate the new locations
-    [app.particleArrayLocation, app.particleArrayVelocity] = app.particleFunctions.moveParticle(app.particleArrayLocation, app.particleArrayVelocity, app.tMax);
+    app.particleArrayVelocity = app.particleArrayVelocity + app.particleFunctions.calculateParticlevelocityComponentFromForce(app.particleArrayForce, app.tMax);
+        %calculate the new locations bearing in mind wallContact and the
+        %trajectories of the other particles.
+    [app.particleArrayLocation, app.particleArrayVelocity] = app.particleFunctions.moveParticle(app.particleArrayLocation, app.particleArrayVelocity, wallContact, app.tMax);
+        %Log this all to a file for data collection
     fprintf(app.fileID,  datestr(now,'HH_MM_SS_FFF') + sprintf(",%d,%d,%d,%d,", app.X1AGauge.Value,app.Y1AGauge.Value,app.X2AGauge.Value,app.Y2AGauge.Value) + mat2str(app.particleArrayLocation) + mat2str(app.particleArrayVelocity) + "\r\n");
 end

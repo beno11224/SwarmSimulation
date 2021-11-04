@@ -73,7 +73,7 @@ classdef ParticleFunctions
             q = repmat(particleLocation,[1,1,length(polygon.currentPolyVector)]); %Dodgy using other vars for length here, but hopefully won't be an issue as they must be the same length
             p = repmat(polygon.currentPoly(1:end-1,:)', [1,1,length(particleVelocity)]);
             p = permute(p,[3,1,2]);
-            t = (q - p) .* (r ./ (s .* r));
+            t = (q - p) .* (r ./ (s .* r)); %t is not being calculated correctly here. not sure what to do...
             [tMin,loc] = min(t,[],3);
             a = s(loc); %Um, loc doesn't produce what I'm thinking it does - please try to work this out!
             b = t(loc);
@@ -82,21 +82,26 @@ classdef ParticleFunctions
             wallContact = correctRow(:,:)./norm(correctRow(:,:)); %TODO !?!?!?!?!??!?!?!?!?!?!?!?!?!?!??! don't think this is getting the unit vectors correctly - want it to be by row.
             wallContact(isnan(wallContact)) = 0;
             wallContact(isinf(wallContact)) = 0;
+            wallContact(~any(wallContact,2),:) = 1; %Should turn any rows that are not in contact with the wall to 1s?
             tMin = squeeze(tMin);
             tMin(isinf(tMin)) = 0;
-            tMin(isnan(tMin)) = 0;
+            tMin(isnan(tMin)) = 0; %TODO <><><><><><><><><><><><>Removing all movement here - this is why the particles are carrying on.
+            %Once the particles go out of the play area, they go to complex
+            %numbers which messes other things up.
+            c = abs(tMin);
             tMin(abs(tMin) > 1 ) = 0; %cap the change at 1 so it doesn't try to do anything wrong
             negatives = particleVelocity<0;
             particleVelocity = particleVelocity - particleVelocity .* tMin;
             particleVelocity(negatives ~= (particleVelocity<0) ) = 0; %set all values that don't match sign to 0 - inelastic.
-            particleLocation = particleLocation - particleVelocity .* tMin;
+            particleLocation = particleLocation - particleVelocity .* tMin; %Just use the point of intersection, if the particle needs to be moved??
                 
             
-            %WallContact should show the perpendicular direction to the
-            %wall (going out from the wall? can swap if needed) this means
-            %can determine what force to mitigate
-
-            %In short, wall contact is the wall normal force?
+            %WallContact should show the 'normal' direction to the
+            %wall. Can multiply this by expected velocity to just get the
+            %component force? All Other values in WallContact are 1s so it
+            %doesn't affect the other values.
+            %In short, wall contact is the wall normal force? (with
+            %adjustment)
         end
         
         function force = calculateFlowForce(obj, particleLocation, flowChart)
@@ -134,7 +139,7 @@ classdef ParticleFunctions
             force = ForceOnMovingParticles + ForceOnStationaryParticles; %uncertain if this is working fully correct
         end
         
-        function velocity = calculateParticleVelocity(obj, particleForce, timeSinceLastUpdate)
+        function velocity = calculateParticlevelocityComponentFromForce(obj, particleForce, timeSinceLastUpdate)
             velocity = (particleForce ./ obj.particleMass) .* timeSinceLastUpdate;
         end   
         
@@ -163,7 +168,7 @@ classdef ParticleFunctions
             %particleDistanceDifferences = sum(oldParticleLocation - newParticleLocation,2)
             %newVelocity = particleVelocity - (resetParticlesToCorrectLocations ./ particleDistanceDifferences); %What is this?? This is so not right...
         end
-        function [location, newVelocity] = moveParticle(obj, particleLocation, particleVelocity, timeModifier)
+        function [location, newVelocity] = moveParticle(obj, particleLocation, particleVelocity, wallContact, timeModifier)
             %Below for if calculating collisions before
             %collidedParticles = calculateCollisions(particleLocation, particleVelocity, timeModifier)
             %possibleLocation = particleLocation + particleVelocity.* timeModifier;
@@ -171,7 +176,7 @@ classdef ParticleFunctions
             %location = fullMoveParticles + collidedParticles;
             
             %Below if calculating collisions after
-            unCheckedLocation = particleLocation + particleVelocity .* timeModifier;
+            unCheckedLocation = particleLocation + (particleVelocity .* wallContact)  .* timeModifier;
             [location,newVelocity] = calculateCollisionsAfter(obj, particleLocation, unCheckedLocation, particleVelocity, timeModifier);
         end
         
