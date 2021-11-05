@@ -67,13 +67,23 @@ classdef ParticleFunctions
             in = inpolygon(particleLocation(:,1), particleLocation(:,2), polygon.currentPoly(:,1), polygon.currentPoly(:,2));
 
             %https://stackoverflow.com/questions/563198/how-do-you-detect-where-two-line-segments-intersect
-            s = repmat(particleVelocity.*tMax,[1,1,length(polygon.currentPolyVector)]);
-            r = repmat(polygon.currentPolyVector', [1,1,length(particleVelocity)]);
-            r = permute(r,[3,1,2]);
-            q = repmat(particleLocation,[1,1,length(polygon.currentPolyVector)]); %Dodgy using other vars for length here, but hopefully won't be an issue as they must be the same length
-            p = repmat(polygon.currentPoly(1:end-1,:)', [1,1,length(particleVelocity)]);
-            p = permute(p,[3,1,2]);
-            t = (q - p) .* (r ./ (s .* r)); %t is not being calculated correctly here. not sure what to do...
+            s = squeeze(repmat(particleVelocity.*tMax,[1,1,length(polygon.currentPolyVector)]))';
+            r = repmat(polygon.currentPolyVector', [1,size(particleVelocity,1)])';
+            %r = permute(r,[3,1,2]);
+            q = squeeze(repmat(particleLocation,[1,1,length(polygon.currentPolyVector)]))'; %Dodgy using other vars for length here, but hopefully won't be an issue as they must be the same length
+            p = repmat(polygon.currentPoly(1:end-1,:)', [1,1,size(particleVelocity,1)])';
+            %p = permute(p,[3,1,2]);
+            %ssq = squeeze(s);
+            %rsq = squeeze(r);
+            asd = obj.crossProduct(s(:,1), s(:,2), r(:,1), r(:,2)); %was ssq
+            %asc = (r ./ asd);
+            asb = (q - p);
+            asc = obj.crossProduct(asb(:,1), asb(:,2), r(:,1), r(:,2));
+            tbleh = asc./asd;
+            
+            
+            t = cross((q - p), (r ./ asd)); %t is not being calculated correctly here. not sure what to do... %cross A&B must be same size...
+            %silly. it's not .*, it's a cross product!!!
             [tMin,loc] = min(t,[],3);
             a = s(loc); %Um, loc doesn't produce what I'm thinking it does - please try to work this out!
             b = t(loc);
@@ -199,7 +209,9 @@ classdef ParticleFunctions
         end
     end
     methods (Access = private)        
-        
+        function AB = crossProduct(obj, Ax, Ay, Bx, By)
+            AB(:,:,3) = Ax.*By-Ay.*Bx; %No idea if this is right or not... lets try it!
+        end
     end
 end
 
