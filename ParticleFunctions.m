@@ -67,51 +67,51 @@ classdef ParticleFunctions
             in = inpolygon(particleLocation(:,1), particleLocation(:,2), polygon.currentPoly(:,1), polygon.currentPoly(:,2));
 
             %https://stackoverflow.com/questions/563198/how-do-you-detect-where-two-line-segments-intersect
-            s = squeeze(repmat(particleVelocity.*tMax,[1,1,length(polygon.currentPolyVector)]))';
-            r = repmat(polygon.currentPolyVector', [1,size(particleVelocity,1)])';
-            %r = permute(r,[3,1,2]);
-            q = squeeze(repmat(particleLocation,[1,1,length(polygon.currentPolyVector)]))'; %Dodgy using other vars for length here, but hopefully won't be an issue as they must be the same length
-            p = repmat(polygon.currentPoly(1:end-1,:)', [1,1,size(particleVelocity,1)])';
-            %p = permute(p,[3,1,2]);
-            %ssq = squeeze(s);
-            %rsq = squeeze(r);
-            asd = obj.crossProduct(s(:,1), s(:,2), r(:,1), r(:,2)); %was ssq
-            %asc = (r ./ asd);
+            s = squeeze(repmat(particleVelocity.*tMax,[1,1,length(polygon.currentPolyVector)]));
+            r = permute(repmat(polygon.currentPolyVector', [1,1,size(particleVelocity,1)]),[3,1,2]);
+            q = squeeze(repmat(particleLocation,[1,1,length(polygon.currentPolyVector)])); %Dodgy using other vars for length here, but hopefully won't be an issue as they must be the same length
+            p = permute(repmat(polygon.currentPoly(1:end-1,:)', [1,1,size(particleVelocity,1)]),[3,1,2]); %Are we looking at all the lines here? or not all of them
+            asd = obj.crossProduct(s(:,1,:), s(:,2,:), r(:,1,:), r(:,2,:));
             asb = (q - p);
-            asc = obj.crossProduct(asb(:,1), asb(:,2), r(:,1), r(:,2));
-            tbleh = asc./asd;
-            
-            
-            t = cross((q - p), (r ./ asd)); %t is not being calculated correctly here. not sure what to do... %cross A&B must be same size...
-            %silly. it's not .*, it's a cross product!!!
-            [tMin,loc] = min(t,[],3);
-            a = s(loc); %Um, loc doesn't produce what I'm thinking it does - please try to work this out!
-            b = t(loc);
-            correctRow = s(:,:,loc(2));
-            correctRow = correctRow .* ~in;
-            wallContact = correctRow(:,:)./norm(correctRow(:,:)); %TODO !?!?!?!?!??!?!?!?!?!?!?!?!?!?!??! don't think this is getting the unit vectors correctly - want it to be by row.
-            wallContact(isnan(wallContact)) = 0;
-            wallContact(isinf(wallContact)) = 0;
-            wallContact(~any(wallContact,2),:) = 1; %Should turn any rows that are not in contact with the wall to 1s?
-            tMin = squeeze(tMin);
+            asc = obj.crossProduct(asb(:,1,:), asb(:,2,:), r(:,1,:), r(:,2,:));
+            t = asc./asd;
+            t(t<0) = NaN;
+            t(t == 0) = NaN;
+            %a = t(t>0);
+            [tMin,loc] = min(t,[],2);
+            tMin = tMin(:,:,3);
             tMin(isinf(tMin)) = 0;
-            tMin(isnan(tMin)) = 0; %TODO <><><><><><><><><><><><>Removing all movement here - this is why the particles are carrying on.
-            %Once the particles go out of the play area, they go to complex
-            %numbers which messes other things up.
-            c = abs(tMin);
-            tMin(abs(tMin) > 1 ) = 0; %cap the change at 1 so it doesn't try to do anything wrong
-            negatives = particleVelocity<0;
-            particleVelocity = particleVelocity - particleVelocity .* tMin;
-            particleVelocity(negatives ~= (particleVelocity<0) ) = 0; %set all values that don't match sign to 0 - inelastic.
-            particleLocation = particleLocation - particleVelocity .* tMin; %Just use the point of intersection, if the particle needs to be moved??
-                
+            tMin(isnan(tMin)) = 0;                                    
+            tMin(abs(tMin) > 1 ) = 0; %cap the change at 1 to ignore the impossible intersections
+            %This should now match up with ~in
+            tMin(tMin == 0) = 1;
             
+            %tMax is the TIME we need the MAX DISTANCE here
+            reverseVelocityScalar = (-tMin + 1) .*tMax.*norm(particleVelocity); % get components of this velocity reverse - a^2 + b^ 2 = c ^ 2
+            a = obj.scalarToVector(reverseVelocityScalar, particleVelocity);
+            a(isinf(a)) = 0;
+            a(isnan(a)) = 0;
+            particleLocation = particleLocation - a; %Just use the point of intersection, if the particle needs to be moved??
+            
+            %negatives = particleVelocity<0;
+            %particleVelocity = particleVelocity - particleVelocity .* tMin(3); %wrong
+            %particleVelocity(negatives ~= (particleVelocity<0) ) = 0; %set all values that don't match sign to 0 - inelastic.
             %WallContact should show the 'normal' direction to the
             %wall. Can multiply this by expected velocity to just get the
             %component force? All Other values in WallContact are 1s so it
             %doesn't affect the other values.
             %In short, wall contact is the wall normal force? (with
             %adjustment)
+            minCol = s(loc);
+            locone = loc;
+            locone(:,:,3) = locone(:,:,3) + 1;
+            minColPlus = s(locone); % just alter which polygon vertex we are looking at here please.
+            %now get the normal
+            
+            wallContact(:,1) = -(minCol(:,2) - minColPlus(:,2));
+            wallContact(:,2) = minCol(:,1) - minColPlus(:,1);
+            wallContact = wallContact .* ~in;
+            wallContact(~any(wallContact,2),:) = 1;
         end
         
         function force = calculateFlowForce(obj, particleLocation, flowChart)
@@ -154,6 +154,8 @@ classdef ParticleFunctions
         end   
         
         function [newLocations, newVelocity] = calculateCollisionsAfter(obj, oldParticleLocation, newParticleLocation, particleVelocity, timeModifier)
+            %Think the component part of this is wrong
+            
             %get distances between each particle and all the others:            
             xYDistances = newParticleLocation - permute(newParticleLocation,[3,2,1]);
             distances = permute(sqrt(abs(xYDistances(:,1,:).^2 + xYDistances(:,2,:).^2)),[1,3,2]);
@@ -211,6 +213,10 @@ classdef ParticleFunctions
     methods (Access = private)        
         function AB = crossProduct(obj, Ax, Ay, Bx, By)
             AB(:,:,3) = Ax.*By-Ay.*Bx; %No idea if this is right or not... lets try it!
+        end
+        %C must be scalar, AB must be vector
+        function vec = scalarToVector(obj,C,AB)
+            vec = (AB./norm(AB)) .* C;            
         end
     end
 end
