@@ -101,10 +101,10 @@ classdef ParticleFunctions
             %WallContact are nans to show there is no contact
             
             %getting the wallContact values here
-            minCol = r(loc);
+            minCol = s(loc);
             locone = loc;
-            locone(:,:,3) = locone(:,:,3) + 1; %TODO THIS  IS NOT PULLING THE WALL IN HERE!
-            minColPlus = r(locone);
+            locone(:,:,3) = locone(:,:,3) + 1;
+            minColPlus = s(locone);
             
             wallContact(:,1) = minCol(:,2) - minColPlus(:,2);
             wallContact(:,2) = minCol(:,1) - minColPlus(:,1);
@@ -160,16 +160,9 @@ classdef ParticleFunctions
             %rot = zeros(velocity);
             %Now multiply by the vector orthagonal to the wall
             for i = 1:length(velocity)
-                %rot(:,:,i) = [wallContact(i,1) -wallContact(i,2); wallContact(i,2) wallContact(i,1)];
-                if(any(~isnan(wallContact(i,:))))
-                    rot = [wallContact(i,1) -wallContact(i,2); wallContact(i,2) wallContact(i,1)];
-                    rotatedVector = rot * velocity(i,:)';
-                    rotatedVector(1) = 0;
-                    a = rot' * rotatedVector;
-                    velocity(i,:) = (rot' * rotatedVector)';
-                end
+                rot(:,:,i) = [wallContact(i,1) -wallContact(i,2); wallContact(i,2) wallContact(i,1)];
             end
-            %orthValues = rot .* permute(velocity,[3,2,1]);% wallContact.*magnitude;
+            orthValues = rot .* permute(velocity,[3,2,1]);% wallContact.*magnitude;
             %Now return to component values?
             
         end   
