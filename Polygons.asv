@@ -134,8 +134,8 @@ classdef Polygons
            %    -len len*0.9];
            
            obj.allStartZones(3,:,:) = [-len -len*0.45;
-               -len*0.75 -len*0.45;
-               -len*0.75 -len*0.2;
+               -len*0.5 -len*0.45;
+               -len*0.5 -len*0.2;
                -len -len*0.2;
                -len -len*0.45];
            
@@ -165,8 +165,8 @@ classdef Polygons
            %    len*0.65 len*0.85;                            
            %    len*0.7 len*0.75];
            obj.allEndZones(3,:,:) = [len 0
-               len*0.9 len*0.1;
-               len*0.78 0;
+               len*0.8 len*0.1;
+               len*0.5 len*0.05;
                len*0.95 -len*0.15;
                len 0]; 
            
