@@ -16,7 +16,7 @@ classdef Polygons
         function obj = Polygons(app)
             obj.padding = 0.0002;
             len = app.UIAxes.XLim(2) - obj.padding*2;
-            obj.allPolys = zeros(1,18,2); %This will cause issues - only 5 points across a 2d axis atm - what do i do for matricies of different sizes           
+            obj.allPolys = zeros(1,18,2);
            
             obj.allPolys(1,:,:) = [-len len; %Training
                -len*0.5 len;

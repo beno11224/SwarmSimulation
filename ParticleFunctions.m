@@ -92,15 +92,10 @@ classdef ParticleFunctions
             a(isinf(a)) = 0;
             a(isnan(a)) = 0;
             particleLocation = particleLocation - a; %Just use the point of intersection, if the particle needs to be moved??
-            
-            %negatives = particleVelocity<0;
-            %particleVelocity = particleVelocity - particleVelocity .* tMin(3); %wrong
-            %particleVelocity(negatives ~= (particleVelocity<0) ) = 0; %set all values that don't match sign to 0 - inelastic.
-            
+           
             %WallContact shows the vector orthogonal to the wall. All other values in 
             %WallContact are nans to show there is no contact
-            wallContact = polygon.currentPolyVector(loc(:,:,3),:) - polygon.currentPolyVector(loc(:,:,3) + 1,:);
-
+            wallContact = polygon.currentPolyVector(loc(:,:,3),:);
             wallContact = wallContact .* ~in;
             wallContact = wallContact ./ norm(wallContact);
             wallContact(~any(wallContact,2),:) = NaN; %Set 1's to nan s?
@@ -157,8 +152,8 @@ classdef ParticleFunctions
                 if(any(~isnan(wallContact(i,:))))
                     rot = [wallContact(i,1) -wallContact(i,2); wallContact(i,2) wallContact(i,1)];
                     rotatedVector = rot * velocity(i,:)';
-                    rotatedVector(1) = 0;
-                    a = rot' * rotatedVector;
+                    rotatedVector(2) = 0;
+                    a = rot' * rotatedVector; %Not sure this is working as I'm expecting...
                     velocity(i,:) = (rot' * rotatedVector)';
                 end
             end
@@ -206,7 +201,9 @@ classdef ParticleFunctions
             
             %Below if calculating collisions after
             unCheckedLocation = particleLocation + particleVelocity .* timeModifier;
-            [location,newVelocity] = calculateCollisionsAfter(obj, particleLocation, unCheckedLocation, particleVelocity, timeModifier);
+            location = particleLocation + particleVelocity .* timeModifier;
+            newVelocity = particleVelocity;
+            %[location,newVelocity] = calculateCollisionsAfter(obj, particleLocation, unCheckedLocation, particleVelocity, timeModifier);
         end
         
         function particleLocations = generateParticleLocations(obj, poly, particleLocationsLength)
