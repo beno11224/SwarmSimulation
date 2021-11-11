@@ -99,15 +99,8 @@ classdef ParticleFunctions
             
             %WallContact shows the vector orthogonal to the wall. All other values in 
             %WallContact are nans to show there is no contact
-            
-            %getting the wallContact values here
-            minCol = r(loc);
-            locone = loc;
-            locone(:,:,3) = locone(:,:,3) + 1; %TODO THIS  IS NOT PULLING THE WALL IN HERE!
-            minColPlus = r(locone);
-            
-            wallContact(:,1) = minCol(:,2) - minColPlus(:,2);
-            wallContact(:,2) = minCol(:,1) - minColPlus(:,1);
+            wallContact = polygon.currentPolyVector(loc(:,:,3),:) - polygon.currentPolyVector(loc(:,:,3) + 1,:);
+
             wallContact = wallContact .* ~in;
             wallContact = wallContact ./ norm(wallContact);
             wallContact(~any(wallContact,2),:) = NaN; %Set 1's to nan s?
