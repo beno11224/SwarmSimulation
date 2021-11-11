@@ -67,37 +67,43 @@ classdef ParticleFunctions
             in = inpolygon(particleLocation(:,1), particleLocation(:,2), polygon.currentPoly(:,1), polygon.currentPoly(:,2));
 
             %https://stackoverflow.com/questions/563198/how-do-you-detect-where-two-line-segments-intersect
-            s = squeeze(repmat(particleVelocity.*tMax,[1,1,length(polygon.currentPolyVector)]));
-            r = permute(repmat(polygon.currentPolyVector', [1,1,size(particleVelocity,1)]),[3,1,2]);
-            q = squeeze(repmat(particleLocation,[1,1,length(polygon.currentPolyVector)])); %Dodgy using other vars for length here, but hopefully won't be an issue as they must be the same length
-            p = permute(repmat(polygon.currentPoly(1:end-1,:)', [1,1,size(particleVelocity,1)]),[3,1,2]); %Are we looking at all the lines here? or not all of them
-            asd = obj.crossProduct(s(:,1,:), s(:,2,:), r(:,1,:), r(:,2,:));
-            asb = (q - p);
-            asc = obj.crossProduct(asb(:,1,:), asb(:,2,:), r(:,1,:), r(:,2,:));
-            t = asc./asd;
-            t(t<0) = NaN;
-            t(t == 0) = NaN;
-            %a = t(t>0);
-            [tMin,loc] = min(t,[],2);
-            tMin = tMin(:,:,3);
-            tMin(isinf(tMin)) = 0;
-            tMin(isnan(tMin)) = 0;                                    
-            tMin(abs(tMin) > 1 ) = 0; %cap the change at 1 to ignore the impossible intersections
-            %This should now match up with ~in
-            tMin(tMin == 0) = 1;
+            particleVelocityVectorS = squeeze(repmat(particleVelocity.*tMax,[1,1,length(polygon.currentPolyVector)]));
+            polygonVectorR = permute(repmat(polygon.currentPolyVector', [1,1,size(particleVelocity,1)]),[3,1,2]);
+            particleStartQ = squeeze(repmat(particleLocation,[1,1,length(polygon.currentPolyVector)])); %Dodgy using other vars for length here, but hopefully won't be an issue as they must be the same length
+            polyLineStartP = permute(repmat(polygon.currentPoly(1:end-1,:)', [1,1,size(particleVelocity,1)]),[3,1,2]); %Are we looking at all the lines here? or not all of them
+            startDistanceQP = (particleStartQ - polyLineStartP);
+            startDistancePolyVectorCrossProductQPR = obj.crossProduct(startDistanceQP(:,1,:), startDistanceQP(:,2,:), polygonVectorR(:,1,:), polygonVectorR(:,2,:));
+            vectorCrossProductRS = obj.crossProduct(polygonVectorR(:,1,:), polygonVectorR(:,2,:), particleVelocityVectorS(:,1,:), particleVelocityVectorS(:,2,:));
+            timeParticleCrossedLine = startDistancePolyVectorCrossProductQPR./vectorCrossProductRS;
+            a = timeParticleCrossedLine;
+            amin = min(abs(timeParticleCrossedLine),[],2);
+            timeParticleCrossedLine(timeParticleCrossedLine<0) = NaN;
+            timeParticleCrossedLine(timeParticleCrossedLine == 0) = NaN; %0 to prevent errors in min calculation
             
-            %tMax is the TIME we need the MAX DISTANCE here
-            reverseVelocityScalar = (-tMin + 1) .*tMax.*norm(particleVelocity); % get components of this velocity reverse - a^2 + b^ 2 = c ^ 2
-            a = obj.scalarToVector(reverseVelocityScalar, particleVelocity);
-            a(isinf(a)) = 0;
-            a(isnan(a)) = 0;
-            particleLocation = particleLocation - a; %Just use the point of intersection, if the particle needs to be moved??
+            %rename tmin
+            [minTime,loc] = min(timeParticleCrossedLine,[],2);
+            minTime = minTime(:,:,3);
+            minTime(isinf(minTime)) = 0;
+            minTime(isnan(minTime)) = 0;                                    
+            minTime(abs(minTime) > 1 ) = 0; %cap the change at 1 to ignore the impossible intersections
+            %This should now match up with ~in
+            minTime(minTime == 0) = 1;
+            
+            %remember tMax is the TIME not a DISTANCE
+            %location is current, velocity and tMax are from the previous calculations
+            reverseVelocityAmmount = ((-minTime + 1) ./ tMax) .* particleVelocity;
+            particleLocation = particleLocation - reverseVelocityAmmount;
+            %reverseVelocityScalar = (-minTime + 1) .* tMax.*norm(particleVelocity); % get components of this velocity reverse - a^2 + b^ 2 = c ^ 2
+            %a = obj.scalarToVector(reverseVelocityScalar, particleVelocity);
+            %a(isinf(a)) = 0;
+            %a(isnan(a)) = 0;
+            %particleLocation = particleLocation - a; %Just use the point of intersection, if the particle needs to be moved??
            
             %WallContact shows the vector orthogonal to the wall. All other values in 
             %WallContact are nans to show there is no contact
             wallContact = polygon.currentPolyVector(loc(:,:,3),:);
             wallContact = wallContact .* ~in;
-            wallContact = wallContact ./ norm(wallContact);
+            wallContact = wallContact ./ norm(wallContact); %to unit vector
             wallContact(~any(wallContact,2),:) = NaN; %Set 1's to nan s?
         end
         
@@ -148,18 +154,13 @@ classdef ParticleFunctions
             %rot = zeros(velocity);
             %Now multiply by the vector orthagonal to the wall
             for i = 1:length(velocity)
-                %rot(:,:,i) = [wallContact(i,1) -wallContact(i,2); wallContact(i,2) wallContact(i,1)];
                 if(any(~isnan(wallContact(i,:))))
                     rot = [wallContact(i,1) -wallContact(i,2); wallContact(i,2) wallContact(i,1)];
                     rotatedVector = rot * velocity(i,:)';
                     rotatedVector(2) = 0;
-                    a = rot' * rotatedVector; %Not sure this is working as I'm expecting...
                     velocity(i,:) = (rot' * rotatedVector)';
                 end
-            end
-            %orthValues = rot .* permute(velocity,[3,2,1]);% wallContact.*magnitude;
-            %Now return to component values?
-            
+            end            
         end   
         
         function [newLocations, newVelocity] = calculateCollisionsAfter(obj, oldParticleLocation, newParticleLocation, particleVelocity, timeModifier)
