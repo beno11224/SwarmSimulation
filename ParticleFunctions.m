@@ -67,7 +67,7 @@ classdef ParticleFunctions
             in = inpolygon(particleLocation(:,1), particleLocation(:,2), polygon.currentPoly(:,1), polygon.currentPoly(:,2));
 
             %https://stackoverflow.com/questions/563198/how-do-you-detect-where-two-line-segments-intersect
-            particleVelocityVectorS = squeeze(repmat(particleVelocity.*tMax,[1,1,length(polygon.currentPolyVector)]));
+            particleVelocityVectorS = squeeze(repmat(-particleVelocity.*tMax,[1,1,length(polygon.currentPolyVector)]));
             polygonVectorR = permute(repmat(polygon.currentPolyVector', [1,1,size(particleVelocity,1)]),[3,1,2]);
             particleStartQ = squeeze(repmat(particleLocation,[1,1,length(polygon.currentPolyVector)])); %Dodgy using other vars for length here, but hopefully won't be an issue as they must be the same length
             polyLineStartP = permute(repmat(polygon.currentPoly(1:end-1,:)', [1,1,size(particleVelocity,1)]),[3,1,2]); %Are we looking at all the lines here? or not all of them
@@ -80,19 +80,29 @@ classdef ParticleFunctions
             timeParticleCrossedLine(timeParticleCrossedLine<0) = NaN;
             timeParticleCrossedLine(timeParticleCrossedLine == 0) = NaN; %0 to prevent errors in min calculation
             
+            %TODO what about when the particle hits a second line? particle
+            %will clip through one line then will be considered to be not
+            %passing a line. This below code MUST reflect that this can
+            %happen.
+            
             %rename tmin
             [minTime,loc] = min(timeParticleCrossedLine,[],2);
             minTime = minTime(:,:,3);
             minTime(isinf(minTime)) = 0;
-            minTime(isnan(minTime)) = 0;                                    
-            minTime(abs(minTime) > 1 ) = 0; %cap the change at 1 to ignore the impossible intersections
-            %This should now match up with ~in
-            minTime(minTime == 0) = 1;
+            minTime(isnan(minTime)) = 0;
+            %don't like this 1 - I think it's wrong? tbh do we actually
+            %care about this?
+            %minTime(abs(minTime) > 1 ) = 0; %cap the change at 1 to ignore the impossible intersections
+            %><><This should now match up with ~in
+            %Instead using ~in to selectively remove ones we don't need.
+            minTime = minTime .* ~in;
+            %minTime(minTime == 0) = 1;
             
             %remember tMax is the TIME not a DISTANCE
             %location is current, velocity and tMax are from the previous calculations
-            reverseVelocityAmmount = ((-minTime + 1) ./ tMax) .* particleVelocity;
-            particleLocation = particleLocation - reverseVelocityAmmount;
+            %reverseVelocityAmmount = ((-minTime + 1) ./ tMax) .* particleVelocity;
+            reverseVelocityAmmount = minTime .* -particleVelocity; %Think it's simple as this...
+            particleLocation = particleLocation + reverseVelocityAmmount; %plus as the particleVelocity was negative
             %reverseVelocityScalar = (-minTime + 1) .* tMax.*norm(particleVelocity); % get components of this velocity reverse - a^2 + b^ 2 = c ^ 2
             %a = obj.scalarToVector(reverseVelocityScalar, particleVelocity);
             %a(isinf(a)) = 0;
@@ -157,7 +167,7 @@ classdef ParticleFunctions
                 if(any(~isnan(wallContact(i,:))))
                     rot = [wallContact(i,1) -wallContact(i,2); wallContact(i,2) wallContact(i,1)];
                     rotatedVector = rot * velocity(i,:)';
-                    rotatedVector(2) = 0;
+                    rotatedVector(1) = 0;
                     velocity(i,:) = (rot' * rotatedVector)';
                 end
             end            
