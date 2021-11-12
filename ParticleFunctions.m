@@ -95,7 +95,7 @@ classdef ParticleFunctions
             %(it means nothing on it's own!)
             %location is current, velocity and tMax are from the previous calculations
             %reverseVelocityAmmount = ((-minTime + 1) ./ tMax) .* particleVelocity;
-            reverseVelocityAmmount = (minTimeModifier.*tMax) .* -particleVelocity; %Think it's simple as this...
+            reverseVelocityAmmount = ((minTimeModifier.*tMax) .* -particleVelocity) .* 1.015; %Think it's simple as this...
             particleLocation = particleLocation + reverseVelocityAmmount; %plus as the particleVelocity was negative
             %reverseVelocityScalar = (-minTime + 1) .* tMax.*norm(particleVelocity); % get components of this velocity reverse - a^2 + b^ 2 = c ^ 2
             %a = obj.scalarToVector(reverseVelocityScalar, particleVelocity);
@@ -156,11 +156,16 @@ classdef ParticleFunctions
                 if(any(~isnan(wallContact(i,:))))
                     rot = [wallContact(i,1) -wallContact(i,2); wallContact(i,2) wallContact(i,1)]; %wall Contact is a unit vector here
                     rotatedVector = rot * velocity(i,:)'; %rotate the velocity
-                    %multipliera = sum(abs(rotatedVector))/abs(rotatedVector(2)); %remember this 1 and the 2 must be opposites
                     multiplier = norm(rotatedVector)/abs(rotatedVector(2));
                     rotatedVector(1) = 0; %zero the repective axis (check this one!)
                     rotatedVector(2) = rotatedVector(2)*multiplier;
-                    velocity(i,:) = (rot' * rotatedVector)'; %rotate vector back... doesn't seem to be working?
+                    velocity(i,:) = (rot' * rotatedVector)'; %rotate vector back
+                    
+                    %Issue is with which force is being applied - if the
+                    %particle is being moved in the x direction then it
+                    %sticks, in the y direction it slips - any x in the
+                    %right direction takes the particle off the wall,
+                    %otherwise it sticks.
                 end
             end            
         end   
@@ -196,7 +201,7 @@ classdef ParticleFunctions
             %newVelocity = particleVelocity - (resetParticlesToCorrectLocations ./ particleDistanceDifferences); %What is this?? This is so not right...
         end
         function [location, newVelocity] = moveParticle(obj, particleLocation, particleVelocity, timeModifier)
-            unCheckedLocation = particleLocation + particleVelocity .* timeModifier;
+            %unCheckedLocation = particleLocation + particleVelocity .* timeModifier;
             %[location,newVelocity] = calculateCollisionsAfter(obj, particleLocation, unCheckedLocation, particleVelocity, timeModifier);
             
             location = particleLocation + particleVelocity .* timeModifier;
