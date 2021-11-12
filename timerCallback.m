@@ -19,7 +19,7 @@ function timerCallback(app)
     %friction
     %app.particleArrayForce = app.particleArrayForce - app.particleFunctions.calculateFrictionForce(app.particleArrayVelocity, app.particleArrayForce, wallContact);
         %calculate the new velocity
-    app.particleArrayVelocity = app.particleArrayVelocity + app.particleFunctions.calculateParticlevelocityComponentFromForce(app.particleArrayForce, wallContact, app.tMax);
+    app.particleArrayVelocity = app.particleFunctions.calculateCumulativeParticlevelocityComponentFromForce(app.particleArrayForce, app.particleArrayVelocity, wallContact, app.tMax);
         %calculate the new locations bearing in mind wallContact and the
         %trajectories of the other particles.
     [app.particleArrayLocation, app.particleArrayVelocity] = app.particleFunctions.moveParticle(app.particleArrayLocation, app.particleArrayVelocity, app.tMax);

@@ -156,8 +156,12 @@ classdef ParticleFunctions
                 if(any(~isnan(wallContact(i,:))))
                     rot = [wallContact(i,1) -wallContact(i,2); wallContact(i,2) wallContact(i,1)]; %wall Contact is a unit vector here
                     rotatedVector = rot * velocity(i,:)'; %rotate the velocity
-                    %multipliera = sum(abs(rotatedVector))/abs(rotatedVector(2)); %remember this 1 and the 2 must be opposites
-                    multiplier = norm(rotatedVector)/abs(rotatedVector(2));
+                    a = rot * [1 0]';
+                    aa = sum(abs(a))/abs(a(2));
+                    
+                    b = [0 a(2) * sum(abs(a))/abs(a(2))]'; % sum is not right here...
+                    c = rot' * b;
+                    multiplier = sum(abs(rotatedVector))/abs(rotatedVector(2)); %remember this 1 and the 2 must be opposites
                     rotatedVector(1) = 0; %zero the repective axis (check this one!)
                     rotatedVector(2) = rotatedVector(2)*multiplier;
                     velocity(i,:) = (rot' * rotatedVector)'; %rotate vector back... doesn't seem to be working?
@@ -196,11 +200,17 @@ classdef ParticleFunctions
             %newVelocity = particleVelocity - (resetParticlesToCorrectLocations ./ particleDistanceDifferences); %What is this?? This is so not right...
         end
         function [location, newVelocity] = moveParticle(obj, particleLocation, particleVelocity, timeModifier)
-            unCheckedLocation = particleLocation + particleVelocity .* timeModifier;
-            %[location,newVelocity] = calculateCollisionsAfter(obj, particleLocation, unCheckedLocation, particleVelocity, timeModifier);
+            %Below for if calculating collisions before
+            %collidedParticles = calculateCollisions(particleLocation, particleVelocity, timeModifier)
+            %possibleLocation = particleLocation + particleVelocity.* timeModifier;
+            %fullMoveParticles = possibleLocation .* isNan(collidedparticles)
+            %location = fullMoveParticles + collidedParticles;
             
+            %Below if calculating collisions after
+            unCheckedLocation = particleLocation + particleVelocity .* timeModifier;
             location = particleLocation + particleVelocity .* timeModifier;
             newVelocity = particleVelocity;
+            %[location,newVelocity] = calculateCollisionsAfter(obj, particleLocation, unCheckedLocation, particleVelocity, timeModifier);
         end
         
         function particleLocations = generateParticleLocations(obj, poly, particleLocationsLength)
