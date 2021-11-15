@@ -156,9 +156,9 @@ classdef ParticleFunctions
                 if(any(~isnan(wallContact(i,:))))
                     rot = [wallContact(i,1) -wallContact(i,2); wallContact(i,2) wallContact(i,1)]; %wall Contact is a unit vector here
                     rotatedVector = rot * velocity(i,:)'; %rotate the velocity
-                    multiplier = norm(rotatedVector)/abs(rotatedVector(2));
+                    %multiplier = norm(rotatedVector)/abs(rotatedVector(2));
                     rotatedVector(1) = 0; %zero the repective axis (check this one!)
-                    rotatedVector(2) = rotatedVector(2)*multiplier;
+                    %rotatedVector(2) = rotatedVector(2)*multiplier;
                     velocity(i,:) = (rot' * rotatedVector)'; %rotate vector back
                     
                     %Issue is with which force is being applied - if the
