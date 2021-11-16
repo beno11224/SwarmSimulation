@@ -138,26 +138,21 @@ classdef ParticleFunctions
             %TODO make this matrix based
         end
        
-        function force = calculateFrictionForce(obj, particleVelocity, particleForce, wallContact)            
-            totalVelocity = sum(abs(particleVelocity),2);
-            movingParticles = totalVelocity > 0;
-            force = zeros(size(particleForce));
-            for i = 1:length(particleVelocity)
+        function force = calculateFrictionForce(obj, particleVelocity, particleForce, wallContact)
+            for i = 1:length(velocity)
                 if(any(~isnan(wallContact(i,:))))
                     rot = [wallContact(i,1) -wallContact(i,2); wallContact(i,2) wallContact(i,1)]; %wall Contact is a unit vector here
                     rotatedForce = rot * particleForce(i,:)';
                     rotatedForce(2) = 0;
-                    if(movingParticles(i))                        
-                        rotatedForce(1) = rotatedForce(1) .* obj.movingFrictionCoefficient;
-                    else                    
-                        rotatedForce(1) = rotatedForce(1) .* obj.staticFrictionCoefficient;
-                    end
-                    force(i,:) = (rot' * rotatedForce)';                    
+                    normalised
+                    
                 end
             end
-            %ForceOnMovingParticles = wallContact .* movingParticles .* particleForce .* obj.movingFrictionCoefficient;
-            %ForceOnStationaryParticles = wallContact .* ~movingParticles .* particleForce .* obj.staticFrictionCoefficient;
-            %force = ForceOnMovingParticles + ForceOnStationaryParticles; %uncertain if this is working fully correct
+            totalVelocity = sum(abs(particleVelocity),2);
+            movingParticles = totalVelocity > 0;
+            ForceOnMovingParticles = wallContact .* movingParticles .* particleForce .* obj.movingFrictionCoefficient;
+            ForceOnStationaryParticles = wallContact .* ~movingParticles .* particleForce .* obj.staticFrictionCoefficient;
+            force = ForceOnMovingParticles + ForceOnStationaryParticles; %uncertain if this is working fully correct
         end
         
         function velocity = calculateCumulativeParticlevelocityComponentFromForce(obj, particleForce, oldVelocity, wallContact, timeSinceLastUpdate)
