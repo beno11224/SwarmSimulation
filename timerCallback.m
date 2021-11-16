@@ -11,12 +11,12 @@ function timerCallback(app)
     	%particles are inelastic - no bouncing.
     [wallContact, app.particleArrayLocation, app.particleArrayVelocity] = app.particleFunctions.isParticleOnWallPIP(app.particleArrayLocation, app.particleArrayVelocity, app.particleArrayForce, app.polygon, app.tMax);
     
-    %get app.t for use in wall collision maths.
+        %now update tMax for this iteration
     timeNow = 86400 * now;
     app.tMax = timeNow - app.lastUpdate;
     app.lastUpdate = timeNow;   
     
-    %friction
+        %friction
     app.particleArrayForce = app.particleArrayForce - app.particleFunctions.calculateFrictionForce(app.particleArrayVelocity, app.particleArrayForce, wallContact);
         %calculate the new velocity
     app.particleArrayVelocity = app.particleFunctions.calculateCumulativeParticlevelocityComponentFromForce(app.particleArrayForce, app.particleArrayVelocity, wallContact, app.tMax);
