@@ -112,30 +112,15 @@ classdef ParticleFunctions
         end
         
         function force = calculateFlowForce(obj, particleLocation, flowChart)
-            %f = spline(flowChart, particleLocation(1,:))
-            for particleCount = 1:length(particleLocation(1,:))
-                searchArray = flowChart(1,:);
-                while(length(searchArray) > 2)
-                    a = particleLocation(particleCount,1);
-                    midpoint = floor(length(searchArray)/2);
-                    c = searchArray(midpoint);
-                    if (particleLocation(particleCount,1) > searchArray(midpoint))
-                        searchArray = searchArray(midpoint : length(searchArray));
-                    else
-                        searchArray = searchArray(1 : midpoint);
-                    end
-                end
-                if(length(searchArray) == 2)
-                    if(searchArray(1) > particleLocation(particleCount,1)) %TODO use the actual distance here, that will make it work
-                        answer = searchArray(2);
-                    else
-                        answer = searchArray(1);
-                    end
-                else
-                    answer = searchArray(1);
-                end
-            end
-            %TODO make this matrix based
+            %flowChart must be a nxn matrix. calculate the position of the
+            %particle as a factor of the gamespace (0..1), say [0.6 0.4].
+            %Then get the index that is that factor of the flowChart, and
+            %that's the force?            
+            factorPosition = (particleLocation + obj.workspaceSizePositive) ./ (obj.workspaceSizePositive*2);
+            flowChartNumericalPosition = round(factorPosition .* size(flowChart));
+            flowChartNumericalPosition(flowChartNumericalPosition == 0) = 1; %TODO confirm this indexing is correct.
+            flowChartIndex = sub2ind(size(flowChart),flowChartNumericalPosition(:,1),flowChartNumericalPosition(:,2));
+            force = flowChart(flowChartIndex);
         end
        
         function force = calculateFrictionForce(obj, particleVelocity, particleForce, wallContact)            
@@ -166,7 +151,8 @@ classdef ParticleFunctions
             for i = 1:length(velocity)
                 if(any(~isnan(wallContact(i,:))))
                     %Use vector projection to restrict the velocity to only
-                    %along a wall if applicable
+                    %along a wall if applicable - may possibly be an issue
+                    %with perfectly parallel lines, shouldn't come up.
                     velocity(i,:) = dot(velocity(i,:),wallContact(i,:)) / dot(wallContact(i,:), wallContact(i,:)) * wallContact(i,:);
                 end
             end            
