@@ -162,12 +162,19 @@ classdef ParticleFunctions
         
         function velocity = calculateCumulativeParticlevelocityComponentFromForce(obj, particleForce, oldVelocity, wallContact, timeSinceLastUpdate)
             velocity = oldVelocity + (particleForce ./ obj.particleMass) .* timeSinceLastUpdate;
-
+            %Add velocity first then zero it out after:
+            
+            %UseWallContact to make sure that there is 0 velocity in the
+            %wall direction - moving away from the wall is OK obviously.
+            
+            nanf = ~isnan(wallContact);
+            
+            
             for i = 1:length(velocity)
                 if(any(~isnan(wallContact(i,:))))
-                    %Use vector projection to restrict the velocity to only
-                    %along a wall if applicable
+                    %Use vector projection to 
                     velocity(i,:) = dot(velocity(i,:),wallContact(i,:)) / dot(wallContact(i,:), wallContact(i,:)) * wallContact(i,:);
+
                 end
             end            
         end   
