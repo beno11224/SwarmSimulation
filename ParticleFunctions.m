@@ -120,26 +120,42 @@ classdef ParticleFunctions
             flowChartNumericalPosition = round(factorPosition .* size(flowChart));
             flowChartNumericalPosition(flowChartNumericalPosition == 0) = 1; %TODO confirm this indexing is correct.
             flowChartIndex = sub2ind(size(flowChart),flowChartNumericalPosition(:,1),flowChartNumericalPosition(:,2));
-            force = flowChart(flowChartIndex);
+            force = flowChart(flowChartIndex); % might need to add more functionality in here?
         end
        
         function force = calculateFrictionForce(obj, particleVelocity, particleForce, wallContact)            
             totalVelocity = sum(abs(particleVelocity),2);
             movingParticles = totalVelocity > 0;
             force = zeros(size(particleForce));
-            for i = 1:length(particleVelocity)
+            for i = 1:length(particleForce)
                 if(any(~isnan(wallContact(i,:))))
-                    rot = [wallContact(i,1) -wallContact(i,2); wallContact(i,2) wallContact(i,1)]; %wall Contact is a unit vector here
-                    rotatedForce = rot * particleForce(i,:)';
-                    rotatedForce(2) = 0;
-                    if(movingParticles(i))                        
-                        rotatedForce(1) = rotatedForce(1) .* obj.movingFrictionCoefficient;
-                    else                    
-                        rotatedForce(1) = rotatedForce(1) .* obj.staticFrictionCoefficient;
+                    %Use vector rejection to project force into the wall.
+                    %Must check if this force is into the wall or not...
+                    fOne = particleForce(i,:) - (dot(particleForce(i,:),wallContact(i,:)) / dot(wallContact(i,:), wallContact(i,:)) * wallContact(i,:));
+                    if(movingParticles(i))
+                        force(i,:) = fOne .*obj.movingFrictionCoefficient;
+                    else
+                        force(i,:) = fOne .*obj.staticFrictionCoefficient; %Don't hit this - if the particle is on the wall it must have velocity due to point maths.
                     end
-                    force(i,:) = (rot' * rotatedForce)';                    
                 end
             end
+            
+            % totalVelocity = sum(abs(particleVelocity),2);
+           % movingParticles = totalVelocity > 0;
+           % force = zeros(size(particleForce));
+           % for i = 1:length(particleVelocity)
+           %     if(any(~isnan(wallContact(i,:))))
+           %         rot = [wallContact(i,1) -wallContact(i,2); wallContact(i,2) wallContact(i,1)]; %wall Contact is a unit vector here
+           %         rotatedForce = rot * particleForce(i,:)';
+           %         rotatedForce(2) = 0;
+           %         if(movingParticles(i))                        
+           %             rotatedForce(1) = rotatedForce(1) .* obj.movingFrictionCoefficient;
+           %         else                    
+           %             rotatedForce(1) = rotatedForce(1) .* obj.staticFrictionCoefficient;
+           %         end
+           %         force(i,:) = (rot' * rotatedForce)';                    
+           %     end
+           % end
             %ForceOnMovingParticles = wallContact .* movingParticles .* particleForce .* obj.movingFrictionCoefficient;
             %ForceOnStationaryParticles = wallContact .* ~movingParticles .* particleForce .* obj.staticFrictionCoefficient;
             %force = ForceOnMovingParticles + ForceOnStationaryParticles; %uncertain if this is working fully correct

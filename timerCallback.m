@@ -14,11 +14,22 @@ function timerCallback(app)
         %now update tMax for this iteration
     timeNow = 86400 * now;
     app.tMax = timeNow - app.lastUpdate;
-    app.lastUpdate = timeNow;   
+    app.lastUpdate = timeNow;
+    
+    %This is super hacky, but might help with debugging?
+    if app.tMax <0.001
+        app.tMax = 0.001;
+    else if app.tMax > 0.1            app.tMax = 0.1;
+        end
+    end
+    
+    %app.tMax = 0.02; %REMOVE THIS AS IT WILL BREAK IT!
     
         %friction
     app.particleArrayForce = app.particleArrayForce - app.particleFunctions.calculateFrictionForce(app.particleArrayVelocity, app.particleArrayForce, wallContact);
-        %calculate the new velocity
+        %calculate the new velocityee
+    [a,b] = inpolygon(app.particleArrayLocation(:,1), app.particleArrayLocation(:,2), app.polygon.currentPoly(:,1), app.polygon.currentPoly(:,2));
+        
     app.particleArrayVelocity = app.particleFunctions.calculateCumulativeParticlevelocityComponentFromForce(app.particleArrayForce, app.particleArrayVelocity, wallContact, app.tMax);
         %calculate the new locations bearing in mind wallContact and the
         %trajectories of the other particles.
