@@ -229,8 +229,7 @@ classdef ParticleFunctions
             inGoalZone = inpolyon(particleLocations, poly);
             %TODO maybe put other goal zone logic in here?
         end
-    end
-    methods (Access = private)        
+        
         function AB = crossProduct(obj, Ax, Ay, Bx, By)
             AB(:,:,3) = Ax.*By-Ay.*Bx; %No idea if this is right or not... lets try it!
         end

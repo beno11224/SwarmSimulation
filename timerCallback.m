@@ -19,7 +19,8 @@ function timerCallback(app)
     %This is super hacky, but might help with debugging?
     if app.tMax <0.001
         app.tMax = 0.001;
-    else if app.tMax > 0.1            app.tMax = 0.1;
+    else if app.tMax > 0.1            
+            app.tMax = 0.1;
         end
     end
     
