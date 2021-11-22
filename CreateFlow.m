@@ -76,8 +76,7 @@ function FlowMatrix = CreateFlow(app)
                         else
                             if(all(inOrOn(i) == 0))
                                 endOfLine = true;
-                                %TODO start again at the other end? or just
-                                %backtrack? idk...
+                                %TODO move to next line
                                 %Backtrack by setting the pointer location to a
                                 %valid location.
                                 %Here should add the check for if we have
