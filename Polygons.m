@@ -173,13 +173,13 @@ classdef Polygons
            
            obj.allPolyFlows(2,:,:) = [0 0 0 0; 0 0 0 0; 0 0 0 0; 0 0 0 0; 0 0 0 0; 0 0 0 0; 0 0 0 0];
            
-           obj.allPolyFlows(3,:,:) = [-len -len*0.3 -len*0.47 -len*0.3;%right
-               -len*0.47 -len*0.3 -len*0.11 -len*0.95;%down
-               -len*0.47 -len*0.3 -len*0.02 len*0.35;%up
-               -len*0.02 len*0.35 -len*0.05 len %up
-               -len*0.02 len*0.35 len*0.55 len*0.35 %right
-               len*0.55 len*0.35 len*0.9 len*0.95%up
-               len*0.55 len*0.35 len*0.95 len*0.05];%down
+           obj.allPolyFlows(3,:,:) = [-len*0.95 -len*0.3 -len*0.5 -len*0.3;%right
+               -len*0.45 -len*0.42 -len*0.11 -len*0.95;%down
+               -len*0.45 -len*0.25 -len*0.05 len*0.3;%up
+               -len*0.02 len*0.4 -len*0.05 len*0.95 %up
+               len*0.05 len*0.35 len*0.5 len*0.35 %right
+               len*0.55 len*0.4 len*0.9 len*0.95%up
+               len*0.55 len*0.3 len*0.9 -len*0];%down
            
            obj.allPolyFlows(4,:,:) = [0 0 0 0; 0 0 0 0; 0 0 0 0; 0 0 0 0; 0 0 0 0; 0 0 0 0; 0 0 0 0];
            

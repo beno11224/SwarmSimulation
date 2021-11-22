@@ -32,21 +32,15 @@ function FlowMatrix = CreateFlow(app)
             endDistancePQ = (polygonStartP - midPoint);            
             endDistancePolyVectorCrossProductPQSR = app.particleFunctions.crossProduct(endDistancePQ(:,1,:), endDistancePQ(:,2,:), perpendicularLineVector(:,1), perpendicularLineVector(:,2,:));          
             vectorCrossProductSR = app.particleFunctions.crossProduct(perpendicularLineVector(:,1), perpendicularLineVector(:,2), polygonVectorR(:,1,:), polygonVectorR(:,2,:));     
-            vectorCollisionFIRST = (endDistancePolyVectorCrossProductPQSR./vectorCrossProductSR);
-            vectorCollision = vectorCollisionFIRST;
-            vectorCollision(abs(vectorCollision) > 1) = NaN;
-            %vectorCollision(vectorCollision < 0) = NaN;
-            %vectorCollision(~isnan(vectorCollision)) = 1;            
-            %vectorCollision(isnan(vectorCollision)) = 0;
+            VectorCollision = (endDistancePolyVectorCrossProductPQSR./vectorCrossProductSR);
             %Alternatively, there will only be 2 lines where this is
             %between 0 and 1?
             
-            ValidLinesDistance = lineDist .* vectorCollision;
             
             %TODO must remember to only use lines that are valid. Work this
             %out the other way round?
-            [minDist,locDist] = mink(abs(vectorCollision),2);
-            %[minDist,locDist] = mink(abs(lineDist),2); %These SHOULD be the lines either side of the line provided. %But they arent...
+            
+            [minDist,locDist] = mink(abs(lineDist),2); %These SHOULD be the lines either side of the line provided. %But they arent...
             totalRadius = (minDist(2) + minDist(1)) / 2; %capital R - Radius of pipe
             radiusSq = totalRadius*totalRadius; %square it
 
@@ -102,7 +96,8 @@ function FlowMatrix = CreateFlow(app)
                         else
                             if(all(inOrOn(i) == 0))
                                 endOfLine = true;
-                                %TODO move to next line
+                                %TODO start again at the other end? or just
+                                %backtrack? idk...
                                 %Backtrack by setting the pointer location to a
                                 %valid location.
                                 %Here should add the check for if we have
