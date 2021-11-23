@@ -8,7 +8,7 @@ function FlowMatrix = CreateFlow(app)
 
     if(app.polygon.currentPolyFlows(1,:) ~=  [0 0 0 0]) %check this?
         for flowLineIndex = 1:size(app.polygon.currentPolyFlows,1)
-            if(flowLineIndex ~= 1)
+            if(flowLineIndex ~= 2)
                 continue;
             end
             startPoint = app.polygon.currentPolyFlows(flowLineIndex,1:2);
@@ -29,24 +29,52 @@ function FlowMatrix = CreateFlow(app)
             vectorCrossProductRS = app.particleFunctions.crossProduct(polygonVectorR(:,1,:), polygonVectorR(:,2,:), perpendicularLineVector(:,1), perpendicularLineVector(:,2));
             lineDist = (startDistancePolyVectorCrossProductQPR./vectorCrossProductRS);
             lineDist = lineDist(:,:,3);
+            
+            %Working out the lines instead
             endDistancePQ = (polygonStartP - midPoint);            
             endDistancePolyVectorCrossProductPQSR = app.particleFunctions.crossProduct(endDistancePQ(:,1,:), endDistancePQ(:,2,:), perpendicularLineVector(:,1), perpendicularLineVector(:,2,:));          
             vectorCrossProductSR = app.particleFunctions.crossProduct(perpendicularLineVector(:,1), perpendicularLineVector(:,2), polygonVectorR(:,1,:), polygonVectorR(:,2,:));     
             vectorCollisionFIRST = (endDistancePolyVectorCrossProductPQSR./vectorCrossProductSR);
-            vectorCollision = vectorCollisionFIRST;
-            vectorCollision(abs(vectorCollision) > 1) = NaN;
-            %vectorCollision(vectorCollision < 0) = NaN;
+            vectorCollision = vectorCollisionFIRST(:,:,3);
+            vectorCollision(vectorCollision > 1) = NaN;
+            vectorCollision(vectorCollision < 0) = NaN;
             %vectorCollision(~isnan(vectorCollision)) = 1;            
             %vectorCollision(isnan(vectorCollision)) = 0;
             %Alternatively, there will only be 2 lines where this is
             %between 0 and 1?
             
-            ValidLinesDistance = lineDist .* vectorCollision;
+            %ValidLinesDistance = lineDist .* vectorCollision;
             
             %TODO must remember to only use lines that are valid. Work this
             %out the other way round?
-            [minDist,locDist] = mink(abs(vectorCollision),2);
-            %[minDist,locDist] = mink(abs(lineDist),2); %These SHOULD be the lines either side of the line provided. %But they arent...
+            
+            
+            
+            validLines = lineDist(~isnan(vectorCollision));
+            
+            %Don't minimise yet, AND them for are they both valid.
+            
+            
+            
+            
+            
+            [minDist,locDist] = mink(abs(validLines),2);
+            [minDistabc,locDistabc] = mink(abs(vectorCollision),2);
+            [minDistab,locDistab] = mink(abs(lineDist),2); %These SHOULD be the lines either side of the line provided. %But they arent...
+            
+            line1 = [app.polygon.currentPoly(locDist(1),1) app.polygon.currentPoly(locDist(1),2); app.polygon.currentPoly(locDist(1) + 1,1) app.polygon.currentPoly(locDist(1) + 1,2)];
+            line2 = [app.polygon.currentPoly(locDist(2),1) app.polygon.currentPoly(locDist(2),2); app.polygon.currentPoly(locDist(2) + 1,1) app.polygon.currentPoly(locDist(2) + 1,2)];
+            lineab1 = [app.polygon.currentPoly(locDistab(1),1) app.polygon.currentPoly(locDistab(1),2); app.polygon.currentPoly(locDistab(1) + 1,1) app.polygon.currentPoly(locDistab(1) + 1,2)];
+            lineab2 = [app.polygon.currentPoly(locDistab(2),1) app.polygon.currentPoly(locDistab(2),2); app.polygon.currentPoly(locDistab(2) + 1,1) app.polygon.currentPoly(locDistab(2) + 1,2)];
+            
+            %plot(app.UIAxes, app.polygon.currentPolyVector(locDist(1),1), app.polygon.currentPolyVector(locDist(1),2), "Color",'red');            
+            %plot(app.UIAxes, app.polygon.currentPolyVector(locDist(2),1), app.polygon.currentPolyVector(locDist(2),2), "Color",'red');            
+            %plot(app.UIAxes, app.polygon.currentPolyVector(locDistab(1),1), app.polygon.currentPolyVector(locDistab(1),2), "Color",'black');
+            plot(app.UIAxes, line1(:,1), line1(:,2), "Color",'black');
+            plot(app.UIAxes, line2(:,1), line2(:,2), "Color",'black');
+            plot(app.UIAxes, lineab1(:,1), lineab1(:,2), "Color",'red');
+            plot(app.UIAxes, lineab2(:,1), lineab2(:,2), "Color",'red');
+            
             totalRadius = (minDist(2) + minDist(1)) / 2; %capital R - Radius of pipe
             radiusSq = totalRadius*totalRadius; %square it
 
