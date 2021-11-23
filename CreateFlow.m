@@ -14,8 +14,12 @@ function FlowMatrix = CreateFlow(app)
             startPoint = app.polygon.currentPolyFlows(flowLineIndex,1:2);
             lineVector = app.polygon.currentPolyFlows(flowLineIndex,3:4) - startPoint;
             unitLineVector = lineVector/norm(lineVector);
-            perpendicularLineVector = lineVector;
-            perpendicularLineVector(1) = - perpendicularLineVector(1);
+            if(unitLineVector(2) == 0)                
+                perpendicularLineVector = [unitLineVector(2) -unitLineVector(1)];
+            else
+                perpendicularLineVector = [-unitLineVector(2) unitLineVector(1)];
+            end
+            %perpendicularLineVector(1) = - perpendicularLineVector(1);
             midPoint = startPoint + lineVector./2;
 
             %TODO this calculation of the closest values here is not
@@ -30,11 +34,14 @@ function FlowMatrix = CreateFlow(app)
             lineDist = (startDistancePolyVectorCrossProductQPR./vectorCrossProductRS);
             lineDist = lineDist(:,:,3);
             
+            %TODO This bit is not producing ANY sensible collision values.
+            %is it to do with the unit vector? that should only
+            %affect the above lineDist one surely?
             %Working out the lines instead
             endDistancePQ = (polygonStartP - midPoint);            
-            endDistancePolyVectorCrossProductPQSR = app.particleFunctions.crossProduct(endDistancePQ(:,1,:), endDistancePQ(:,2,:), perpendicularLineVector(:,1), perpendicularLineVector(:,2,:));          
+            endDistancePolyVectorCrossProductPQS = app.particleFunctions.crossProduct(endDistancePQ(:,1,:), endDistancePQ(:,2,:), perpendicularLineVector(:,1), perpendicularLineVector(:,2));          
             vectorCrossProductSR = app.particleFunctions.crossProduct(perpendicularLineVector(:,1), perpendicularLineVector(:,2), polygonVectorR(:,1,:), polygonVectorR(:,2,:));     
-            vectorCollisionFIRST = (endDistancePolyVectorCrossProductPQSR./vectorCrossProductSR);
+            vectorCollisionFIRST = (endDistancePolyVectorCrossProductPQS./vectorCrossProductSR);
             vectorCollision = vectorCollisionFIRST(:,:,3);
             vectorCollision(vectorCollision > 1) = NaN;
             vectorCollision(vectorCollision < 0) = NaN;
@@ -48,9 +55,14 @@ function FlowMatrix = CreateFlow(app)
             %TODO must remember to only use lines that are valid. Work this
             %out the other way round?
             
+            %Should be correct
+            aasg = ~isnan(vectorCollision);
+            validLines = lineDist;
+            validLines(isnan(vectorCollision)) = NaN;
             
-            
-            validLines = lineDist(~isnan(vectorCollision));
+            %Should be incorrect %Well it isn't correct tbh...            
+            %aasg = ~isnan(lineDist);
+            %validLines = vectorCollision(~isnan(lineDist));
             
             %Don't minimise yet, AND them for are they both valid.
             
@@ -59,6 +71,7 @@ function FlowMatrix = CreateFlow(app)
             
             
             [minDist,locDist] = mink(abs(validLines),2);
+            [minDistabcd,locDistabcd] = mink(abs(vectorCollisionFIRST),2);
             [minDistabc,locDistabc] = mink(abs(vectorCollision),2);
             [minDistab,locDistab] = mink(abs(lineDist),2); %These SHOULD be the lines either side of the line provided. %But they arent...
             
@@ -130,12 +143,19 @@ function FlowMatrix = CreateFlow(app)
                         else
                             if(all(inOrOn(i) == 0))
                                 endOfLine = true;
+                                if(minDist(1) <= 0) %Might be the other way round?
+                                    pointers(1,:) = pointers(1,:) + (perpendicularLineVector .* 1/matrixSize(1));
+                                    pointers(2,:) = pointers(2,:) - (perpendicularLineVector .* 1/matrixSize(1));
+                                else
+                                    pointers(1,:) = pointers(1,:) - (perpendicularLineVector .* 1/matrixSize(1));
+                                    pointers(2,:) = pointers(2,:) + (perpendicularLineVector .* 1/matrixSize(1));
+                                end
                                 %TODO move to next line
                                 %Backtrack by setting the pointer location to a
                                 %valid location.
                                 %Here should add the check for if we have
                                 %finished or not.
-                                if(countToJumpOut > 1000 || cellRadius <= 1/matrixSize(1).*totalRadius)
+                                if(countToJumpOut > 10000 || cellRadius <= 1/matrixSize(1).*totalRadius)
                                     reachedCentre = true; %TODO does this stop once values are small enough?
                                 end
                             end
