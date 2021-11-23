@@ -22,16 +22,11 @@ function FlowMatrix = CreateFlow(app)
         %pdegplot(results, 'VertexLabels','on');
         %trimesh(telements,tnodes(1,:),tnodes(2,:)); %???? that doesn't do anything?
         %polygonMesh = generateMesh(app.polygon.currentPoly);
-        nodeToSearchFor = [0.67 * app.UIAxes.XLim(2) -0.92 * app.UIAxes.XLim(2)];
-        nodes = findNodes(mesh, 'nearest', nodeToSearchFor');
-        edgeid = nearestEdge(model.Geometry,nodeToSearchFor);
-        place = [app.polygon.currentPoly(edgeid,1) app.polygon.currentPoly(edgeid,2);
-            app.polygon.currentPoly(edgeid+1,1) app.polygon.currentPoly(edgeid+1,2)];
-        plot(app.UIAxes, place(:,1), place(:,2), 'color', 'red');
+        nodes = findNodes(mesh, 'nearest', [0;0]);
+        edgeid = nearestEdge(model.Geometry,[0 0]);
+        plot(app.polygon.currentPoly(:,1),app.polygon.currentPoly(:,2)(edgeid), 'color', 'green');
         hold on
         plot(mesh.Nodes(1,nodes), mesh.Nodes(2,nodes), 'ok', 'MarkerFaceColor', 'cyan')
-        flowSize = mesh.Nodes;
-        asbasfg = [mesh.Nodes(1,nodes), mesh.Nodes(2,nodes)];
     end
     
     %Not mesh
