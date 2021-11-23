@@ -5,201 +5,31 @@ function FlowMatrix = CreateFlow(app)
     %use FlowLines from Polygons
     
     %%vi = vmax(1- (r^2/R^2)) - formula for flow parabola
-    
-    %Mesh
-    if(true)
-        tr = triangulation(polyshape(app.polygon.currentPoly(:,1),app.polygon.currentPoly(:,2)));
-        model = createpde(1);
-        tnodes = tr.Points';
-        telements = tr.ConnectivityList';
-        model.geometryFromMesh(tnodes, telements);
-        %pdegplot(model, 'VertexLabels','on');
-        mesh = generateMesh(model, 'Hmax', 0.001);    
-        figure
-        pdemesh(model);
-        hold on
-        %results = solvepde(model);
-        %pdegplot(results, 'VertexLabels','on');
-        %trimesh(telements,tnodes(1,:),tnodes(2,:)); %???? that doesn't do anything?
-        %polygonMesh = generateMesh(app.polygon.currentPoly);
-        nodeToSearchFor = [0.67 * app.UIAxes.XLim(2) -0.92 * app.UIAxes.XLim(2)];
-        nodes = findNodes(mesh, 'nearest', nodeToSearchFor');
-        edgeid = nearestEdge(model.Geometry,nodeToSearchFor);
-        place = [app.polygon.currentPoly(edgeid,1) app.polygon.currentPoly(edgeid,2);
-            app.polygon.currentPoly(edgeid+1,1) app.polygon.currentPoly(edgeid+1,2)];
-        plot(app.UIAxes, place(:,1), place(:,2), 'color', 'red');
-        hold on
-        plot(mesh.Nodes(1,nodes), mesh.Nodes(2,nodes), 'ok', 'MarkerFaceColor', 'cyan')
-        flowSize = mesh.Nodes;
-        asbasfg = [mesh.Nodes(1,nodes), mesh.Nodes(2,nodes)];
-    end
-    
-    %Not mesh
-    if (false)        
-        if(app.polygon.currentPolyFlows(1,:) ~=  [0 0 0 0]) %check this?
-            for flowLineIndex = 1:size(app.polygon.currentPolyFlows,1)
-                if(flowLineIndex ~= 2)
-                    continue;
-                end
-                startPoint = app.polygon.currentPolyFlows(flowLineIndex,1:2);
-                lineVector = app.polygon.currentPolyFlows(flowLineIndex,3:4) - startPoint;
-                unitLineVector = lineVector/norm(lineVector);
-                if(unitLineVector(2) == 0)                
-                    perpendicularLineVector = [unitLineVector(2) -unitLineVector(1)];
-                else
-                    perpendicularLineVector = [-unitLineVector(2) unitLineVector(1)];
-                end
-                %perpendicularLineVector(1) = - perpendicularLineVector(1);
-                midPoint = startPoint + lineVector./2;
 
-                %TODO this calculation of the closest values here is not
-                %correct.
-
-                %Now they are unit vectors determine the smallest OPPOSITE pair
-                polygonVectorR = app.polygon.currentPolyVector;
-                polygonStartP = app.polygon.currentPoly(1:end-1,:);
-                startDistanceQP = (midPoint - polygonStartP);
-                startDistancePolyVectorCrossProductQPR = app.particleFunctions.crossProduct(startDistanceQP(:,1,:), startDistanceQP(:,2,:), polygonVectorR(:,1,:), polygonVectorR(:,2,:));
-                vectorCrossProductRS = app.particleFunctions.crossProduct(polygonVectorR(:,1,:), polygonVectorR(:,2,:), perpendicularLineVector(:,1), perpendicularLineVector(:,2));
-                lineDist = (startDistancePolyVectorCrossProductQPR./vectorCrossProductRS);
-                lineDist = lineDist(:,:,3);
-
-                %TODO This bit is not producing ANY sensible collision values.
-                %is it to do with the unit vector? that should only
-                %affect the above lineDist one surely?
-                %Working out the lines instead
-                endDistancePQ = (polygonStartP - midPoint);            
-                endDistancePolyVectorCrossProductPQS = app.particleFunctions.crossProduct(endDistancePQ(:,1,:), endDistancePQ(:,2,:), perpendicularLineVector(:,1), perpendicularLineVector(:,2));          
-                vectorCrossProductSR = app.particleFunctions.crossProduct(perpendicularLineVector(:,1), perpendicularLineVector(:,2), polygonVectorR(:,1,:), polygonVectorR(:,2,:));     
-                vectorCollisionFIRST = (endDistancePolyVectorCrossProductPQS./vectorCrossProductSR);
-                vectorCollision = vectorCollisionFIRST(:,:,3);
-                vectorCollision(vectorCollision > 1) = NaN;
-                vectorCollision(vectorCollision < 0) = NaN;
-                %vectorCollision(~isnan(vectorCollision)) = 1;            
-                %vectorCollision(isnan(vectorCollision)) = 0;
-                %Alternatively, there will only be 2 lines where this is
-                %between 0 and 1?
-
-                %ValidLinesDistance = lineDist .* vectorCollision;
-
-                %TODO must remember to only use lines that are valid. Work this
-                %out the other way round?
-
-                %Should be correct
-                aasg = ~isnan(vectorCollision);
-                validLines = lineDist;
-                validLines(isnan(vectorCollision)) = NaN;
-
-                %Should be incorrect %Well it isn't correct tbh...            
-                %aasg = ~isnan(lineDist);
-                %validLines = vectorCollision(~isnan(lineDist));
-
-                %Don't minimise yet, AND them for are they both valid.
-
-
-
-
-
-                [minDist,locDist] = mink(abs(validLines),2);
-                [minDistabcd,locDistabcd] = mink(abs(vectorCollisionFIRST),2);
-                [minDistabc,locDistabc] = mink(abs(vectorCollision),2);
-                [minDistab,locDistab] = mink(abs(lineDist),2); %These SHOULD be the lines either side of the line provided. %But they arent...
-
-                line1 = [app.polygon.currentPoly(locDist(1),1) app.polygon.currentPoly(locDist(1),2); app.polygon.currentPoly(locDist(1) + 1,1) app.polygon.currentPoly(locDist(1) + 1,2)];
-                line2 = [app.polygon.currentPoly(locDist(2),1) app.polygon.currentPoly(locDist(2),2); app.polygon.currentPoly(locDist(2) + 1,1) app.polygon.currentPoly(locDist(2) + 1,2)];
-                lineab1 = [app.polygon.currentPoly(locDistab(1),1) app.polygon.currentPoly(locDistab(1),2); app.polygon.currentPoly(locDistab(1) + 1,1) app.polygon.currentPoly(locDistab(1) + 1,2)];
-                lineab2 = [app.polygon.currentPoly(locDistab(2),1) app.polygon.currentPoly(locDistab(2),2); app.polygon.currentPoly(locDistab(2) + 1,1) app.polygon.currentPoly(locDistab(2) + 1,2)];
-
-                %plot(app.UIAxes, app.polygon.currentPolyVector(locDist(1),1), app.polygon.currentPolyVector(locDist(1),2), "Color",'red');            
-                %plot(app.UIAxes, app.polygon.currentPolyVector(locDist(2),1), app.polygon.currentPolyVector(locDist(2),2), "Color",'red');            
-                %plot(app.UIAxes, app.polygon.currentPolyVector(locDistab(1),1), app.polygon.currentPolyVector(locDistab(1),2), "Color",'black');
-                plot(app.UIAxes, line1(:,1), line1(:,2), "Color",'black');
-                plot(app.UIAxes, line2(:,1), line2(:,2), "Color",'black');
-                plot(app.UIAxes, lineab1(:,1), lineab1(:,2), "Color",'red');
-                plot(app.UIAxes, lineab2(:,1), lineab2(:,2), "Color",'red');
-
-                totalRadius = (minDist(2) + minDist(1)) / 2; %capital R - Radius of pipe
-                radiusSq = totalRadius*totalRadius; %square it
-
-                lineStarts = [app.polygon.currentPoly(locDist(1),:); app.polygon.currentPoly(locDist(2),:)];
-                lineEnds = [app.polygon.currentPoly(locDist(1)+1,:); app.polygon.currentPoly(locDist(2)+1,:)];
-
-                %Now go along each tube - start from the walls then go in each
-                %iteration. use the centre of each square for context.
-                unitVectorLine1 = app.polygon.currentPolyVector(locDist(1),:)/norm(app.polygon.currentPolyVector(locDist(1),:)); %TODO Get the correct vector out here...
-                pointers(1,:) = app.polygon.currentPoly(locDist(1),:);
-                unitVectorLine2 = app.polygon.currentPolyVector(locDist(2),:)/norm(app.polygon.currentPolyVector(locDist(2),:)); %TODO Get the correct vector out here...
-                pointers(2,:) = app.polygon.currentPoly(locDist(2),:); %Is pointer the wrong way up?
-                pipePoly = [app.polygon.currentPoly(locDist(1) ,:); 
-                    app.polygon.currentPoly(locDist(1)+1 ,:);
-                    app.polygon.currentPoly(locDist(2) ,:); 
-                    app.polygon.currentPoly(locDist(2)+1 ,:);
-                    app.polygon.currentPoly(locDist(1) ,:)]; %Check this works, it should since the lines are linked in one long poly.
-                reachedCentre = false;
-                plot(app.UIAxes, pipePoly(:,1), pipePoly(:,2), "Color",'cyan');
-                countToJumpOut = 0;
-                while(~reachedCentre)
-                    endOfLine = false;
-                    while(~endOfLine)
-                        [in,on] = inpolygon(pointers(:,1), pointers(:,2), pipePoly(:,1), pipePoly(:,2));
-                        inOrOn = in|on; %If it's on the edge that's fine too.
-                        for i = 1:2
-
-                                %isPointer in the poly?
-                            if(inOrOn(i)) %i for line 1 or 2
-                                cellIndex = getCellIndex(pointers(i,:),matrixSize, app.UIAxes.XLim(2));
-
-                                    %has the cell got a value in it?
-                                if(FlowMatrix(cellIndex) == 0)
-
-                                    %are the pointers in the same cell? (Maybe obsolete from has cell got value in it?)
-                                    %If none of above, what is the centre of the cell we are in?
-                                    cellCentre = getCellCentre(matrixSize, cellIndex, app.UIAxes.XLim(2)); %This may be pointless once at a certain resolution, but oh well.
-
-                                    %TODO get litteR;
-                                    cellDist = (((lineEnds(i,1) - lineStarts(i,1))*(lineStarts(i,2) - cellCentre(2)) ) - ((lineStarts(i,1) - cellCentre(1))*(lineEnds(i,2) - lineStarts(i,2)) )) / (totalRadius*2);
-                                    cellRadius = abs(totalRadius - cellDist); %TODO This is wrong - check for negatives etc maybe?
-
-                                    %cell value = vi formula above
-                                    aaa = 1- ((cellRadius*cellRadius)/radiusSq);
-                                    aab = MagnitudeOfFlowAtCentreOfPipe.*(1- ((cellRadius*cellRadius)/radiusSq));
-                                    aac = unitLineVector .* MagnitudeOfFlowAtCentreOfPipe.*(1- ((cellRadius*cellRadius)/radiusSq));
-                                    %flowMatrixFullIndex = [cellCentre,:];
-                                    VectorToAdd = unitLineVector .* MagnitudeOfFlowAtCentreOfPipe.*(1- ((cellRadius*cellRadius)/radiusSq));
-                                    %cellCentreIndex = getCellIndex(cellCentre, size(FlowMatrix), app.UIAxes.XLim(2));
-                                    FlowMatrix(cellIndex) = VectorToAdd(1);                            
-                                    %FlowMatrix(cellIndex*2) = VectorToAdd(2); %It's not x2...
-                                end
-                            else
-                                if(all(inOrOn(i) == 0))
-                                    endOfLine = true;
-                                    if(minDist(1) <= 0) %Might be the other way round?
-                                        pointers(1,:) = pointers(1,:) + (perpendicularLineVector .* 1/matrixSize(1));
-                                        pointers(2,:) = pointers(2,:) - (perpendicularLineVector .* 1/matrixSize(1));
-                                    else
-                                        pointers(1,:) = pointers(1,:) - (perpendicularLineVector .* 1/matrixSize(1));
-                                        pointers(2,:) = pointers(2,:) + (perpendicularLineVector .* 1/matrixSize(1));
-                                    end
-                                    %TODO move to next line
-                                    %Backtrack by setting the pointer location to a
-                                    %valid location.
-                                    %Here should add the check for if we have
-                                    %finished or not.
-                                    if(countToJumpOut > 10000 || cellRadius <= 1/matrixSize(1).*totalRadius)
-                                        reachedCentre = true; %TODO does this stop once values are small enough?
-                                    end
-                                end
-                            end
-                            countToJumpOut = countToJumpOut + 1;
-                            %Now add the unit vector...;
-                            pointers(1,:) = pointers(1,:) - (unitVectorLine1 .* 1/matrixSize(1)); %What value to make it small? just want a step of < 1 square... %TODO the unit vectors went down the wrong lines when negated. how does that work??
-                            pointers(2,:) = pointers(2,:) - (unitVectorLine2 .* 1/matrixSize(1));
-                        end
-                    end
-                end
-            end
-        end
-    end
+    tr = triangulation(polyshape(app.polygon.currentPoly(:,1),app.polygon.currentPoly(:,2)));
+    model = createpde(1);
+    tnodes = tr.Points';
+    telements = tr.ConnectivityList';
+    model.geometryFromMesh(tnodes, telements);
+    %pdegplot(model, 'VertexLabels','on');
+    mesh = generateMesh(model, 'Hmax', 0.001);    
+    figure
+    pdemesh(model);
+    hold on
+    %results = solvepde(model);
+    %pdegplot(results, 'VertexLabels','on');
+    %trimesh(telements,tnodes(1,:),tnodes(2,:)); %???? that doesn't do anything?
+    %polygonMesh = generateMesh(app.polygon.currentPoly);
+    nodeToSearchFor = [0.67 * app.UIAxes.XLim(2) -0.92 * app.UIAxes.XLim(2)];
+    nodes = findNodes(mesh, 'nearest', nodeToSearchFor');
+    edgeid = nearestEdge(model.Geometry,nodeToSearchFor);
+    place = [app.polygon.currentPoly(edgeid,1) app.polygon.currentPoly(edgeid,2);
+        app.polygon.currentPoly(edgeid+1,1) app.polygon.currentPoly(edgeid+1,2)];
+    plot(app.UIAxes, place(:,1), place(:,2), 'color', 'red');
+    hold on
+    plot(mesh.Nodes(1,nodes), mesh.Nodes(2,nodes), 'ok', 'MarkerFaceColor', 'cyan')
+    flowSize = mesh.Nodes;
+    asbasfg = [mesh.Nodes(1,nodes), mesh.Nodes(2,nodes)];    
 end
 
 function cellIndex = getCellIndex(pointLocation, flowChartSize, workSpaceSize)
