@@ -14,28 +14,37 @@ function FlowMatrix = CreateFlow(app)
     model.geometryFromMesh(tnodes, telements);
     mesh = generateMesh(model, 'Hmax', 0.001); %Hmax is the size - use app.UIAxes.XLim(2) to decide how to do this    
     
+    figure
+    pdemesh(model);
+    hold on
+    
     %Get FlowMatrix
     FlowMatrix = zeros(size(mesh.Nodes));
     
     %Start filling all points
-    for pointIndex = 1 : size(mesh.Nodes,1)
+    for pointIndex = 1 : size(mesh.Nodes,2)
+        point = plot(mesh.Nodes(1,pointIndex),mesh.Nodes(2,pointIndex),'.', 'Color', 'green');
+        hold on
+        valueToUse = pointIndex;
+        breakpointqwt = 1;
+        delete(point);
         %Each node is a valid simulation location.
         
         %Start with the closest edge - this must be a side and NOT an
         %in/out flow.
-        nearestEdgeID = nearestEdge(model.Geometry,mesh.Nodes(:,pointIndex)');
+      %  nearestEdgeID = nearestEdge(model.Geometry,mesh.Nodes(:,pointIndex)');
         
         %Now find the opposite edge
         
         %Now get the max radius^2 (distance to the opposite edge / 2)^2
-        totalRadiusSQUARED = 1;%TODO
+     %   totalRadiusSQUARED = 1;%TODO
         
         %And the distance to the closest edge
         %TODO Edgeid is not the correct one...
-        pointRadius = getDistanceFromPointToVectorLine(mesh.Nodes(1,pointIndex),mesh.Nodes(2,pointIndex),app.polygon.currentPoly(edgeid,1), app.polygon.currentPoly(edgeid,2),app.polygon.currentPoly(edgeid+1,1), app.polygon.currentPoly(edgeid+1,2));
+     %   pointRadius = getDistanceFromPointToVectorLine(mesh.Nodes(1,pointIndex),mesh.Nodes(2,pointIndex),app.polygon.currentPoly(edgeid,1), app.polygon.currentPoly(edgeid,2),app.polygon.currentPoly(edgeid+1,1), app.polygon.currentPoly(edgeid+1,2));
         
         %Set the value
-        FlowMatrix(pointIndex,:) = VelocityAtCentreOfPipe * (1 - (pointRadius*pointRadius) /  totalRadiusSQUARED);         
+     %   FlowMatrix(pointIndex,:) = VelocityAtCentreOfPipe * (1 - (pointRadius*pointRadius) /  totalRadiusSQUARED);         
     end
     
     %Worth mentioning that this method will not work in bifurcations

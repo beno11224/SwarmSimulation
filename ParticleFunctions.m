@@ -60,8 +60,8 @@ classdef ParticleFunctions
             force = combinedForce .* distSum;
             %force = dipoleConstant * sum(1-5.*(normalisedDipoleMoment).^2 .* distances + 2.*(normalisedDipoleMoment).*particleTorque,3); %can't do Mci * Mcj/r^4 in this way
         end
-        function force = calculateDragForce(obj, particleVelocity)
-            force = particleVelocity .* obj.dragForceConstant; %Something here is broken - Drag force can't force the particle the wrong way??
+        function force = calculateDragForce(obj, particleVelocity, flowVelocity)
+            force = (particleVelocity - flowVelocity) .* obj.dragForceConstant; %Something here is broken - Drag force can't force the particle the wrong way??
         end
         function [wallContact, particleLocation, particleVelocity] = isParticleOnWallPIP(obj, particleLocation, particleVelocity, particleForce, polygon, tMax)
             in = inpolygon(particleLocation(:,1), particleLocation(:,2), polygon.currentPoly(:,1), polygon.currentPoly(:,2));
@@ -111,16 +111,30 @@ classdef ParticleFunctions
             wallContact(~any(wallContact,2),:) = NaN; %Set 1's to nan s?
         end
         
-        function force = calculateFlowForce(obj, particleLocation, flowChart)
-            %flowChart must be a nxn matrix. calculate the position of the
-            %particle as a factor of the gamespace (0..1), say [0.6 0.4].
-            %Then get the index that is that factor of the flowChart, and
-            %that's the force?            
-            factorPosition = (particleLocation + obj.workspaceSizePositive) ./ (obj.workspaceSizePositive*2);
-            flowChartNumericalPosition = round(factorPosition .* size(flowChart));
-            flowChartNumericalPosition(flowChartNumericalPosition == 0) = 1; %TODO confirm this indexing is correct.
-            flowChartIndex = sub2ind(size(flowChart),flowChartNumericalPosition(:,1),flowChartNumericalPosition(:,2));
-            force = flowChart(flowChartIndex); % might need to add more functionality in here?
+        function velocity = calculateFlow(obj, particleLocation, flowMatrix, polygon)%, model, mesh)
+            %For demo only, remove to pre-calculate otherwise
+            tr = triangulation(polyshape(polygon.currentPoly(:,1),polygon.currentPoly(:,2)));
+            model = createpde(1);
+            tnodes = tr.Points';
+            telements = tr.ConnectivityList';
+            model.geometryFromMesh(tnodes, telements);
+            mesh = generateMesh(model, 'Hmax', 0.001);
+            %For demo only
+            
+            closestNode = findNodes(mesh, 'nearest', particleLocation');
+            velocity(:,1) = flowMatrix(closestNode,1);
+            velocity(:,2) = flowMatrix(closestNode,2);
+            
+            %><><><Old version><><><
+            %%flowChart must be a nxn matrix. calculate the position of the
+            %%particle as a factor of the gamespace (0..1), say [0.6 0.4].
+            %%Then get the index that is that factor of the flowChart, and
+            %%that's the force?            
+            %factorPosition = (particleLocation + obj.workspaceSizePositive) ./ (obj.workspaceSizePositive*2);
+            %flowChartNumericalPosition = round(factorPosition .* size(flowChart));
+            %flowChartNumericalPosition(flowChartNumericalPosition == 0) = 1; %TODO confirm this indexing is correct.
+            %flowChartIndex = sub2ind(size(flowChart),flowChartNumericalPosition(:,1),flowChartNumericalPosition(:,2));
+            %force = flowChart(flowChartIndex); % might need to add more functionality in here?
         end
        
         function force = calculateFrictionForce(obj, particleVelocity, particleForce, wallContact)            
