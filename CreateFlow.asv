@@ -26,7 +26,7 @@ function FlowMatrix = CreateFlow(app)
         point = plot(mesh.Nodes(1,pointIndex),mesh.Nodes(2,pointIndex),'.', 'Color', 'green', 'markerSize', 23);
         hold on
         valueToUse(1,:) = [0 pointIndex];
-        valueToUse(2,:) = app.fd.FlowValues(pointIndex,:);
+        valueToUse(2,:) = app.fd.FlowValues(pointIndex;
         delete(point);
         %Each node is a valid simulation location.
         
