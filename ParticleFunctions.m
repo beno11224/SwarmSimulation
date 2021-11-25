@@ -96,17 +96,25 @@ classdef ParticleFunctions
             wallContact(~any(wallContact,2),:) = NaN; %Set 1's to nan s?
         end
         
-        function velocity = calculateFlow(obj, particleLocation, flowMatrix, polygon)%, model, mesh)
-            %For demo purpose only. Once this is precalculated this should
-            %be stored and loaded in.
-            %TODO move to app and only generate once please.
+        function velocity = calculateFlow(obj, particleLocation, flowMatrix, polygon, axes)
+            %Remove this once values are loaded in from file
             tr = triangulation(polyshape(polygon.currentPoly(:,1),polygon.currentPoly(:,2)));
             model = createpde(1);
             tnodes = tr.Points';
             telements = tr.ConnectivityList';
             model.geometryFromMesh(tnodes, telements);
             mesh = generateMesh(model, 'Hmax', 0.001);
-            %For demo only
+            
+            flowMatrix = flowMatrix .* 50;
+            
+            %for i = 1:size(mesh.Nodes,2)
+            %    ab = plot(axes, mesh.Nodes(1,i), mesh.Nodes(2,i), '.', 'markerSize', 23, 'color', 'red');
+            %    abz = plot(axes,[mesh.Nodes(1,i); mesh.Nodes(1,i) + flowMatrix(i,1)], [mesh.Nodes(2,i); mesh.Nodes(2,i) + flowMatrix(i,2)], 'color', 'yellow');
+            %    abc(1,:) = [i i+11];
+            %    abc(2,:) = flowMatrix(i,:);
+            %    delete(ab);
+            %    delete(abz);
+            %end
             
             closestNode = findNodes(mesh, 'nearest', particleLocation');
             velocity(:,1) = flowMatrix(closestNode,1);

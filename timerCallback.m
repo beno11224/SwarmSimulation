@@ -8,7 +8,7 @@ function timerCallback(app)
     flowMatrix = app.fd.FlowValues;
     flowMatrix = flowMatrix.*0.001;
         %what is the flow velocity experienced by each particle
-    vFlow = app.particleFunctions.calculateFlow(app.particleArrayLocation, flowMatrix, app.polygon);
+    vFlow = app.particleFunctions.calculateFlow(app.particleArrayLocation, flowMatrix, app.polygon, app.UIAxes);
     
         %dipole force
     app.particleArrayForce = app.particleArrayForce - app.particleFunctions.calculateDipoleForce(app.particleArrayLocation, app.particleArrayForce);
