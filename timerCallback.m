@@ -5,9 +5,8 @@ function timerCallback(app)
     	%particles are inelastic - no bouncing.
     [wallContact, app.particleArrayLocation, app.particleArrayVelocity] = app.particleFunctions.isParticleOnWallPIP(app.particleArrayLocation, app.particleArrayVelocity, app.particleArrayForce, app.polygon, app.tMax);
         
-    %flowMatrix = ones(435,2); %REMOVE This
     flowMatrix = app.fd.FlowValues;
-    flowMatrix = flowMatrix.*0.001; %REMOVE This
+    flowMatrix = flowMatrix.*0.001; %TODO This needs to be done more correctly.. maybe provide a maxVelocity instead?
     vFlow = app.particleFunctions.calculateFlow(app.particleArrayLocation, flowMatrix, app.polygon); %Store in app somewhere after pulling in from a file. Must also store the mesh&Geometry. Might just calculate each time it's loaded?
     
         %dipole force %does this fit here or later?
@@ -20,15 +19,14 @@ function timerCallback(app)
     app.tMax = timeNow - app.lastUpdate;
     app.lastUpdate = timeNow;
     
-    %This is super hacky, but might help with debugging?
+    %This helps with debugging, and should have no effect on simulation
+    %other than preventing crashes for some slower PCs
     if app.tMax <0.001
         app.tMax = 0.001;
     else if app.tMax > 0.1            
             app.tMax = 0.1;
         end
     end
-    
-    %app.tMax = 0.02; %REMOVE THIS AS IT WILL BREAK IT!
     
         %friction
     app.particleArrayForce = app.particleArrayForce - app.particleFunctions.calculateFrictionForce(app.particleArrayVelocity, app.particleArrayForce, wallContact);
