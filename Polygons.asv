@@ -10,6 +10,7 @@ classdef Polygons
         allEndZones;
         currentEndZone;
         allPolyFlows;
+        currentPolyFlows;
     end
     methods ( Access = public)
         function obj = Polygons(app)
@@ -21,22 +22,22 @@ classdef Polygons
                -len*0.5 len;
                -len*0.25 len;
                len*0.5 len;
-               len len;
+               len len;%
                len len*0.5;
                len len*0.25;
                len -len*0.5;
-               len -len;
+               len -len;%
                len*0.5 -len;
                len*0.25 -len;              
                -len*0.5 -len;
                -len*0.25 -len;
                -len -len;
-               -len -len;       
+               -len -len;%          
                -len -len*0.5;
                -len -len*0.25;
                -len len*0.5;
                -len len*0.25;
-               -len len];
+               -len len];%
            
            obj.allPolys(2,:,:) = [-len len*0.9; %Ex1
                -len*0.5 len*0.1;
@@ -155,6 +156,23 @@ classdef Polygons
             
            obj.currentEndZone = squeeze(obj.allEndZones(1,:,:));
            
+           %obj.allPolyFlows(1,:,:) = [0 0 0 0; 0 0 0 0; 0 0 0 0; 0 0 0 0; 0 0 0 0; 0 0 0 0; 0 0 0 0]; %Leave as no flow. %Must be the same number of flows for each
+           
+           %obj.allPolyFlows(2,:,:) = [0 0 0 0; 0 0 0 0; 0 0 0 0; 0 0 0 0; 0 0 0 0; 0 0 0 0; 0 0 0 0];
+           
+           %obj.allPolyFlows(3,:,:) = [-len*0.95 -len*0.3 -len*0.5 -len*0.3;%right
+           %    -len*0.45 -len*0.42 -len*0.11 -len*0.95;%down
+           %    -len*0.45 -len*0.25 -len*0.05 len*0.3;%up
+           %    -len*0.02 len*0.4 -len*0.05 len*0.95 %up
+           %    len*0.05 len*0.35 len*0.5 len*0.35 %right
+           %    len*0.55 len*0.4 len*0.9 len*0.95%up
+           %    len*0.55 len*0.3 len*0.9 -len*0];%down
+           
+           %obj.allPolyFlows(4,:,:) = [0 0 0 0; 0 0 0 0; 0 0 0 0; 0 0 0 0; 0 0 0 0; 0 0 0 0; 0 0 0 0];
+           
+           obj.currentPolyFlows = squeeze(obj.allPolyFlows(1,:,:));
+           
+            %TODO remember to change this if needed.
             for i = 1:length(obj.currentPoly)-1 
                 obj.currentPolyVector(i,:) = obj.currentPoly(i,:) - obj.currentPoly(i+1,:);
             end
@@ -167,6 +185,7 @@ classdef Polygons
             end
             obj.currentStartZone = squeeze(obj.allStartZones(num,:,:));
             obj.currentEndZone = squeeze(obj.allEndZones(num,:,:));
+           obj.currentPolyFlows = squeeze(obj.allPolyFlows(num,:,:));
         end
     end
 end

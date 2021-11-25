@@ -1,7 +1,6 @@
 classdef ParticleFunctions
     properties
-        magneticForceConstant; %TODO ALL of these need to be calculated at a relevant point
-                %(obj.permFreeSpace * xOneCurrent * xRadius^2) / (2*(xRadius^2 + (obj.particleLocation(1)+0.1)^2)^(3/2));
+        magneticForceConstant;
         dragForceConstant;
         dipoleForceConstant;
         particleDiameter; 
@@ -42,7 +41,6 @@ classdef ParticleFunctions
             %the negative direction
             particleLocation(particleLocation < obj.workspaceSizeMinus) = obj.workspaceSizeMinus; %pretend that the particles don't reach the magnetic centres, or it messes up calculations.
             particleLocation(particleLocation > obj.workspaceSizePositive) = obj.workspaceSizePositive;
-            %good breakpoint condition: any(any(particleLocation > obj.workspaceSizePositive))
             force = double((obj.magneticForceConstant .* aCoils) ./ ((particleLocation + (0.999 * obj.workspaceSizePositive)).^1.5) + (obj.magneticForceConstant .* bCoils) ./ (((2 * obj.workspaceSizePositive) - (particleLocation + (0.999 * obj.workspaceSizePositive))).^ 1.5));
             force(isinf(force)) = 0;
             force(isnan(force)) = 0;
@@ -58,18 +56,17 @@ classdef ParticleFunctions
             %now convert back to 5x2, x & y for the final result
             distSum = permute(sum(xYDistances,1),[3,2,1]);
             force = combinedForce .* distSum;
-            %force = dipoleConstant * sum(1-5.*(normalisedDipoleMoment).^2 .* distances + 2.*(normalisedDipoleMoment).*particleTorque,3); %can't do Mci * Mcj/r^4 in this way
         end
         function force = calculateDragForce(obj, particleVelocity, flowVelocity)
-            force = (particleVelocity - flowVelocity) .* obj.dragForceConstant; %Something here is broken - Drag force can't force the particle the wrong way??
+            force = (particleVelocity - flowVelocity) .* obj.dragForceConstant;
         end
         function [wallContact, particleLocation, particleVelocity] = isParticleOnWallPIP(obj, particleLocation, particleVelocity, particleForce, polygon, tMax)
             in = inpolygon(particleLocation(:,1), particleLocation(:,2), polygon.currentPoly(:,1), polygon.currentPoly(:,2));
 
+            %TODO this could be tidied up a bit
             %https://stackoverflow.com/questions/563198/how-do-you-detect-where-two-line-segments-intersect
             particleVelocityVectorS = squeeze(repmat(-particleVelocity.*tMax,[1,1,length(polygon.currentPolyVector)]));
             polygonVectorR = permute(repmat(polygon.currentPolyVector', [1,1,size(particleVelocity,1)]),[3,1,2]);
-             %Dodgy using other vars for length here, but hopefully won't be an issue as they must be the same length
             particleStartQ = squeeze(repmat(particleLocation,[1,1,length(polygon.currentPolyVector)]));
             polyLineStartP = permute(repmat(polygon.currentPoly(1:end-1,:)', [1,1,size(particleVelocity,1)]),[3,1,2]);
             startDistanceQP = (particleStartQ - polyLineStartP);
@@ -77,13 +74,7 @@ classdef ParticleFunctions
             vectorCrossProductRS = obj.crossProduct(polygonVectorR(:,1,:), polygonVectorR(:,2,:), particleVelocityVectorS(:,1,:), particleVelocityVectorS(:,2,:));
             timeParticleCrossedLine = startDistancePolyVectorCrossProductQPR./vectorCrossProductRS;
             timeParticleCrossedLine(timeParticleCrossedLine<0) = NaN;
-            timeParticleCrossedLine(timeParticleCrossedLine == 0) = NaN; %0 to prevent errors in min calculation
-            
-            %TODO what about when the particle hits a second line? particle
-            %will clip through one line then will be considered to be not
-            %passing a line. This below code MUST reflect that this can
-            %happen.
-            
+            timeParticleCrossedLine(timeParticleCrossedLine == 0) = NaN; %0 to prevent errors in min calculation           
             [minTimeModifier,loc] = min(timeParticleCrossedLine,[],2);
             minTimeModifier = minTimeModifier(:,:,3);
             minTimeModifier(isinf(minTimeModifier)) = 0;
@@ -94,14 +85,8 @@ classdef ParticleFunctions
             %Similarly minTimeModifier is a Multiplier of TMAX
             %(it means nothing on it's own!)
             %location is current, velocity and tMax are from the previous calculations
-            %reverseVelocityAmmount = ((-minTime + 1) ./ tMax) .* particleVelocity;
-            reverseVelocityAmmount = ((minTimeModifier.*tMax) .* -particleVelocity) .* 1.015; %Think it's simple as this...
+            reverseVelocityAmmount = ((minTimeModifier.*tMax) .* -particleVelocity) .* 1.015; %move the particle 1.5% away from the wall to prevent sticking
             particleLocation = real(particleLocation + reverseVelocityAmmount); %plus as the particleVelocity was negative
-            %reverseVelocityScalar = (-minTime + 1) .* tMax.*norm(particleVelocity); % get components of this velocity reverse - a^2 + b^ 2 = c ^ 2
-            %a = obj.scalarToVector(reverseVelocityScalar, particleVelocity);
-            %a(isinf(a)) = 0;
-            %a(isnan(a)) = 0;
-            %particleLocation = particleLocation - a; %Just use the point of intersection, if the particle needs to be moved??
            
             %WallContact shows the vector orthogonal to the wall. All other values in 
             %WallContact are nans to show there is no contact
@@ -112,7 +97,9 @@ classdef ParticleFunctions
         end
         
         function velocity = calculateFlow(obj, particleLocation, flowMatrix, polygon)%, model, mesh)
-            %For demo only, remove to pre-calculate otherwise
+            %For demo purpose only. Once this is precalculated this should
+            %be stored and loaded in.
+            %TODO move to app and only generate once please.
             tr = triangulation(polyshape(polygon.currentPoly(:,1),polygon.currentPoly(:,2)));
             model = createpde(1);
             tnodes = tr.Points';
@@ -124,17 +111,6 @@ classdef ParticleFunctions
             closestNode = findNodes(mesh, 'nearest', particleLocation');
             velocity(:,1) = flowMatrix(closestNode,1);
             velocity(:,2) = flowMatrix(closestNode,2);
-            
-            %><><><Old version><><><
-            %%flowChart must be a nxn matrix. calculate the position of the
-            %%particle as a factor of the gamespace (0..1), say [0.6 0.4].
-            %%Then get the index that is that factor of the flowChart, and
-            %%that's the force?            
-            %factorPosition = (particleLocation + obj.workspaceSizePositive) ./ (obj.workspaceSizePositive*2);
-            %flowChartNumericalPosition = round(factorPosition .* size(flowChart));
-            %flowChartNumericalPosition(flowChartNumericalPosition == 0) = 1; %TODO confirm this indexing is correct.
-            %flowChartIndex = sub2ind(size(flowChart),flowChartNumericalPosition(:,1),flowChartNumericalPosition(:,2));
-            %force = flowChart(flowChartIndex); % might need to add more functionality in here?
         end
        
         function force = calculateFrictionForce(obj, particleVelocity, particleForce, wallContact)            
@@ -144,35 +120,14 @@ classdef ParticleFunctions
             for i = 1:length(particleForce)
                 if(any(~isnan(wallContact(i,:))))
                     %Use vector rejection to project force into the wall.
-                    %Must check if this force is into the wall or not...
                     fOne = particleForce(i,:) - (dot(particleForce(i,:),wallContact(i,:)) / dot(wallContact(i,:), wallContact(i,:)) * wallContact(i,:));
                     if(movingParticles(i))
                         force(i,:) = fOne .*obj.movingFrictionCoefficient;
                     else
-                        force(i,:) = fOne .*obj.staticFrictionCoefficient; %Don't hit this - if the particle is on the wall it must have velocity due to point maths.
+                        force(i,:) = fOne .*obj.staticFrictionCoefficient; %TODO Currently not reached - if the particle is on the wall it must have velocity due to existing maths.
                     end
                 end
             end
-            
-            % totalVelocity = sum(abs(particleVelocity),2);
-           % movingParticles = totalVelocity > 0;
-           % force = zeros(size(particleForce));
-           % for i = 1:length(particleVelocity)
-           %     if(any(~isnan(wallContact(i,:))))
-           %         rot = [wallContact(i,1) -wallContact(i,2); wallContact(i,2) wallContact(i,1)]; %wall Contact is a unit vector here
-           %         rotatedForce = rot * particleForce(i,:)';
-           %         rotatedForce(2) = 0;
-           %         if(movingParticles(i))                        
-           %             rotatedForce(1) = rotatedForce(1) .* obj.movingFrictionCoefficient;
-           %         else                    
-           %             rotatedForce(1) = rotatedForce(1) .* obj.staticFrictionCoefficient;
-           %         end
-           %         force(i,:) = (rot' * rotatedForce)';                    
-           %     end
-           % end
-            %ForceOnMovingParticles = wallContact .* movingParticles .* particleForce .* obj.movingFrictionCoefficient;
-            %ForceOnStationaryParticles = wallContact .* ~movingParticles .* particleForce .* obj.staticFrictionCoefficient;
-            %force = ForceOnMovingParticles + ForceOnStationaryParticles; %uncertain if this is working fully correct
         end
         
         function velocity = calculateCumulativeParticlevelocityComponentFromForce(obj, particleForce, oldVelocity, wallContact, timeSinceLastUpdate)
@@ -180,27 +135,23 @@ classdef ParticleFunctions
 
             for i = 1:length(velocity)
                 if(any(~isnan(wallContact(i,:))))
-                    %Use vector projection to restrict the velocity to only
-                    %along a wall if applicable - may possibly be an issue
-                    %with perfectly parallel lines, shouldn't come up.
+                    %Use vector projection to restrict the velocity where a
+                    %particle is on a wall to only along the wall
                     velocity(i,:) = real(dot(velocity(i,:),wallContact(i,:)) / dot(wallContact(i,:), wallContact(i,:)) * wallContact(i,:));
                 end
             end            
         end   
         
         function [newLocations, newVelocity] = calculateCollisionsAfter(obj, oldParticleLocation, newParticleLocation, particleVelocity, timeModifier)
-            %Think the component part of this is wrong
-            %Modify this to be similar to the wallContact code - ideally
-            %take the collision part out to a shared function and just pass
-            %in the relevant stuff.
+            %TODO use the same code as in wall contact.
             
             %get distances between each particle and all the others:            
             xYDistances = newParticleLocation - permute(newParticleLocation,[3,2,1]);
             distances = permute(sqrt(abs(xYDistances(:,1,:).^2 + xYDistances(:,2,:).^2)),[1,3,2]);
             distances(isnan(distances)) = 0;
-            actualCollisions = distances < obj.particleDiameter / 2; %/2 for the radius
-            actualCollisions = triu(actualCollisions,1);%everything above main diagonal. - means only one particle in a collision is moved
-            %we have the collisions above, now move the particles...
+            actualCollisions = distances < obj.particleDiameter / 2; % /2 is to use radius and not diameter
+            actualCollisions = triu(actualCollisions,1);%everything above main diagonal. - this does mean only one particle in a collision is moved
+            %we have the collisions above, now move the particles
             resetParticlesToCorrectLocations = sum(actualCollisions .* -1 .* distances,2);
             componentFraction = (particleVelocity ./ sum(particleVelocity,2)); %the fraction
             componentFraction(isnan(componentFraction)) = 0;
@@ -210,20 +161,16 @@ classdef ParticleFunctions
             vectoredResetParticlesToCorrectLocations(isnan(vectoredResetParticlesToCorrectLocations)) = 0;
             vectoredResetParticlesToCorrectLocations(isinf(vectoredResetParticlesToCorrectLocations)) = 0;
             
-            newLocations = newParticleLocation + vectoredResetParticlesToCorrectLocations; %TODO this is super broken...
-            %(xYDistances .* permute(actualCollisions,[1,3,2]))
-            %newLocations = newParticleLocation - (actualCollisions .* xYDistances)
-            %Now just the velocity perpendicular to the contact...
+            newLocations = newParticleLocation + vectoredResetParticlesToCorrectLocations;
+            %Now use just the velocity perpendicular to the contact...
             newVelocity = particleVelocity .* ~any(actualCollisions,2);
-            %particleDistanceDifferences = sum(oldParticleLocation - newParticleLocation,2)
-            %newVelocity = particleVelocity - (resetParticlesToCorrectLocations ./ particleDistanceDifferences); %What is this?? This is so not right...
         end
         function [location, newVelocity] = moveParticle(obj, particleLocation, particleVelocity, timeModifier)
-            %unCheckedLocation = particleLocation + particleVelocity .* timeModifier;
-            %[location,newVelocity] = calculateCollisionsAfter(obj, particleLocation, unCheckedLocation, particleVelocity, timeModifier);
+            unCheckedLocation = particleLocation + particleVelocity .* timeModifier;
+            [location,newVelocity] = calculateCollisionsAfter(obj, particleLocation, unCheckedLocation, particleVelocity, timeModifier);
             
-            location = real(particleLocation + particleVelocity .* timeModifier);
-            newVelocity = particleVelocity;
+            %location = real(particleLocation + particleVelocity .* timeModifier);
+            %newVelocity = particleVelocity;
         end
         
         function particleLocations = generateParticleLocations(obj, poly, particleLocationsLength)
@@ -241,11 +188,11 @@ classdef ParticleFunctions
         
         function inGoalZone = isParticleInEndZone(poly, particleLocations)
             inGoalZone = inpolyon(particleLocations, poly);
-            %TODO maybe put other goal zone logic in here?
+            %TODO put any other logic for goal zone in here
         end
         
         function AB = crossProduct(obj, Ax, Ay, Bx, By)
-            AB(:,:,3) = Ax.*By-Ay.*Bx; %No idea if this is right or not... lets try it!
+            AB(:,:,3) = Ax.*By-Ay.*Bx;
         end
         %C must be scalar, AB must be vector
         function vec = scalarToVector(obj,C,AB)

@@ -1,6 +1,4 @@
 classdef FlowData
-    %FLOWDATA Summary of this class goes here
-    %   Detailed explanation goes here
     
     properties
         FlowValues
@@ -8,9 +6,8 @@ classdef FlowData
     
     methods
         function obj = FlowData()
-            %This is only for number 2, entered manually.
-            %Ideally this can be provided in a file format (.csv?) OR 
-            %A rough idea can be generated for use if no file is available.
+            %The below data is for levels following Ex2, entered manually.
+            %In future this will be read in from the filesystem
             
             obj.FlowValues = [0 0;
                 0 0;
