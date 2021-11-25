@@ -96,7 +96,7 @@ classdef ParticleFunctions
             %location is current, velocity and tMax are from the previous calculations
             %reverseVelocityAmmount = ((-minTime + 1) ./ tMax) .* particleVelocity;
             reverseVelocityAmmount = ((minTimeModifier.*tMax) .* -particleVelocity) .* 1.015; %Think it's simple as this...
-            particleLocation = particleLocation + reverseVelocityAmmount; %plus as the particleVelocity was negative
+            particleLocation = real(particleLocation + reverseVelocityAmmount); %plus as the particleVelocity was negative
             %reverseVelocityScalar = (-minTime + 1) .* tMax.*norm(particleVelocity); % get components of this velocity reverse - a^2 + b^ 2 = c ^ 2
             %a = obj.scalarToVector(reverseVelocityScalar, particleVelocity);
             %a(isinf(a)) = 0;
@@ -183,7 +183,7 @@ classdef ParticleFunctions
                     %Use vector projection to restrict the velocity to only
                     %along a wall if applicable - may possibly be an issue
                     %with perfectly parallel lines, shouldn't come up.
-                    velocity(i,:) = dot(velocity(i,:),wallContact(i,:)) / dot(wallContact(i,:), wallContact(i,:)) * wallContact(i,:);
+                    velocity(i,:) = real(dot(velocity(i,:),wallContact(i,:)) / dot(wallContact(i,:), wallContact(i,:)) * wallContact(i,:));
                 end
             end            
         end   
@@ -222,7 +222,7 @@ classdef ParticleFunctions
             %unCheckedLocation = particleLocation + particleVelocity .* timeModifier;
             %[location,newVelocity] = calculateCollisionsAfter(obj, particleLocation, unCheckedLocation, particleVelocity, timeModifier);
             
-            location = particleLocation + particleVelocity .* timeModifier;
+            location = real(particleLocation + particleVelocity .* timeModifier);
             newVelocity = particleVelocity;
         end
         
