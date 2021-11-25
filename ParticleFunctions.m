@@ -158,7 +158,7 @@ classdef ParticleFunctions
             vectoredResetParticlesToCorrectLocations(isnan(vectoredResetParticlesToCorrectLocations)) = 0;
             vectoredResetParticlesToCorrectLocations(isinf(vectoredResetParticlesToCorrectLocations)) = 0;
             
-            newLocations = newParticleLocation + vectoredResetParticlesToCorrectLocations;
+            newLocations = real(newParticleLocation + vectoredResetParticlesToCorrectLocations);
             %Now use just the velocity perpendicular to the contact...
             newVelocity = particleVelocity .* ~any(actualCollisions,2);
         end
@@ -174,7 +174,7 @@ classdef ParticleFunctions
             [xlim ylim] = boundingbox(polyshape(poly));
             particleLocationIndex = 1;
             while(particleLocationIndex <= particleLocationsLength)
-                particleLocations(particleLocationIndex,:) = [xlim(1), ylim(1)] + [xlim(2)-xlim(1),ylim(2)-xlim(1)] .* rand(1, 2);
+                particleLocations(particleLocationIndex,:) = real([xlim(1), ylim(1)] + [xlim(2)-xlim(1),ylim(2)-xlim(1)] .* rand(1, 2));
                 a = particleLocations(particleLocationIndex,1);
                 b = particleLocations(particleLocationIndex,2);
                 if(inpolygon(a,b,poly(:,1), poly(:,2)))
