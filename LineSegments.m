@@ -62,10 +62,15 @@ classdef LineSegments
         
         function obj = change(obj,num)
             obj.currentScenario = squeeze(obj.allScenarios(num,:,:));
-            obj.currentScenario = squeeze(obj.allScenariosRadius(num,:));            
+            obj.currentScenario = squeeze(obj.allScenariosRadius(num,:));
+            polyshapeValues = [];
             for i = 1:length(obj.currentScenario)-1 
                 obj.currentScenarioVector(i) = obj.currentScenario(i,1:2) - obj.currentScenario(i,3:4);
-                obj.currentScenarioPoly = 1%TODO;
+                %obj.currentScenarioPoly(1,:) = 1%TODO; work out a way of
+                %going round the skeleton in a clockwise direction,
+                %can start from the first line. determine the correct
+                %collision points of the edges, and use these to make the
+                %polyshape.
             end
             obj.currentStartZone = squeeze(obj.allStartZones(num,:,:));
             obj.currentEndZone = squeeze(obj.allEndZones(num,:,:));

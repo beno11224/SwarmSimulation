@@ -202,8 +202,6 @@ classdef ParticleFunctions
             %newVelocity = particleVelocity - (resetParticlesToCorrectLocations ./ particleDistanceDifferences); %What is this?? This is so not right...
         end
         function [location, newVelocity] = moveParticle(obj, particleLocation, particleVelocity, timeModifier)
-            %TODO obviously need to refactor collisions code.
-            
             %unCheckedLocation = particleLocation + particleVelocity .* timeModifier;
             %[location,newVelocity] = calculateCollisionsAfter(obj, particleLocation, unCheckedLocation, particleVelocity, timeModifier);
             
