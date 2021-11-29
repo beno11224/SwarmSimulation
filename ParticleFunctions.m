@@ -104,6 +104,18 @@ classdef ParticleFunctions
             telements = tr.ConnectivityList';
             model.geometryFromMesh(tnodes, telements);
             mesh = generateMesh(model, 'Hmax', 0.001);
+            
+            
+            flowMatrix = flowMatrix .* 50;
+
+            for i = 1:size(mesh.Nodes,2)
+                ab = plot(axes, mesh.Nodes(1,i), mesh.Nodes(2,i), '.', 'markerSize', 23, 'color', 'red');
+                abz = plot(axes,[mesh.Nodes(1,i); mesh.Nodes(1,i) + flowMatrix(i,1)], [mesh.Nodes(2,i); mesh.Nodes(2,i) + flowMatrix(i,2)], 'color', 'yellow');
+                abc(1,:) = [i i+11];
+                abc(2,:) = flowMatrix(i,:);
+                delete(ab);
+                delete(abz);
+            end
 
             closestNode = findNodes(mesh, 'nearest', particleLocation');
             velocity(:,1) = flowMatrix(closestNode,1);
