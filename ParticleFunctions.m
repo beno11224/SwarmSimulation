@@ -86,7 +86,7 @@ classdef ParticleFunctions
             %(it means nothing on it's own!)
             %location is current, velocity and tMax are from the previous calculations
             reverseVelocityAmmount = ((minTimeModifier.*tMax) .* -particleVelocity) .* 1.015; %move the particle 1.5% away from the wall to prevent sticking
-            particleLocation = real(particleLocation + reverseVelocityAmmount); %plus as the particleVelocity was negative
+            particleLocation = particleLocation + real(reverseVelocityAmmount); %plus as the particleVelocity was negative
            
             %WallContact shows the vector orthogonal to the wall. All other values in 
             %WallContact are nans to show there is no contact
@@ -127,7 +127,7 @@ classdef ParticleFunctions
             end
         end
         
-        function velocity = calculateCumulativeParticlevelocityComponentFromForce(obj, particleForce, oldVelocity, wallContact, timeSinceLastUpdate)
+        function velocity = calculateCumulativeParticlevelocityComponentFromForce(obj, particleForce, oldVelocity, haltTheseParticles, wallContact, timeSinceLastUpdate)
             velocity = oldVelocity + (particleForce ./ obj.particleMass) .* timeSinceLastUpdate;
 
             for i = 1:length(velocity)
@@ -136,7 +136,8 @@ classdef ParticleFunctions
                     %particle is on a wall to only along the wall
                     velocity(i,:) = real(dot(velocity(i,:),wallContact(i,:)) / dot(wallContact(i,:), wallContact(i,:)) * wallContact(i,:));
                 end
-            end            
+            end
+            velocity = velocity .* ~haltTheseParticles;
         end   
         
         function [newLocations, newVelocity] = calculateCollisionsAfter(obj, oldParticleLocation, newParticleLocation, particleVelocity, timeModifier)
@@ -155,6 +156,7 @@ classdef ParticleFunctions
             catch ME
                 abcd = 0;
             end
+            
                 %we have the collisions above, now move the particles
             resetParticlesToCorrectLocations = sum(actualCollisions .* -1 .* distances,2);
             resetParticlesToCorrectLocations(isinf(resetParticlesToCorrectLocations)) = 0;
@@ -194,10 +196,6 @@ classdef ParticleFunctions
         end
         
         function inGoalZone = isParticleInEndZone(obj, poly, particleLocations)
-            a = particleLocations(:,1);
-            b = particleLocations(:,2);
-            c = poly(:,1);
-            d = poly(:,2);
             inGoalZone = inpolygon(particleLocations(:,1), particleLocations(:,2), poly(:,1), poly(:,2));
             %TODO put any other logic for goal zone in here
         end

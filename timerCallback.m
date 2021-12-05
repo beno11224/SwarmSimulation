@@ -31,12 +31,13 @@ function timerCallback(app)
         %friction
     app.particleArrayForce = app.particleArrayForce - app.particleFunctions.calculateFrictionForce(app.particleArrayVelocity, app.particleArrayForce, wallContact);
         %calculate the new velocity
-    app.particleArrayVelocity = app.particleFunctions.calculateCumulativeParticlevelocityComponentFromForce(app.particleArrayForce, app.particleArrayVelocity, wallContact, app.tMax);
+    app.particleArrayVelocity = app.particleFunctions.calculateCumulativeParticlevelocityComponentFromForce(app.particleArrayForce, app.particleArrayVelocity, app.haltParticlesInEndZone, wallContact, app.tMax);
         %calculate the new locations bearing in mind wallContact and the
         %trajectories of the other particles.
     [app.particleArrayLocation, app.particleArrayVelocity] = app.particleFunctions.moveParticle(app.particleArrayLocation, app.particleArrayVelocity, app.tMax);
 
-    goalPercentage = sum(app.particleFunctions.isParticleInEndZone(app.polygon.currentEndZone,app.particleArrayLocation)) / app.numParticles;
+    app.haltParticlesInEndZone = app.particleFunctions.isParticleInEndZone(app.polygon.currentEndZone,app.particleArrayLocation);
+    goalPercentage = sum(app.haltParticlesInEndZone) / app.numParticles;
         %Log this all to a file for data collection
-    fprintf(app.fileID,  datestr(now,'HH_MM_SS_FFF') + "," + goalPercentage + sprintf(",%d,%d,%d,%d", app.X1AGauge.Value,app.Y1AGauge.Value,app.X2AGauge.Value,app.Y2AGauge.Value) + mat2str(app.particleArrayLocation) + "," + mat2str(app.particleArrayVelocity) + "\r\n");
+    fprintf(app.fileID,  posixtime(datetime(datestr(now)))-app.startTime + "," + goalPercentage + sprintf(",%d,%d,%d,%d", app.X1AGauge.Value,app.Y1AGauge.Value,app.X2AGauge.Value,app.Y2AGauge.Value) + mat2str(app.particleArrayLocation) + "," + mat2str(app.particleArrayVelocity) + "\r\n");
 end
