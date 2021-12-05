@@ -144,12 +144,20 @@ classdef ParticleFunctions
             
             %get distances between each particle and all the others:            
             xYDistances = newParticleLocation - permute(newParticleLocation,[3,2,1]);
+            xYDistances(isnan(xYDistances)) = 0;
+            xYDistances(isinf(xYDistances)) = 0;
             distances = permute(sqrt(abs(xYDistances(:,1,:).^2 + xYDistances(:,2,:).^2)),[1,3,2]);
             distances(isnan(distances)) = 0;
+            distances(isinf(distances)) = 0;
             actualCollisions = distances < obj.particleDiameter / 2; % /2 is to use radius and not diameter
-            actualCollisions = triu(actualCollisions,1);%everything above main diagonal. - this does mean only one particle in a collision is moved
-            %we have the collisions above, now move the particles
+            try
+                actualCollisions = triu(actualCollisions,1);%everything above main diagonal. - this does mean only one particle in a collision is moved
+            catch ME
+                abcd = 0;
+            end
+                %we have the collisions above, now move the particles
             resetParticlesToCorrectLocations = sum(actualCollisions .* -1 .* distances,2);
+            resetParticlesToCorrectLocations(isinf(resetParticlesToCorrectLocations)) = 0;
             componentFraction = (particleVelocity ./ sum(particleVelocity,2)); %the fraction
             componentFraction(isnan(componentFraction)) = 0;
             componentFraction(isinf(componentFraction)) = 0;
@@ -160,14 +168,16 @@ classdef ParticleFunctions
             
             newLocations = real(newParticleLocation + vectoredResetParticlesToCorrectLocations);
             %Now use just the velocity perpendicular to the contact...
-            newVelocity = particleVelocity .* ~any(actualCollisions,2);
+            newVelocity = real(particleVelocity .* ~any(actualCollisions,2));
         end
         function [location, newVelocity] = moveParticle(obj, particleLocation, particleVelocity, timeModifier)
             unCheckedLocation = particleLocation + particleVelocity .* timeModifier;
+            unCheckedLocation(isinf(unCheckedLocation)) = 0; 
+            unCheckedLocation(isnan(unCheckedLocation)) = 0; 
             [location,newVelocity] = calculateCollisionsAfter(obj, particleLocation, unCheckedLocation, particleVelocity, timeModifier);
             
-            %location = real(particleLocation + particleVelocity .* timeModifier);
-            %newVelocity = particleVelocity;
+            location = real(particleLocation + particleVelocity .* timeModifier);
+            newVelocity = particleVelocity;
         end
         
         function particleLocations = generateParticleLocations(obj, poly, particleLocationsLength)
@@ -183,8 +193,12 @@ classdef ParticleFunctions
             end
         end
         
-        function inGoalZone = isParticleInEndZone(poly, particleLocations)
-            inGoalZone = inpolyon(particleLocations, poly);
+        function inGoalZone = isParticleInEndZone(obj, poly, particleLocations)
+            a = particleLocations(:,1);
+            b = particleLocations(:,2);
+            c = poly(:,1);
+            d = poly(:,2);
+            inGoalZone = inpolygon(particleLocations(:,1), particleLocations(:,2), poly(:,1), poly(:,2));
             %TODO put any other logic for goal zone in here
         end
         

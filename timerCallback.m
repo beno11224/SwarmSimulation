@@ -6,9 +6,9 @@ function timerCallback(app)
     [wallContact, app.particleArrayLocation, app.particleArrayVelocity] = app.particleFunctions.isParticleOnWallPIP(app.particleArrayLocation, app.particleArrayVelocity, app.particleArrayForce, app.polygon, app.tMax);
         
     flowMatrix = app.fd.FlowValues;
-    flowMatrix = flowMatrix.*0.001;
+    flowMatrix = flowMatrix.*0.0005;
         %what is the flow velocity experienced by each particle
-    vFlow = app.particleFunctions.calculateFlow(app.particleArrayLocation, flowMatrix, app.polygon, app.UIAxes);
+    vFlow = app.particleFunctions.calculateFlow(real(app.particleArrayLocation), flowMatrix, app.polygon, app.UIAxes);
     
         %dipole force
     app.particleArrayForce = app.particleArrayForce - app.particleFunctions.calculateDipoleForce(app.particleArrayLocation, app.particleArrayForce);
@@ -31,12 +31,12 @@ function timerCallback(app)
         %friction
     app.particleArrayForce = app.particleArrayForce - app.particleFunctions.calculateFrictionForce(app.particleArrayVelocity, app.particleArrayForce, wallContact);
         %calculate the new velocity
-    [a,b] = inpolygon(app.particleArrayLocation(:,1), app.particleArrayLocation(:,2), app.polygon.currentPoly(:,1), app.polygon.currentPoly(:,2));
-        
     app.particleArrayVelocity = app.particleFunctions.calculateCumulativeParticlevelocityComponentFromForce(app.particleArrayForce, app.particleArrayVelocity, wallContact, app.tMax);
         %calculate the new locations bearing in mind wallContact and the
         %trajectories of the other particles.
     [app.particleArrayLocation, app.particleArrayVelocity] = app.particleFunctions.moveParticle(app.particleArrayLocation, app.particleArrayVelocity, app.tMax);
+
+    goalPercentage = sum(app.particleFunctions.isParticleInEndZone(app.polygon.currentEndZone,app.particleArrayLocation)) / app.numParticles;
         %Log this all to a file for data collection
-    fprintf(app.fileID,  datestr(now,'HH_MM_SS_FFF') + sprintf(",%d,%d,%d,%d,", app.X1AGauge.Value,app.Y1AGauge.Value,app.X2AGauge.Value,app.Y2AGauge.Value) + mat2str(app.particleArrayLocation) + mat2str(app.particleArrayVelocity) + "\r\n");
+    fprintf(app.fileID,  datestr(now,'HH_MM_SS_FFF') + "," + goalPercentage + sprintf(",%d,%d,%d,%d", app.X1AGauge.Value,app.Y1AGauge.Value,app.X2AGauge.Value,app.Y2AGauge.Value) + mat2str(app.particleArrayLocation) + "," + mat2str(app.particleArrayVelocity) + "\r\n");
 end
