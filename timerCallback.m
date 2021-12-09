@@ -6,7 +6,7 @@ function timerCallback(app)
     [wallContact, app.particleArrayLocation, app.particleArrayVelocity] = app.particleFunctions.isParticleOnWallPIP(app.particleArrayLocation, app.particleArrayVelocity, app.particleArrayForce, app.polygon, app.tMax);
         
     flowMatrix = app.fd.FlowValues;
-    flowMatrix = flowMatrix.*0.0005;
+    flowMatrix = flowMatrix.*0.001;
         %what is the flow velocity experienced by each particle
     vFlow = app.particleFunctions.calculateFlow(real(app.particleArrayLocation), flowMatrix, app.polygon, app.UIAxes);
     

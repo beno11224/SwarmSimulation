@@ -1,0 +1,55 @@
+<html>  
+<head>
+    <style>     
+        html{     
+        background-color: white;     
+        padding: 5px;     
+        width: 95%;     
+        }     
+        pre {     
+        overflow-x: auto;     
+        white-space: pre-wrap;     
+        white-space: -moz-pre-wrap;     
+        white-space: -pre-wrap;     
+        white-space: -o-pre-wrap;     
+        word-wrap: break-word;     
+        }     
+    </style>     
+    
+    <script type="text/javascript">     
+            
+            function setup(htmlComponent) {     
+            
+				htmlComponent.addEventListener("DataChanged", function(event) {     
+				scrollID =  htmlComponent.Data;     
+					if (scrollID != ''){
+						if(scrollID==="bottom"){         
+							scrollToBottom();     
+						} else if(scrollID==="DOWNLOAD_MCRINSTALLER" || scrollID==="BUILD_MISSING" || scrollID==="SAMPLE_GEN" || scrollID==="USER_REQUESTED_PACKAGE"){     
+							document.getElementById(scrollID).scrollIntoView(true);     
+						} else {     
+							//document.body.innerHTML = document.body.innerHTML + scrollID;     
+							document.body.appendChild(scrollID);                 
+							scrollToBottom();     
+						}    
+						htmlComponent.Data = '';
+					}		
+				});          
+            }     
+            function scrollToBottom(){     
+            var scrollingElement = (document.scrollingElement || document.body);     
+            scrollingElement.scrollTop = scrollingElement.scrollHeight;     
+            }     
+            
+    </script> 
+</head>
+ <body><meta charset="UTF-8">        
+ <pre><font color=blue>mcc -W 'webapp:app1_1,CONFIG:C:\Users\beno11224\AppData\Local\Temp\tpa7346f3e_9a7e_49b7_9419_a1a8b316d545.xml' -d F:\Uni\Simulations\SwarmSimulation\app1_1 -v -C F:\Uni\Simulations\SwarmSimulation\particleSimulationParticipant.mlapp</font>
+Compiler version: 8.2 (R2021a)
+Analyzing file dependencies. 
+[Warning: Web apps that generate additional windows or apps are currently not supported. Check the following .mlapp files for window and app dependencies:
+F:\Uni\Simulations\SwarmSimulation\particleSimulationParticipant.mlapp] 
+Parsing file "F:\Uni\Simulations\SwarmSimulation\particleSimulationParticipant.mlapp" 
+	(referenced from command line). 
+
+</pre></body></html>
