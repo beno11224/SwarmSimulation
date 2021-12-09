@@ -12,9 +12,9 @@ classdef Polygons
         allPolyFlows;
     end
     methods ( Access = public)
-        function obj = Polygons(app)
+        function obj = Polygons(width)
             obj.padding = 0.0002;
-            len = app.UIAxes.XLim(2) - obj.padding*2;
+            len = width - obj.padding*2;
             obj.allPolys = zeros(1,20,2);
            
             obj.allPolys(1,:,:) = [-len len; %Training
