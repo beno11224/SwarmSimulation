@@ -43,7 +43,7 @@ classdef ParticleFunctions
             particleLocation(particleLocation > obj.workspaceSizePositive) = obj.workspaceSizePositive; 
             %the 0.999 is used to prevent the particles from reaching the magnetic centres, as that messes up calculations.
             force = double((obj.magneticForceConstant .* aCoils) ./ ((particleLocation + (0.999 * obj.workspaceSizePositive)).^1.5) + (obj.magneticForceConstant .* bCoils) ./ (((2 * obj.workspaceSizePositive) - (particleLocation + (0.999 * obj.workspaceSizePositive))).^ 1.5));
-            force = obj.realNum(force);
+            force = realNumMat(force);
         end
         function force = calculateDipoleForce(obj, particleLocation, particleTorque)
             xYdistanceBetweenAllParticles = particleLocation - permute(particleLocation,[3,2,1]);
@@ -200,7 +200,7 @@ classdef ParticleFunctions
             newVelocity = real(particleVelocity .* ~any(actualCollisions,2));
         end
         function [location, newVelocity] = moveParticle(obj, particleLocation, particleVelocity, timeModifier)
-            unCheckedLocation = particleLocation + obj.realNumMat(particleVelocity .* timeModifier);
+            unCheckedLocation = particleLocation + realNumMat(particleVelocity .* timeModifier);
             [location,newVelocity] = calculateCollisionsAfter(obj, particleLocation, unCheckedLocation, particleVelocity, timeModifier);
             %Put collisions back in
             location = real(particleLocation + particleVelocity .* timeModifier);
@@ -238,27 +238,20 @@ classdef ParticleFunctions
         
         %Fix matlabs tendency to make doubles into imaginary numbers
         %for a double value
-        %function res = realNumVal(obj,val)
-        %    res = val;
-        %    if(isinf(val))
-        %        res = 0;
-        %    end
-        %    if(isnan(val))
-        %        res = 0;
-        %    end
-        %end
+        function val = realNumVal(obj,val)
+            if(isinf(val))
+                val = 0;
+            end
+            if(isnan(val))
+                val = 0;
+            end
+        end
         
         %for a matrix
-        %function res = realNumMat(obj,mat)
-        %    res = mat;
-        %    res(isinf(mat)) = 0;
-        %    res(isnan(mat)) = 0;
-        %end
-        
-        %Fix matlabs tendency to make doubles into imaginary numbers
-        function num = realNum(obj,num)            
-            num(isinf(num)) = 0;
-            num(isnan(num)) = 0;
+        function res = realNumMat(obj,mat)
+            res = mat;
+            mat(isinf(mat)) = 0;
+            mat(isnan(mat)) = 0;
         end
     end
 end
