@@ -43,7 +43,7 @@ classdef ParticleFunctions
             particleLocation(particleLocation > obj.workspaceSizePositive) = obj.workspaceSizePositive; 
             %the 0.999 is used to prevent the particles from reaching the magnetic centres, as that messes up calculations.
             force = double((obj.magneticForceConstant .* aCoils) ./ ((particleLocation + (0.999 * obj.workspaceSizePositive)).^1.5) + (obj.magneticForceConstant .* bCoils) ./ (((2 * obj.workspaceSizePositive) - (particleLocation + (0.999 * obj.workspaceSizePositive))).^ 1.5));
-            force = realNumMat(force);
+            force = obj.realNum(force);
         end
         function force = calculateDipoleForce(obj, particleLocation, particleTorque)
             xYdistanceBetweenAllParticles = particleLocation - permute(particleLocation,[3,2,1]);
@@ -54,7 +54,7 @@ classdef ParticleFunctions
             normalisedDipoleMoment = dipoleMoments ./ distanceBetweenAllParticles.^-4;
             sumOfAllDipoleMoments = obj.dipoleForceConstant .* sum(normalisedDipoleMoment,2); %sum along '2'axis to make it 5x1
             %now convert back to 5x2, x & y for the final result
-            distanceMultiplier = permute(sum(xYDistances,1),[3,2,1]);
+            distanceMultiplier = permute(sum(xYdistanceBetweenAllParticles,1),[3,2,1]);
             force = sumOfAllDipoleMoments .* distanceMultiplier;
         end
         function force = calculateDragForce(obj, particleVelocity, flowVelocity)
@@ -65,24 +65,18 @@ classdef ParticleFunctions
             %the walls
             in = inpolygon(particleLocation(:,1), particleLocation(:,2), polygon.currentPoly(:,1), polygon.currentPoly(:,2));
 
-            %TODO this could be tidied up a bit
             %https://stackoverflow.com/questions/563198/how-do-you-detect-where-two-line-segments-intersect
             particleVelocityVectorS = squeeze(repmat(-particleVelocity.*tMax,[1,1,length(polygon.currentPolyVector)]));
             polygonVectorR = permute(repmat(polygon.currentPolyVector', [1,1,size(particleVelocity,1)]),[3,1,2]);
             particleStartQ = squeeze(repmat(particleLocation,[1,1,length(polygon.currentPolyVector)]));
             polyLineStartP = permute(repmat(polygon.currentPoly(1:end-1,:)', [1,1,size(particleVelocity,1)]),[3,1,2]);
-            startDistanceQP = (particleStartQ - polyLineStartP);
-            startDistancePolyVectorCrossProductQPR = obj.crossProduct(startDistanceQP(:,1,:), startDistanceQP(:,2,:), polygonVectorR(:,1,:), polygonVectorR(:,2,:));
-            vectorCrossProductRS = obj.crossProduct(polygonVectorR(:,1,:), polygonVectorR(:,2,:), particleVelocityVectorS(:,1,:), particleVelocityVectorS(:,2,:));
-            timeParticleCrossedLine = startDistancePolyVectorCrossProductQPR./vectorCrossProductRS;
+            timeParticleCrossedLine = obj.multiplierOfLineVectorOfIntersectionOfTwoLines(particleStartQ, particleVelocityVectorS, polyLineStartP, polygonVectorR);
             
             %Now tidy the matricies up to something useable
             timeParticleCrossedLine(timeParticleCrossedLine<0) = NaN;
-            timeParticleCrossedLine(timeParticleCrossedLine == 0) = NaN; %0 to prevent errors in min calculation
+            timeParticleCrossedLine(timeParticleCrossedLine == 0) = NaN; %remove 0 to prevent errors in min calculation
             [minTimeModifier, indexOfClosestVector] = min(timeParticleCrossedLine,[],2);
-            minTimeModifier = minTimeModifier(:,:,3);
-            minTimeModifier(isinf(minTimeModifier)) = 0;
-            minTimeModifier(isnan(minTimeModifier)) = 0;
+            minTimeModifier = obj.realNum(minTimeModifier(:,:,3));
             minTimeModifier = minTimeModifier .* ~in; %So we only care about the particles that are not in the space
             
             %remember tMax is the TIME not a DISTANCE
@@ -168,39 +162,44 @@ classdef ParticleFunctions
         end   
         
         function [newLocations, newVelocity] = calculateCollisionsAfter(obj, oldParticleLocation, newParticleLocation, particleVelocity, timeModifier)
+            positionsOfAnyParticleCollisions = obj.multiplierOfLineVectorOfIntersectionOfTwoLines(oldParticleLocation, particleVelocity, newParticleLocation, particleVelocity.*-1);
+            positionsOfAnyParticleCollisions(positionsOfAnyParticleCollisions >= 0) = NaN;
+            positionsOfAnyParticleCollisions(positionsOfAnyParticleCollisions >= 0) = NaN;
+            vectoredResetParticlesToCorrectLocations = componentFraction .* resetParticlesToCorrectLocations;
+            
             %TODO use the same code as in wall contact.
             
             %get distances between each particle and all the others:            
-            xYDistances = newParticleLocation - permute(newParticleLocation,[3,2,1]);
-            xYDistances(isnan(xYDistances)) = 0;
-            xYDistances(isinf(xYDistances)) = 0;
-            distances = permute(sqrt(abs(xYDistances(:,1,:).^2 + xYDistances(:,2,:).^2)),[1,3,2]);
-            distances(isnan(distances)) = 0;
-            distances(isinf(distances)) = 0;
-            actualCollisions = distances < obj.particleDiameter / 2; % /2 is to use radius and not diameter
-            try
-                actualCollisions = triu(actualCollisions,1);%everything above main diagonal. - this does mean only one particle in a collision is moved
-            catch ME
-                abcd = 0;
-            end
+            %xYDistances = newParticleLocation - permute(newParticleLocation,[3,2,1]);
+            %xYDistances(isnan(xYDistances)) = 0;
+            %xYDistances(isinf(xYDistances)) = 0;
+            %distances = permute(sqrt(abs(xYDistances(:,1,:).^2 + xYDistances(:,2,:).^2)),[1,3,2]);
+            %distances(isnan(distances)) = 0;
+            %distances(isinf(distances)) = 0;
+            %actualCollisions = distances < obj.particleDiameter / 2; % /2 is to use radius and not diameter
+            %try
+            %    actualCollisions = triu(actualCollisions,1);%everything above main diagonal. - this does mean only one particle in a collision is moved
+            %catch ME
+            %    abcd = 0;
+            %end
             
                 %we have the collisions above, now move the particles
-            resetParticlesToCorrectLocations = sum(actualCollisions .* -1 .* distances,2);
-            resetParticlesToCorrectLocations(isinf(resetParticlesToCorrectLocations)) = 0;
-            componentFraction = (particleVelocity ./ sum(particleVelocity,2)); %the fraction
-            componentFraction(isnan(componentFraction)) = 0;
-            componentFraction(isinf(componentFraction)) = 0;
-            %occupied by each x/y component
-            vectoredResetParticlesToCorrectLocations = componentFraction .* resetParticlesToCorrectLocations;
-            vectoredResetParticlesToCorrectLocations(isnan(vectoredResetParticlesToCorrectLocations)) = 0;
-            vectoredResetParticlesToCorrectLocations(isinf(vectoredResetParticlesToCorrectLocations)) = 0;
+            %resetParticlesToCorrectLocations = sum(actualCollisions .* -1 .* distances,2);
+            %resetParticlesToCorrectLocations(isinf(resetParticlesToCorrectLocations)) = 0;
+            %componentFraction = (particleVelocity ./ sum(particleVelocity,2)); %the fraction
+            %componentFraction(isnan(componentFraction)) = 0;
+            %componentFraction(isinf(componentFraction)) = 0;
+                %occupied by each x/y component
+            %vectoredResetParticlesToCorrectLocations = componentFraction .* resetParticlesToCorrectLocations;
+            %vectoredResetParticlesToCorrectLocations(isnan(vectoredResetParticlesToCorrectLocations)) = 0;
+            %vectoredResetParticlesToCorrectLocations(isinf(vectoredResetParticlesToCorrectLocations)) = 0;
             
             newLocations = real(newParticleLocation + vectoredResetParticlesToCorrectLocations);
             %Now use just the velocity perpendicular to the contact...
             newVelocity = real(particleVelocity .* ~any(actualCollisions,2));
         end
         function [location, newVelocity] = moveParticle(obj, particleLocation, particleVelocity, timeModifier)
-            unCheckedLocation = particleLocation + realNumMat(particleVelocity .* timeModifier);
+            unCheckedLocation = particleLocation + obj.realNum(particleVelocity .* timeModifier);
             [location,newVelocity] = calculateCollisionsAfter(obj, particleLocation, unCheckedLocation, particleVelocity, timeModifier);
             %Put collisions back in
             location = real(particleLocation + particleVelocity .* timeModifier);
@@ -226,6 +225,32 @@ classdef ParticleFunctions
             %TODO put any other logic for goal zone in here
         end
         
+        %Helper function used for collision detection for both
+        %particle/wall and particle/particle.
+        %Result references the magnitude of the line1vector to get to the
+        %intersection point. To get the same for line2, swap the parameters
+        %round when calling.
+        function [line1Multiplier] = multiplierOfLineVectorOfIntersectionOfTwoLines(obj, line1StartQ, line1VectorS, line2StartP, line2VectorR)
+           
+            startDistanceQP = (line1StartQ - line2StartP);
+            startDistanceLine2VectorCrossProductQPR = obj.crossProduct(startDistanceQP(:,1,:), startDistanceQP(:,2,:), line2VectorR(:,1,:), line2VectorR(:,2,:));
+            vectorCrossProductRS = obj.crossProduct(line2VectorR(:,1,:), line2VectorR(:,2,:), line1VectorS(:,1,:), line1VectorS(:,2,:));
+            line1Multiplier = startDistanceLine2VectorCrossProductQPR./vectorCrossProductRS;
+            %TODO any other tidying needed here?
+            
+                       
+            %This is the copied code from wallCollision
+            %particleVelocityVectorS = squeeze(repmat(-particleVelocity.*tMax,[1,1,length(polygon.currentPolyVector)]));
+            %polygonVectorR = permute(repmat(polygon.currentPolyVector', [1,1,size(particleVelocity,1)]),[3,1,2]);
+            %particleStartQ = squeeze(repmat(particleLocation,[1,1,length(polygon.currentPolyVector)]));
+            %polyLineStartP = permute(repmat(polygon.currentPoly(1:end-1,:)', [1,1,size(particleVelocity,1)]),[3,1,2]);
+                        
+            %startDistanceQP = (particleStartQ - polyLineStartP);
+            %startDistancePolyVectorCrossProductQPR = obj.crossProduct(startDistanceQP(:,1,:), startDistanceQP(:,2,:), polygonVectorR(:,1,:), polygonVectorR(:,2,:));
+            %vectorCrossProductRS = obj.crossProduct(polygonVectorR(:,1,:), polygonVectorR(:,2,:), particleVelocityVectorS(:,1,:), particleVelocityVectorS(:,2,:));
+            %timeParticleCrossedLine = startDistancePolyVectorCrossProductQPR./vectorCrossProductRS;
+        end
+        
         %parameters are the x and y values as vectors corresponding to the cross product of matricies A and B
         function AB = crossProduct(obj, Ax, Ay, Bx, By)
             AB(:,:,3) = Ax.*By-Ay.*Bx;
@@ -238,20 +263,27 @@ classdef ParticleFunctions
         
         %Fix matlabs tendency to make doubles into imaginary numbers
         %for a double value
-        function val = realNumVal(obj,val)
-            if(isinf(val))
-                val = 0;
-            end
-            if(isnan(val))
-                val = 0;
-            end
-        end
+        %function res = realNumVal(obj,val)
+        %    res = val;
+        %    if(isinf(val))
+        %        res = 0;
+        %    end
+        %    if(isnan(val))
+        %        res = 0;
+        %    end
+        %end
         
         %for a matrix
-        function res = realNumMat(obj,mat)
-            res = mat;
-            mat(isinf(mat)) = 0;
-            mat(isnan(mat)) = 0;
+        %function res = realNumMat(obj,mat)
+        %    res = mat;
+        %    res(isinf(mat)) = 0;
+        %    res(isnan(mat)) = 0;
+        %end
+        
+        %Fix matlabs tendency to make doubles into imaginary numbers
+        function num = realNum(obj,num)            
+            num(isinf(num)) = 0;
+            num(isnan(num)) = 0;
         end
     end
 end
