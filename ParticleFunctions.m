@@ -39,11 +39,11 @@ classdef ParticleFunctions
         function force = calculateMagneticForce(obj, particleLocation, aCoils, bCoils)
             %a coils 'push' in the positive direction, b coils 'push' in
             %the negative direction
+            particleLocation = obj.realNum(particleLocation);
             particleLocation(particleLocation < obj.workspaceSizeMinus) = obj.workspaceSizeMinus;
             particleLocation(particleLocation > obj.workspaceSizePositive) = obj.workspaceSizePositive; 
             %the 0.999 is used to prevent the particles from reaching the magnetic centres, as that messes up calculations.
-            force = double((obj.magneticForceConstant .* aCoils) ./ ((particleLocation + (0.999 * obj.workspaceSizePositive)).^1.5) + (obj.magneticForceConstant .* bCoils) ./ (((2 * obj.workspaceSizePositive) - (particleLocation + (0.999 * obj.workspaceSizePositive))).^ 1.5));
-            force = obj.realNum(force);
+            force = double((obj.realNum(obj.magneticForceConstant .* aCoils)) ./ ((particleLocation + (0.999 * obj.workspaceSizePositive)).^1.5) + (obj.realNum(obj.magneticForceConstant .* bCoils)) ./ (((2 * obj.workspaceSizePositive) - (particleLocation + (0.999 * obj.workspaceSizePositive))).^ 1.5));
         end
         function force = calculateDipoleForce(obj, particleLocation, particleTorque)
             xYdistanceBetweenAllParticles = particleLocation - permute(particleLocation,[3,2,1]);
@@ -163,20 +163,24 @@ classdef ParticleFunctions
         
         function [newLocations, newVelocity] = calculateCollisionsAfter(obj, oldParticleLocation, newParticleLocation, particleVelocity, timeModifier)
             positionsOfAnyParticleCollisions = obj.multiplierOfLineVectorOfIntersectionOfTwoLines(oldParticleLocation, particleVelocity, newParticleLocation, particleVelocity.*-1);
+            positionsOfAnyParticleCollisions = positionsOfAnyParticleCollisions(:,:,3);
             positionsOfAnyParticleCollisions(isnan(positionsOfAnyParticleCollisions)) = 0;
+            %set limits for back-movement of particle (-1<=x<0)
             positionsOfAnyParticleCollisions(positionsOfAnyParticleCollisions >= 0) = 0;
             positionsOfAnyParticleCollisions(positionsOfAnyParticleCollisions < -1) = 0;
-            vectoredResetParticlesToCorrectLocations = particleVelocity .* -1 .* positionsOfAnyParticleCollisions(:,:,3);            
-            newLocations = real(newParticleLocation + vectoredResetParticlesToCorrectLocations);
-            %Now use just the velocity perpendicular to the contact...
-            newVelocity = real(particleVelocity .* ~any(actualCollisions,2));
+            vectoredResetParticlesToCorrectLocations = particleVelocity .* -1 .* positionsOfAnyParticleCollisions;            
+            newLocations = real(newParticleLocation + vectoredResetParticlesToCorrectLocations);            
+            %Now allow only velocity perpendicular to the contact                       
+            newVelocity = particleVelocity;
+            newVelocity(positionsOfAnyParticleCollisions ~= 0) = 0;
         end
         function [location, newVelocity] = moveParticle(obj, particleLocation, particleVelocity, timeModifier)
             unCheckedLocation = particleLocation + obj.realNum(particleVelocity .* timeModifier);
             [location,newVelocity] = calculateCollisionsAfter(obj, particleLocation, unCheckedLocation, particleVelocity, timeModifier);
+            %TODO are halted particles stopping?
             %Put collisions back in
-            location = real(particleLocation + particleVelocity .* timeModifier);
-            newVelocity = particleVelocity;
+            %location = real(particleLocation + particleVelocity .* timeModifier);
+            %newVelocity = particleVelocity;
         end
         
         function particleLocations = generateParticleLocations(obj, poly, particleLocationsLength)
