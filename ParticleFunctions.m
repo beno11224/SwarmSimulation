@@ -7,7 +7,7 @@ classdef ParticleFunctions
         staticFrictionCoefficient;
         movingFrictionCoefficient;
         particleMass;
-        workspaceSizePositive;%use for the positive limits!
+        workspaceSizePositive;%use for the positive limits
         workspaceSizeMinus; %use for negative limits
     end
     methods (Access = public)
@@ -43,7 +43,7 @@ classdef ParticleFunctions
             particleLocation(particleLocation < obj.workspaceSizeMinus) = obj.workspaceSizeMinus;
             particleLocation(particleLocation > obj.workspaceSizePositive) = obj.workspaceSizePositive; 
             %the 0.999 is used to prevent the particles from reaching the magnetic centres, as that messes up calculations.
-            force = double((obj.realNum(obj.magneticForceConstant .* aCoils)) ./ ((particleLocation + (0.999 * obj.workspaceSizePositive)).^1.5) + (obj.realNum(obj.magneticForceConstant .* bCoils)) ./ (((2 * obj.workspaceSizePositive) - (particleLocation + (0.999 * obj.workspaceSizePositive))).^ 1.5));
+            force = double(obj.realNum((obj.magneticForceConstant .* aCoils) ./ ((particleLocation + (0.999 * obj.workspaceSizePositive)).^1.5)) + obj.realNum((obj.magneticForceConstant .* bCoils) ./ (((2 * obj.workspaceSizePositive) - (particleLocation + (0.999 * obj.workspaceSizePositive))).^ 1.5)));
         end
         function force = calculateDipoleForce(obj, particleLocation, particleTorque)
             xYdistanceBetweenAllParticles = particleLocation - permute(particleLocation,[3,2,1]);
@@ -73,8 +73,8 @@ classdef ParticleFunctions
             timeParticleCrossedLine = obj.multiplierOfLineVectorOfIntersectionOfTwoLines(particleStartQ, particleVelocityVectorS, polyLineStartP, polygonVectorR);
             
             %Now tidy the matricies up to something useable
-            timeParticleCrossedLine(timeParticleCrossedLine<0) = NaN;
-            timeParticleCrossedLine(timeParticleCrossedLine == 0) = NaN; %remove 0 to prevent errors in min calculation
+            timeParticleCrossedLine(timeParticleCrossedLine <= 0) = NaN;
+            timeParticleCrossedLine(timeParticleCrossedLine > 1) = NaN; %remove 0 to prevent errors in min calculation %==0
             [minTimeModifier, indexOfClosestVector] = min(timeParticleCrossedLine,[],2);
             minTimeModifier = obj.realNum(minTimeModifier(:,:,3));
             minTimeModifier = minTimeModifier .* ~in; %So we only care about the particles that are not in the space
@@ -85,13 +85,18 @@ classdef ParticleFunctions
             %location is current, velocity and tMax are from the previous calculations
             reverseVelocityAmmount = ((minTimeModifier.*tMax) .* -particleVelocity) .* 1.015; %move the particle 1.5% away from the wall to prevent sticking
             particleLocation = particleLocation + real(reverseVelocityAmmount); %plus as the particleVelocity was negative
-           
+                        
             %WallContact shows the vector orthogonal to the wall. All other values in 
             %WallContact are nans to show there is no contact
             wallContact = polygon.currentPolyVector(indexOfClosestVector(:,:,3),:);
             wallContact = wallContact .* ~in;
             wallContact = wallContact ./ norm(wallContact); %to unit vector
-            wallContact(~any(wallContact,2),:) = NaN; %Set 1's to nan s?
+            wallContact(~any(wallContact,2),:) = NaN; %Set 1's to nan
+            %particleVelocity is determined by projection of velocity onto
+            %wall contact
+            newParticleVelocity = obj.realNum((dot(particleVelocity,wallContact) / dot(wallContact, wallContact)) * wallContact); %TODO check that this is projecting the correct way - currently canceling the velocity twice, this is not the right way to do it..
+            particleVelocity = particleVelocity .* isnan(wallContact) + newParticleVelocity .* ~isnan(wallContact);
+                
         end
         
         function velocity = calculateFlow(obj, particleLocation, flowMatrix, polygon, axes)
@@ -168,8 +173,8 @@ classdef ParticleFunctions
             %set limits for back-movement of particle (-1<=x<0)
             positionsOfAnyParticleCollisions(positionsOfAnyParticleCollisions >= 0) = 0;
             positionsOfAnyParticleCollisions(positionsOfAnyParticleCollisions < -1) = 0;
-            vectoredResetParticlesToCorrectLocations = particleVelocity .* -1 .* positionsOfAnyParticleCollisions;            
-            newLocations = real(newParticleLocation + vectoredResetParticlesToCorrectLocations);            
+            vectoredResetParticlesToCorrectLocations = particleVelocity .* -1 .* obj.realNum(positionsOfAnyParticleCollisions);
+            newLocations = newParticleLocation + obj.realNum(vectoredResetParticlesToCorrectLocations);            
             %Now allow only velocity perpendicular to the contact                       
             newVelocity = particleVelocity;
             newVelocity(positionsOfAnyParticleCollisions ~= 0) = 0;
@@ -177,10 +182,6 @@ classdef ParticleFunctions
         function [location, newVelocity] = moveParticle(obj, particleLocation, particleVelocity, timeModifier)
             unCheckedLocation = particleLocation + obj.realNum(particleVelocity .* timeModifier);
             [location,newVelocity] = calculateCollisionsAfter(obj, particleLocation, unCheckedLocation, particleVelocity, timeModifier);
-            %TODO are halted particles stopping?
-            %Put collisions back in
-            %location = real(particleLocation + particleVelocity .* timeModifier);
-            %newVelocity = particleVelocity;
         end
         
         function particleLocations = generateParticleLocations(obj, poly, particleLocationsLength)
@@ -212,7 +213,7 @@ classdef ParticleFunctions
             startDistanceQP = (line1StartQ - line2StartP);
             startDistanceLine2VectorCrossProductQPR = obj.crossProduct(startDistanceQP(:,1,:), startDistanceQP(:,2,:), line2VectorR(:,1,:), line2VectorR(:,2,:));
             vectorCrossProductRS = obj.crossProduct(line2VectorR(:,1,:), line2VectorR(:,2,:), line1VectorS(:,1,:), line1VectorS(:,2,:));
-            line1Multiplier = startDistanceLine2VectorCrossProductQPR./vectorCrossProductRS;
+            line1Multiplier = obj.realNum(startDistanceLine2VectorCrossProductQPR./vectorCrossProductRS);
         end
         
         %parameters are the x and y values as vectors corresponding to the cross product of matricies A and B
@@ -229,6 +230,7 @@ classdef ParticleFunctions
         function num = realNum(obj,num)            
             num(isinf(num)) = 0;
             num(isnan(num)) = 0;
+            num = real(num);
         end
     end
 end
