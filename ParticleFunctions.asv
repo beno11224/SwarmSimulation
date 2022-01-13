@@ -7,7 +7,7 @@ classdef ParticleFunctions
         staticFrictionCoefficient;
         movingFrictionCoefficient;
         particleMass;
-        workspaceSizePositive;%use for the positive limits!
+        workspaceSizePositive;%use for the positive limits
         workspaceSizeMinus; %use for negative limits
     end
     methods (Access = public)
@@ -43,7 +43,7 @@ classdef ParticleFunctions
             particleLocation(particleLocation < obj.workspaceSizeMinus) = obj.workspaceSizeMinus;
             particleLocation(particleLocation > obj.workspaceSizePositive) = obj.workspaceSizePositive; 
             %the 0.999 is used to prevent the particles from reaching the magnetic centres, as that messes up calculations.
-            force = double((obj.realNum(obj.magneticForceConstant .* aCoils)) ./ ((particleLocation + (0.999 * obj.workspaceSizePositive)).^1.5) + (obj.realNum(obj.magneticForceConstant .* bCoils)) ./ (((2 * obj.workspaceSizePositive) - (particleLocation + (0.999 * obj.workspaceSizePositive))).^ 1.5));
+            force = double(obj.realNum((obj.magneticForceConstant .* aCoils) ./ ((particleLocation + (0.999 * obj.workspaceSizePositive)).^1.5)) + obj.realNum((obj.magneticForceConstant .* bCoils) ./ (((2 * obj.workspaceSizePositive) - (particleLocation + (0.999 * obj.workspaceSizePositive))).^ 1.5)));
         end
         function force = calculateDipoleForce(obj, particleLocation, particleTorque)
             xYdistanceBetweenAllParticles = particleLocation - permute(particleLocation,[3,2,1]);
@@ -91,16 +91,15 @@ classdef ParticleFunctions
             wallContact = polygon.currentPolyVector(indexOfClosestVector(:,:,3),:);
             wallContact = wallContact .* ~in;
             wallContact = wallContact ./ norm(wallContact); %to unit vector
-            wallContact(~any(wallContact,2),:) = NaN; %Set 1's to nan s?
-            %particleVelocity is determined by projection of velocity onto
+            wallContact(~any(wallContact,2),:) = NaN; %Set 1's to nan
+            %particleVelocity is determined by vector projection of velocity onto
             %wall contact
-            %TODO this might need something to protect existing stuff
-            newParticleVelocity = (dot(particleVelocity,wallContact) / dot(wallContact, wallContact)) * wallContact;
-            a = ~isnan(wallContact);
-            aa = particleVelocity(a);
-            aab = particleVelocity(~isnan(wallContact));
-            b = newParticleVelocity(~isnan(wallContact));
-            particleVelocity = particleVelocity .* ~isnan(wallContact) + newParticleVelocity .* ~isnan(wallContact); %TODO does that work?
+            newParticleVelocity = obj.realNum((dot(particleVelocity,wallContact) / dot(wallContact, wallContact)) * wallContact); %TODO check that this is projecting the correct way - currently canceling the velocity twice, this is not the right way to do it..
+            newParticleVelocityNEW = obj.vectorProjection(particleVelocity,wallContact);
+            if(newParticleVelocity ~= newParticleVelocityNEW)
+                errvarWALL = 0
+            end
+            particleVelocity = particleVelocity .* isnan(wallContact) + newParticleVelocity .* ~isnan(wallContact);
                 
         end
         
@@ -151,20 +150,16 @@ classdef ParticleFunctions
                         coefficient = obj.staticFrictionCoefficient; %TODO Currently not reached - if the particle is on the wall it must have velocity due to existing maths.
                     end
                     %Use vector rejection to project force into the wall.
-                    force = particleForce(i,:) - (dot(particleForce(i,:),wallContact(i,:)) / dot(wallContact(i,:), wallContact(i,:)) * wallContact(i,:)) .* coefficient;
+                    force(i,:) = particleForce(i,:) - obj.vectorProjection(particleForce(i,:),wallContact(i,:)) .* coefficient;
                 end
             end
         end
         
         function velocity = calculateCumulativeParticleVelocityComponentFromForce(obj, particleForce, oldVelocity, haltTheseParticles, wallContact, timeSinceLastUpdate)
             velocity = oldVelocity + (particleForce ./ obj.particleMass) .* timeSinceLastUpdate;
-
             for i = 1:length(velocity)
                 if(any(~isnan(wallContact(i,:))))
-                    %Use vector projection to restrict the velocity of a 
-                    %particle in contact with a wall to only the component 
-                    %parallel to the wall
-                    velocity(i,:) = real(dot(velocity(i,:),wallContact(i,:)) / dot(wallContact(i,:), wallContact(i,:)) * wallContact(i,:));
+                    velocity(i,:) = obj.vectorProjection(velocity(i,:),wallContact(i,:));
                 end
             end
             %prevent these particles from moving
@@ -178,18 +173,15 @@ classdef ParticleFunctions
             %set limits for back-movement of particle (-1<=x<0)
             positionsOfAnyParticleCollisions(positionsOfAnyParticleCollisions >= 0) = 0;
             positionsOfAnyParticleCollisions(positionsOfAnyParticleCollisions < -1) = 0;
-            vectoredResetParticlesToCorrectLocations = particleVelocity .* -1 .* obj.realNum(positionsOfAnyParticleCollisions);     
-            %newLocations = newParticleLocation;
+            vectoredResetParticlesToCorrectLocations = particleVelocity .* -1 .* obj.realNum(positionsOfAnyParticleCollisions);
             newLocations = newParticleLocation + obj.realNum(vectoredResetParticlesToCorrectLocations);            
             %Now allow only velocity perpendicular to the contact                       
             newVelocity = particleVelocity;
-            newVelocity(positionsOfAnyParticleCollisions ~= 0) = 0;
+            %newVelocity(positionsOfAnyParticleCollisions ~= 0) = 0;
         end
         function [location, newVelocity] = moveParticle(obj, particleLocation, particleVelocity, timeModifier)
             unCheckedLocation = particleLocation + obj.realNum(particleVelocity .* timeModifier);
             [location,newVelocity] = calculateCollisionsAfter(obj, particleLocation, unCheckedLocation, particleVelocity, timeModifier);
-            %newVelocity = particleVelocity;
-            %location = unCheckedLocation;
         end
         
         function particleLocations = generateParticleLocations(obj, poly, particleLocationsLength)
@@ -232,6 +224,12 @@ classdef ParticleFunctions
         %C must be scalar, AB must be vector
         function vec = scalarToVector(obj,C,AB)
             vec = (AB./norm(AB)) .* C;            
+        end
+        
+        %vector projection of AB along line CD
+        %To get vector rejection, just do AB - obj.vectorProjection(AB,CD)
+        function vec = vectorProjection(obj, AB, CD)
+            vec = obj.realNum((dot(AB,CD) / dot(CD, CD)) * CD);
         end
         
         %Fix matlabs tendency to make doubles into imaginary numbers
