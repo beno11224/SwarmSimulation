@@ -34,5 +34,5 @@ function timerCallback(app)
     goalPercentage = sum(app.haltParticlesInEndZone) / app.numParticles; %TODO store which exit each particle is in (0 is not in exit, 1,2... are the numbers of the exit channel)
     
     %Log this all to a file for data collection
-    fprintf(app.fileID,  posixtime(datetime(datestr(now)))-app.startTime + "," + goalPercentage + sprintf(",%d,%d,%d,%d", app.X1AGauge.Value,app.Y1AGauge.Value,app.X2AGauge.Value,app.Y2AGauge.Value) + mat2str(app.particleArrayLocation) + "," + mat2str(app.particleArrayVelocity) + "\r\n");
+    fprintf(app.fileID,  round(etime(clock,app.startTime)) + "," + goalPercentage + sprintf(",%d,%d,%d,%d", app.X1AGauge.Value,app.Y1AGauge.Value,app.X2AGauge.Value,app.Y2AGauge.Value) + mat2str(app.particleArrayLocation) + "," + mat2str(app.particleArrayVelocity) + "\r\n");
 end
