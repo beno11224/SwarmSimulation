@@ -176,8 +176,11 @@ classdef ParticleFunctions
             %newVelocity(positionsOfAnyParticleCollisions ~= 0) = 0;
         end
         function [location, newVelocity] = moveParticle(obj, particleLocation, particleVelocity, timeModifier)
-            unCheckedLocation = particleLocation + obj.realNum(particleVelocity .* timeModifier);
-            [location,newVelocity] = calculateCollisionsAfter(obj, particleLocation, unCheckedLocation, particleVelocity, timeModifier);
+            %unCheckedLocation = particleLocation + obj.realNum(particleVelocity .* timeModifier);
+            %[location,newVelocity] = calculateCollisionsAfter(obj, particleLocation, unCheckedLocation, particleVelocity, timeModifier);
+            %Comment above and Uncomment below to prevent particleCollisions
+            location = particleLocation + obj.realNum(particleVelocity .* timeModifier);
+            newVelocity = particleVelocity;
         end
         
         function particleLocations = generateParticleLocations(obj, poly, particleLocationsLength)

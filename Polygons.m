@@ -38,68 +38,89 @@ classdef Polygons
                -len len*0.25;
                -len len];
            
-           obj.allPolys(2,:,:) = [-len len*0.9; %Ex1
-               -len*0.5 len*0.1;
-               len*0.6 len*0.8;
-               len*0.8 len*0.8
-               len*0.8 -len*0.8;
-               -len*0.7 -len*0.8;  
-               -len*0.1 -len*0.1;
-               -len*0.3 -len*0.1;
-               -len -len*0.9;
-               -len -len;
-               -len*0.95 -len;
-               len -len;
-               len -len*0.25;
-               len -len*0.5
-               len len*0.25;                          
-               len len*0.5; 
-               len*0.5 len;
-               -len*0.45 len*0.4;
-               -len*0.9 len;
-               -len len*0.9];  
+           %obj.allPolys(2,:,:) = [-len -len*0.45; %Original version.
+           %    -len*0.5 -len*0.45;
+           %    -len*0.15 -len;
+           %    -len*0.05 -len*0.95
+           %    -len*0.4 -len*0.35;
+           %    len*0.05 len*0.25;
+           %    len*0.5 len*0.25;
+           %    len*0.95 -len*0.15;
+           %    len 0;
+           %    len*0.65 len*0.35;
+           %    len len*0.95;
+           %    len*0.9 len;
+           %    len*0.5 len*0.4;
+           %    len*0.05 len*0.4;
+           %    0 len;
+           %    -len*0.15 len;
+           %    -len*0.1 len*0.4;
+           %    -len*0.5 -len*0.2;
+           %    -len -len*0.2;
+           %    -len -len*0.45]; 
            
-           obj.allPolys(3,:,:) = [-len -len*0.45; %Ex2
-               -len*0.5 -len*0.45;
-               -len*0.15 -len;
-               -len*0.05 -len*0.95
-               -len*0.4 -len*0.35;
-               len*0.05 len*0.25;
-               len*0.5 len*0.25;
-               len*0.95 -len*0.15;
-               len 0;
-               len*0.65 len*0.35;
-               len len*0.95;
-               len*0.9 len;
-               len*0.5 len*0.4;
-               len*0.05 len*0.4;
-               0 len;
-               -len*0.15 len;
-               -len*0.1 len*0.4;
-               -len*0.5 -len*0.2;
-               -len -len*0.2;
-               -len -len*0.45];
+           obj.allPolys(2,:,:) = [-0.001 -0.0004; %Ex1
+               -0.0005 -0.0004;
+               -0.000146 -0.000754;%1st lower
+               -0.000075 -0.000683;%1st lower
+               -0.000413 -0.00035;%centre 1st
+               -0.000075 0.000036;%upper 1st
+               0.000451 0.000036;%right2nd
+               0.000820 -0.00034;%lower3rd
+               0.000891 -0.000269;%lower3rdg
+               0.000537 0.000085;%centre3rd
+               0.000891 0.000438;%upper3rd
+               0.000820 0.000509;%upper3rd
+               0.000451 0.000132;%right2nd
+               -0.000049 0.000132;%centre2nd %done
+               -0.000046 0.000632;%upper2nd
+               -0.000146 0.000632;%upper2nd
+               -0.000146 0.000107;%upper1st
+               -0.0005 -0.0003;
+               -0.001 -0.0003;
+               -0.001 -0.0004]; 
            
-            obj.allPolys(4,:,:) = [-len len*0.9; % Ex3
-               -len*0.55 -len*0.2;
-               -len -len*0.9;
-               -len*0.9 -len;
-               -len*0.2 -len*0.1;
-               -len*0.2 0;
-               len*0.4 -len;
-               len*0.45 -len;
-               len*0.5 -len;
-               0 0;
-               len len*0.2;
-               len len*0.3;               
-               -len*0.2 len*0.15; 
-               len*0.5 len;
-               len*0.45 len;
-               len*0.4 len;               
-               -len*0.45 len*0.15;
-               -len*0.9 len;
-               -len*0.9 len;
-               -len len*0.9];
+           obj.allPolys(3,:,:) = [-0.001 -0.0004; %Ex2
+               -0.0005 -0.0004;
+               -0.000146 -0.000754;%1st lower
+               -0.000075 -0.000683;%1st lower
+               -0.000413 -0.00035;%centre 1st
+               -0.000075 0.000036;%upper 1st
+               0.000451 0.000036;%right2nd
+               0.000820 -0.00034;%lower3rd
+               0.000891 -0.000269;%lower3rdg
+               0.000537 0.000085;%centre3rd
+               0.000891 0.000438;%upper3rd
+               0.000820 0.000509;%upper3rd
+               0.000451 0.000132;%right2nd
+               -0.000049 0.000132;%centre2nd %done
+               -0.000046 0.000632;%upper2nd
+               -0.000146 0.000632;%upper2nd
+               -0.000146 0.000107;%upper1st
+               -0.0005 -0.0003;
+               -0.001 -0.0003;
+               -0.001 -0.0004];
+           
+            obj.allPolys(4,:,:) = [-0.001 -0.0004; %Ex3
+               -0.0005 -0.0004;
+               -0.000146 -0.000754;%1st lower
+               -0.000075 -0.000683;%1st lower
+               -0.000413 -0.00035;%centre 1st
+               -0.000075 0.000036;%upper 1st
+               0.000451 0.000036;%right2nd
+               0.000820 -0.00034;%lower3rd
+               0.000891 -0.000269;%lower3rdg
+               0.000537 0.000085;%centre3rd
+               0.000891 0.000438;%upper3rd
+               0.000820 0.000509;%upper3rd
+               0.000451 0.000132;%right2nd
+               -0.000049 0.000132;%centre2nd %done
+               -0.000046 0.000632;%upper2nd
+               -0.000146 0.000632;%upper2nd
+               -0.000146 0.000107;%upper1st
+               -0.0005 -0.0003;
+               -0.001 -0.0003;
+               -0.001 -0.0004];
            
             obj.currentPoly = squeeze(obj.allPolys(1,:,:));
             
@@ -109,23 +130,37 @@ classdef Polygons
                 len*0.25, -len*0.25;
                 len*0.25, len*0.25];
             
-            obj.allStartZones(2,:,:) = [-len len*0.9;
-               -len*0.7 len*0.45;
-               -len*0.5 len*0.45
-               -len*0.9 len;
-               -len len*0.9];
-                      
-           obj.allStartZones(3,:,:) = [-len -len*0.45;
-               -len*0.75 -len*0.45;
-               -len*0.75 -len*0.2;
-               -len -len*0.2;
-               -len -len*0.45];
+            obj.allStartZones(2,:,:) = [-0.001 -0.0004
+               -0.0009 -0.0004;
+               -0.0009 -0.0003;
+               -0.001 -0.0003;
+               -0.001 -0.0004]
+               
+           obj.allStartZones(3,:,:) = [-0.001 -0.0004
+               -0.0009 -0.0004;
+               -0.0009 -0.0003;
+               -0.001 -0.0003;
+               -0.001 -0.0004]   
            
-           obj.allStartZones(4,:,:) = [-len len*0.9;
-               -len*0.5 len*0.1;
-               len*0.6 len*0.8
-               -len*0.9 len;
-               -len len*0.9];
+           obj.allStartZones(4,:,:) = [-0.001 -0.0004
+               -0.0009 -0.0004;
+               -0.0009 -0.0003;
+               -0.001 -0.0003;
+               -0.001 -0.0004]
+           
+           %Comment out these tests and replace with new start/goals - Use with the original scenario, they
+           %might not fit on new ones.
+           %obj.allStartZones(3,:,:) = [-len -len*0.25; %Flow Test
+           %    -len*0.9 -len*0.25;
+           %    -len*0.9 -len*0.35;
+           %    -len -len*0.35;
+           %    -len -len*0.25];   
+           
+           %obj.allStartZones(4,:,:) = [-len -len*0.45; %Magnetic Force Test
+           %    -len*0.6 -len*0.45;
+           %    -len*0.6 -len*0.43;
+           %    -len -len*0.43;
+           %    -len -len*0.45];  
            
            obj.currentStartZone = squeeze(obj.allStartZones(1,:,:));
            
@@ -135,23 +170,35 @@ classdef Polygons
                 len*0.75, -len*0.75;
                 len*0.75, -len];
             
-           obj.allEndZones(2,:,:) = [-len*0.28 -len*0.31;  
-               -len*0.1 -len*0.1;
-               -len*0.3 -len*0.1;
-               -len*0.47 -len*0.3;
-               -len*0.28 -len*0.31];
+           obj.allEndZones(2,:,:) = [0.000891 -0.000269
+               0.000820 -0.00034;
+               0.000749 -0.000269;
+               0.000820 -0.000198;
+               0.000891 -0.000269];
            
-           obj.allEndZones(3,:,:) = [len 0
-               len*0.9 len*0.1;
-               len*0.78 0;
-               len*0.95 -len*0.15;
-               len 0]; 
+           obj.allEndZones(3,:,:) = [0.000891 -0.000269
+               0.000820 -0.00034;
+               0.000749 -0.000269;
+               0.000820 -0.000198;
+               0.000891 -0.000269];
            
-           obj.allEndZones(4,:,:) = [len*0.75, -len;
-                len, -len;
-                len, -len*0.75;
-                len*0.75, -len*0.75;
-                len*0.75, -len];
+           obj.allEndZones(4,:,:) = [0.000891 -0.000269
+               0.000820 -0.00034;
+               0.000749 -0.000269;
+               0.000820 -0.000198;
+               0.000891 -0.000269];
+           
+           %obj.allEndZones(3,:,:) = [-len*0.5 -len*0.25; %Flow Test
+           %    -len*0.4 -len*0.25;
+           %    -len*0.4 -len*0.35;
+           %    -len*0.5 -len*0.35;
+           %    -len*0.5 -len*0.25];
+           
+           %obj.allEndZones(4,:,:) = [-len -len*0.38; %Magnetic Force Test
+           %    -len*0.6 -len*0.38;
+           %    -len*0.6 -len*0.35;
+           %    -len -len*0.35;
+           %    -len -len*0.38]; 
             
            obj.currentEndZone = squeeze(obj.allEndZones(1,:,:));
            
