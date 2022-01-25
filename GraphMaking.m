@@ -18,7 +18,9 @@
 0.225,0.259,0.250
 ];
 
-plot(magneticGraphData(8:end,1),magneticGraphData(8:end,2:3))
+plot(magneticGraphData(11:end,1),magneticGraphData(11:end,2:3), 'r.', 'markerSize', 15)
+hold on
+plot(magneticGraphData(11:end,1),magneticGraphData(11:end,2:3))
 title('Comparison of experimental and simulated magnetic force')
 xlabel('Magnetic Force (MA/m^2)')
 ylabel('Time to reach the edge of the chamber (s)')
