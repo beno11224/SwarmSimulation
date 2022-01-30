@@ -13,7 +13,7 @@ classdef ParticleFunctions
     methods (Access = public)
         %Constructor
         function obj = ParticleFunctions(permeabilityOfFreeSpace, particleDiameter, particleMass, fluidViscocity, staticFrictionCoefficient, motionFrictionCoefficient, workspaceSize)
-            obj.magneticForceConstant = double(permeabilityOfFreeSpace * (particleDiameter/2)^2 * 10^5);
+            obj.magneticForceConstant = double(permeabilityOfFreeSpace * 4/3*pi*(particleDiameter/2)^3);% * 10^6);
             obj.dragForceConstant = double(3*pi*fluidViscocity * particleDiameter);
             obj.dipoleForceConstant = double(3*permeabilityOfFreeSpace / 4*pi);
             obj.staticFrictionCoefficient = staticFrictionCoefficient;
@@ -25,7 +25,7 @@ classdef ParticleFunctions
         end
         %So user can change parameters on the fly
         function obj = ChangeMetaValue(obj, permeabilityOfFreeSpace, particleDiameter, particleMass, fluidViscocity, staticFrictionCoefficient, motionFrictionCoefficient, workspaceSize)
-            obj.magneticForceConstant = double(permeabilityOfFreeSpace * (particleDiameter/2)^2 * 10^6);
+            obj.magneticForceConstant = double(permeabilityOfFreeSpace * 4/3*pi*(particleDiameter/2)^3);% * 10^2);%^6
             obj.dragForceConstant = double(3*pi*fluidViscocity * particleDiameter);
             obj.dipoleForceConstant = double(3*permeabilityOfFreeSpace / 4*pi);
             obj.staticFrictionCoefficient = staticFrictionCoefficient;
@@ -44,6 +44,8 @@ classdef ParticleFunctions
             particleLocation(particleLocation > obj.workspaceSizePositive) = obj.workspaceSizePositive; 
             %the 0.999 is used to prevent the particles from reaching the magnetic centres, as that messes up calculations.
             force = double(obj.realNum((obj.magneticForceConstant .* aCoils) ./ ((particleLocation + (0.999 * obj.workspaceSizePositive)).^1.5)) + obj.realNum((obj.magneticForceConstant .* bCoils) ./ (((2 * obj.workspaceSizePositive) - (particleLocation + (0.999 * obj.workspaceSizePositive))).^ 1.5)));
+            force = (force.*0) + ((2.25.*10^6) * obj.magneticForceConstant .* 58); %Msat is 58 - not sure what this does?
+            force = force .* [1 0];
         end
         function force = calculateDipoleForce(obj, particleLocation, particleTorque)
             xYdistanceBetweenAllParticles = particleLocation - permute(particleLocation,[3,2,1]);
@@ -57,8 +59,8 @@ classdef ParticleFunctions
             distanceMultiplier = permute(sum(xYdistanceBetweenAllParticles,1),[3,2,1]);
             force = sumOfAllDipoleMoments .* distanceMultiplier;
         end
-        function force = calculateDragForce(obj, particleVelocity, flowVelocity)
-            force = (particleVelocity - flowVelocity) .* obj.dragForceConstant;
+        function force = calculateDragForce(obj, particleVelocity, flowVelocity) %This is somehow SOOOOOOO wrong
+            force = ((particleVelocity - flowVelocity) .* obj.dragForceConstant);%.*0.00000000001;
         end
         function [wallContact, particleLocation, particleVelocity] = isParticleOnWallPIP(obj, particleLocation, particleVelocity, particleForce, polygon, tMax)
             %this just returns anything INSIDE the polygon, not anything on
@@ -165,7 +167,7 @@ classdef ParticleFunctions
         end
         
         function velocity = calculateCumulativeParticleVelocityComponentFromForce(obj, particleForce, oldVelocity, haltTheseParticles, wallContact, timeSinceLastUpdate)
-            velocity = oldVelocity + (particleForce ./ obj.particleMass) .* timeSinceLastUpdate;
+            velocity = oldVelocity + (particleForce ./ obj.particleMass);% .* timeSinceLastUpdate;
             for i = 1:length(velocity)
                 if(any(~isnan(wallContact(i,:))))
                     velocity(i,:) = obj.vectorProjection(velocity(i,:),wallContact(i,:));
