@@ -25,9 +25,9 @@ function timerCallback(app)
     end
     
     %Calculate velocity early to calculate a value for drag
-    %currentVelocity = app.particleArrayVelocity + (app.particleArrayForce ./ app.ParticleMasskgEditField.Value);
+    currentVelocity = app.particleArrayVelocity + ((app.particleArrayForce .* app.tMax) ./ app.ParticleMasskgEditField.Value);
     %drag
-    %app.particleArrayForce = app.particleArrayForce - app.particleFunctions.calculateDragForce(currentVelocity, vFlow)*0.0001; %Flow breaks if we go over this reduction threshold
+    app.particleArrayForce = app.particleArrayForce - app.particleFunctions.calculateDragForce(currentVelocity, vFlow.*0.00000005);%.*0.0001;%*0.0001; %Flow breaks if we go over this reduction threshold
     %calculate the new velocity
     app.particleArrayVelocity = app.particleFunctions.calculateCumulativeParticleVelocityComponentFromForce(app.particleArrayForce, app.particleArrayVelocity, app.haltParticlesInEndZone, wallContact, app.tMax);    
     

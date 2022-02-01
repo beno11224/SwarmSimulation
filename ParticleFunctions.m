@@ -14,7 +14,7 @@ classdef ParticleFunctions
         %Constructor
         function obj = ParticleFunctions(permeabilityOfFreeSpace, particleDiameter, particleMass, fluidViscocity, staticFrictionCoefficient, motionFrictionCoefficient, workspaceSize)
             obj.magneticForceConstant = double(permeabilityOfFreeSpace * 4/3*pi*(particleDiameter/2)^3);% * 10^6);
-            obj.dragForceConstant = double(3*pi*fluidViscocity * particleDiameter);
+            obj.dragForceConstant = double(3*pi*fluidViscocity/9.8 * particleDiameter);
             obj.dipoleForceConstant = double(3*permeabilityOfFreeSpace / 4*pi);
             obj.staticFrictionCoefficient = staticFrictionCoefficient;
             obj.movingFrictionCoefficient = motionFrictionCoefficient;
@@ -44,8 +44,9 @@ classdef ParticleFunctions
             particleLocation(particleLocation > obj.workspaceSizePositive) = obj.workspaceSizePositive; 
             %the 0.999 is used to prevent the particles from reaching the magnetic centres, as that messes up calculations.
             force = double(obj.realNum((obj.magneticForceConstant .* aCoils) ./ ((particleLocation + (0.999 * obj.workspaceSizePositive)).^1.5)) + obj.realNum((obj.magneticForceConstant .* bCoils) ./ (((2 * obj.workspaceSizePositive) - (particleLocation + (0.999 * obj.workspaceSizePositive))).^ 1.5)));
-            force = (force.*0) + ((2.25.*10^6) * obj.magneticForceConstant .* 58); %Msat is 58 - not sure what this does?
-            force = force .* [1 0];
+            %These lines are for validation testing
+            %force = (force.*0) + ((2.25.*10^6) * obj.magneticForceConstant .* 58); %Msat is 58 - not sure what this does?
+            %force = force .* [1 0];
         end
         function force = calculateDipoleForce(obj, particleLocation, particleTorque)
             xYdistanceBetweenAllParticles = particleLocation - permute(particleLocation,[3,2,1]);
@@ -167,7 +168,7 @@ classdef ParticleFunctions
         end
         
         function velocity = calculateCumulativeParticleVelocityComponentFromForce(obj, particleForce, oldVelocity, haltTheseParticles, wallContact, timeSinceLastUpdate)
-            velocity = oldVelocity + (particleForce ./ obj.particleMass);% .* timeSinceLastUpdate;
+            velocity = oldVelocity + ((particleForce.* timeSinceLastUpdate) ./ obj.particleMass);% .* timeSinceLastUpdate;
             for i = 1:length(velocity)
                 if(any(~isnan(wallContact(i,:))))
                     velocity(i,:) = obj.vectorProjection(velocity(i,:),wallContact(i,:));
@@ -194,7 +195,7 @@ classdef ParticleFunctions
             %unCheckedLocation = particleLocation + obj.realNum(particleVelocity .* timeModifier);
             %[location,newVelocity] = calculateCollisionsAfter(obj, particleLocation, unCheckedLocation, particleVelocity, timeModifier);
             %Comment above and Uncomment below to prevent particleCollisions
-            location = particleLocation + obj.realNum(particleVelocity .* timeModifier);
+            location = particleLocation + obj.realNum(particleVelocity);% .* timeModifier);
             newVelocity = particleVelocity;
         end
         
