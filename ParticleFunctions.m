@@ -168,7 +168,7 @@ classdef ParticleFunctions
         end
         
         function velocity = calculateCumulativeParticleVelocityComponentFromForce(obj, particleForce, oldVelocity, haltTheseParticles, wallContact, timeSinceLastUpdate)
-            velocity = oldVelocity + ((particleForce.* timeSinceLastUpdate) ./ obj.particleMass);% .* timeSinceLastUpdate;
+            velocity = oldVelocity + calculatePointVelocityUpdate(obj,particleForce, obj.particleMass, timeSinceLastUpdate);
             for i = 1:length(velocity)
                 if(any(~isnan(wallContact(i,:))))
                     velocity(i,:) = obj.vectorProjection(velocity(i,:),wallContact(i,:));
@@ -177,6 +177,10 @@ classdef ParticleFunctions
             %prevent these particles from moving
             velocity = velocity .* ~haltTheseParticles;
         end   
+        
+        function velocity = calculatePointVelocityUpdate(obj,particleForce, particleMass, timeSinceLastUpdate)
+            velocity = (particleForce.* timeSinceLastUpdate) ./ particleMass;
+        end
         
         function [newLocations, newVelocity] = calculateCollisionsAfter(obj, oldParticleLocation, newParticleLocation, particleVelocity, timeModifier)
             positionsOfAnyParticleCollisions = obj.multiplierOfLineVectorOfIntersectionOfTwoLines(oldParticleLocation, particleVelocity, newParticleLocation, particleVelocity.*-1);
