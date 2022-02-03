@@ -178,8 +178,21 @@ classdef ParticleFunctions
             velocity = velocity .* ~haltTheseParticles;
         end   
         
-        function velocity = calculatePointVelocityUpdate(obj,particleForce, particleMass, timeSinceLastUpdate)
-            velocity = (particleForce.* timeSinceLastUpdate) ./ particleMass;
+        function acceleration = calculateAcceleration(obj,particleForce, particleMass)
+            acceleration = particleForce ./ particleMass;
+        end
+        
+        %function velocity = calculateDeltaVelocity(obj,particleForce, particleMass, timeSinceLastUpdate) %Check if this is used
+        %    velocity = calculateDeltaAcceleration(particleForce, timeSinceLastUpdate) ./ particleMass;
+        %end
+        
+        function velocity = calculateCurrentVelocityCD(obj,previousVelocity, previousAcceleration, particleForce, particleMass, timeSinceLastUpdate)            
+            currentAcceleration = obj.calculateAcceleration(particleForce, particleMass);
+            velocity = previousVelocity + 0.5.*(currentAcceleration + previousAcceleration).*timeSinceLastUpdate; %timeSinceLastUpdate must be fairly constant for this to work - maybe avg time?
+        end
+        
+        function location = calculateCurrentLocationCD(obj,previousLocation, previousVelocity, previousAcceleration, timeSinceLastUpdate)
+            location = previousLocation + previousVelocity .* timeSinceLastUpdate + 0.5.*previousAcceleration.*timeSinceLastUpdate^2; %as above for time
         end
         
         function [newLocations, newVelocity] = calculateCollisionsAfter(obj, oldParticleLocation, newParticleLocation, particleVelocity, timeModifier)
@@ -206,6 +219,7 @@ classdef ParticleFunctions
         function particleLocations = generateParticleLocations(obj, poly, particleLocationsLength)
             [xlim ylim] = boundingbox(polyshape(poly));
             particleLocationIndex = 1;
+            particleLocations = zeros(length(particleLocationsLength), 2);
             %init return value
             while(particleLocationIndex <= particleLocationsLength)
                 particleLocations(particleLocationIndex,:) = real([xlim(1), ylim(1)] + [xlim(2)-xlim(1),ylim(2)-xlim(1)] .* rand(1, 2));

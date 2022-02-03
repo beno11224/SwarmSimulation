@@ -12,6 +12,14 @@ function timerCallback(app)
         vFlow = app.particleFunctions.calculateFlow(real(app.particleArrayLocation), app.fd.FlowValues, app.polygon, app.UIAxes);
                 %Use to test app %vFlow = [0.001 0; 0.001 0; 0.001 0];% Flow right
                 %Use to test app %vFlow = [0 0; 0 0; 0 0]; %No flow
+                
+        %Use last iterations velocity
+        %Calculate velocity early to calculate a value for drag
+        %currentVelocity = app.particleArrayVelocity + app.particleFunctions.calculatePointVelocityUpdate(app.particleArrayForce , app.ParticleMasskgEditField.Value, app.tMax);
+        %drag
+        app.particleArrayForce = app.particleArrayForce - app.particleFunctions.calculateDragForce(app.particleArrayPreviousVelocity, vFlow.*0);%.00000005);%.*0.0001;%*0.0001; %Flow breaks if we go over this reduction threshold
+        
+                
         %friction
         %app.particleArrayForce = app.particleArrayForce - app.particleFunctions.calculateFrictionForce(app.particleArrayVelocity, app.particleArrayForce, wallContact);
 
@@ -25,16 +33,26 @@ function timerCallback(app)
         if app.tMax > 0.1
             app.tMax = 0.1;
         end
-
-        %Calculate velocity early to calculate a value for drag
-        currentVelocity = app.particleArrayVelocity + app.particleFunctions.calculatePointVelocityUpdate(app.particleArrayForce , app.ParticleMasskgEditField.Value, app.tMax);
-        %drag
-        %app.particleArrayForce = app.particleArrayForce - app.particleFunctions.calculateDragForce(currentVelocity, vFlow.*0.00000005);%.*0.0001;%*0.0001; %Flow breaks if we go over this reduction threshold
+        
+        temporaryVelocity = app.particleArrayVelocity;
+        temporaryLocation = app.particleArrayLocation;
+        
         %calculate the new velocity
-        app.particleArrayVelocity = app.particleFunctions.calculateCumulativeParticleVelocityComponentFromForce(app.particleArrayForce, app.particleArrayVelocity, app.haltParticlesInEndZone, wallContact, app.tMax);    
+        app.particleArrayVelocity = app.particleFunctions.calculateCurrentVelocityCD(app.particleArrayPreviousVelocity, app.particleArrayPreviousAcceleration, app.particleArrayForce, app.particleFunctions.particleMass, app.tMax);
+        %calculate the new locations
+        app.particleArrayLocation = app.particleFunctions.calculateCurrentLocationCD(app.particleArrayPreviousLocation, app.particleArrayPreviousVelocity, app.particleArrayPreviousAcceleration, app.tMax);
+        %Make sure that we have the correct data stored for the next loop.
+        app.particleArrayPreviousVelocity = temporaryVelocity;
+        app.particleArrayPreviousLocation = temporaryLocation;
+        app.particleArrayPreviousAcceleration = app.particleFunctions.calculateAcceleration(app.particleArrayForce, app.tMax);
+        %now check for wallContact and the trajectories of the other particles.
+     %   [app.particleArrayLocation, app.particleArrayVelocity] = calculateCollisionsAfter(app.particleArrayPreviousLocation, app.particleArrayLocation, app.particleArrayPreviousVelocity, app.tMax);
+        
+        %calculate the new velocity
+        %app.particleArrayVelocity = app.particleFunctions.calculateCumulativeParticleVelocityComponentFromForce(app.particleArrayForce, app.particleArrayVelocity, app.haltParticlesInEndZone, wallContact, app.tMax);    
 
         %calculate the new locations bearing in mind wallContact and the trajectories of the other particles.
-        [app.particleArrayLocation, app.particleArrayVelocity] = app.particleFunctions.moveParticle(app.particleArrayLocation, app.particleArrayVelocity, app.tMax);
+        %[app.particleArrayLocation, app.particleArrayVelocity] = app.particleFunctions.moveParticle(app.particleArrayLocation, app.particleArrayVelocity, app.tMax);
 
         app.haltParticlesInEndZone = app.particleFunctions.isParticleInEndZone(app.polygon.currentEndZone,app.particleArrayLocation);
         goalPercentage = sum(app.haltParticlesInEndZone) / app.numParticles; %TODO store which exit each particle is in (0 is not in exit, 1,2... are the numbers of the exit channel)
