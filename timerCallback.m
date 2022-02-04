@@ -2,26 +2,24 @@ function timerCallback(app)
     if(~app.currentlyDoingWorkSemaphore)
         app.currentlyDoingWorkSemaphore = true; %let the earlier tasks complete first, try and force other to leave things alone
         %'zero' the force by writing over it with the magnetic Force.
-        app.particleArrayForce = app.particleFunctions.calculateMagneticForce(app.particleArrayLocation, [app.X1mAGauge.Value*1000 app.Y1mAGauge.Value*1000], [app.X2mAGauge.Value*1000 app.Y2mAGauge.Value*1000]);
-                %Use to test app%app.particleArrayForce = app.particleFunctions.calculateMagneticForce(app.particleArrayLocation, [0.225 app.Y1AGauge.Value], [app.X2AGauge.Value app.Y2AGauge.Value]);
+      %  app.particleArrayForce = app.particleFunctions.calculateMagneticForce(app.particleArrayLocation, [app.X1mAGauge.Value*1000 app.Y1mAGauge.Value*1000], [app.X2mAGauge.Value*1000 app.Y2mAGauge.Value*1000]);
+                %Use to test app
+        app.particleArrayForce = app.particleFunctions.calculateMagneticForce(app.particleArrayLocation, [0.45*10^3 app.Y1mAGauge.Value], [app.X2mAGauge.Value app.Y2mAGauge.Value]);
         %determine if particles are in collision with the wall - particles are inelastic - no bouncing.
         [wallContact, app.particleArrayLocation, app.particleArrayVelocity] = app.particleFunctions.isParticleOnWallPIP(app.particleArrayLocation, app.particleArrayVelocity, app.particleArrayForce, app.polygon, app.tMax);
         %dipole force
-        %app.particleArrayForce = app.particleArrayForce - app.particleFunctions.calculateDipoleForce(app.particleArrayLocation, app.particleArrayForce); %TODO torque != force surely?
+    %    app.particleArrayForce = app.particleArrayForce - app.particleFunctions.calculateDipoleForce(app.particleArrayLocation, app.particleArrayForce); %TODO torque != force surely?
         %flow velocity for each particle - used for drag calculation
         vFlow = app.particleFunctions.calculateFlow(real(app.particleArrayLocation), app.fd.FlowValues, app.polygon, app.UIAxes);
                 %Use to test app %vFlow = [0.001 0; 0.001 0; 0.001 0];% Flow right
                 %Use to test app %vFlow = [0 0; 0 0; 0 0]; %No flow
                 
-        %Use last iterations velocity
-        %Calculate velocity early to calculate a value for drag
-        %currentVelocity = app.particleArrayVelocity + app.particleFunctions.calculatePointVelocityUpdate(app.particleArrayForce , app.ParticleMasskgEditField.Value, app.tMax);
-        %drag
-        app.particleArrayForce = app.particleArrayForce - app.particleFunctions.calculateDragForce(app.particleArrayPreviousVelocity, vFlow.*0);%.00000005);%.*0.0001;%*0.0001; %Flow breaks if we go over this reduction threshold
-        
-                
+        %drag (using last iterations velocity) %Reduce velocity by 10^-6,
+        %and flow by relevant value (set to 0.0000005 is decent)
+        app.particleArrayForce = app.particleArrayForce - app.particleFunctions.calculateDragForce(app.particleArrayPreviousVelocity.* 0.000001, vFlow.*0);%.0000005);%0.0000005 IS PROBABLY THE BEST VALUE HERE!
+                        
         %friction
-        %app.particleArrayForce = app.particleArrayForce - app.particleFunctions.calculateFrictionForce(app.particleArrayVelocity, app.particleArrayForce, wallContact);
+   %     app.particleArrayForce = app.particleArrayForce - app.particleFunctions.calculateFrictionForce(app.particleArrayVelocity, app.particleArrayForce, wallContact);
 
         %now update tMax for this iteration
         timeNow = 86400 * now;
@@ -46,7 +44,7 @@ function timerCallback(app)
         app.particleArrayPreviousLocation = temporaryLocation;
         app.particleArrayPreviousAcceleration = app.particleFunctions.calculateAcceleration(app.particleArrayForce, app.tMax);
         %now check for wallContact and the trajectories of the other particles.
-     %   [app.particleArrayLocation, app.particleArrayVelocity] = calculateCollisionsAfter(app.particleArrayPreviousLocation, app.particleArrayLocation, app.particleArrayPreviousVelocity, app.tMax);
+     %   [app.particleArrayLocation, app.particleArrayPreviousVelocity] = app.particleFunctions.calculateCollisionsAfter(app.particleArrayPreviousLocation, app.particleArrayLocation, app.particleArrayPreviousVelocity, app.tMax);
         
         %calculate the new velocity
         %app.particleArrayVelocity = app.particleFunctions.calculateCumulativeParticleVelocityComponentFromForce(app.particleArrayForce, app.particleArrayVelocity, app.haltParticlesInEndZone, wallContact, app.tMax);    

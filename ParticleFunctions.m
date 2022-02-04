@@ -182,9 +182,9 @@ classdef ParticleFunctions
             acceleration = particleForce ./ particleMass;
         end
         
-        %function velocity = calculateDeltaVelocity(obj,particleForce, particleMass, timeSinceLastUpdate) %Check if this is used
-        %    velocity = calculateDeltaAcceleration(particleForce, timeSinceLastUpdate) ./ particleMass;
-        %end
+        function velocity = calculateDeltaVelocity(obj,particleForce, particleMass, timeSinceLastUpdate)
+            velocity = obj.calculateAcceleration(particleForce, particleMass) ./ timeSinceLastUpdate;
+        end
         
         function velocity = calculateCurrentVelocityCD(obj,previousVelocity, previousAcceleration, particleForce, particleMass, timeSinceLastUpdate)            
             currentAcceleration = obj.calculateAcceleration(particleForce, particleMass);
