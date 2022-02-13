@@ -15,7 +15,7 @@ classdef ParticleFunctions
         function obj = ParticleFunctions(permeabilityOfFreeSpace, particleDiameter, particleMass, fluidViscocity, staticFrictionCoefficient, motionFrictionCoefficient, workspaceSize)
             obj.magneticForceConstant = double(permeabilityOfFreeSpace * 4/3*pi*(particleDiameter/2)^3);
           %  obj.dragForceConstant = double(fluidViscocity * particleDiameter * particleDiameter);
-            obj.dragForceConstant = double(3*pi * fluidViscocity * particleDiameter .*10^-5);
+            obj.dragForceConstant = double(3*pi * fluidViscocity * particleDiameter .*10^-6);
             obj.dipoleForceConstant = double(3*permeabilityOfFreeSpace / 4*pi);
             obj.staticFrictionCoefficient = staticFrictionCoefficient;
             obj.movingFrictionCoefficient = motionFrictionCoefficient;
@@ -28,7 +28,7 @@ classdef ParticleFunctions
         function obj = ChangeMetaValue(obj, permeabilityOfFreeSpace, particleDiameter, particleMass, fluidViscocity, staticFrictionCoefficient, motionFrictionCoefficient, workspaceSize)
             obj.magneticForceConstant = double(4/3*pi*(particleDiameter/2)^3 * permeabilityOfFreeSpace * 58);
           % obj.dragForceConstant = double(fluidViscocity * particleDiameter * particleDiameter);
-            obj.dragForceConstant = double(3*pi * fluidViscocity * particleDiameter.*10^-5);
+            obj.dragForceConstant = double(3*pi * fluidViscocity * particleDiameter.*10^-6);
             obj.dipoleForceConstant = double(3*permeabilityOfFreeSpace / 4*pi);
             obj.staticFrictionCoefficient = staticFrictionCoefficient;
             obj.movingFrictionCoefficient = motionFrictionCoefficient;
@@ -43,7 +43,7 @@ classdef ParticleFunctions
             %Demo shortly, along with location.
             force = (aCoils.*10^6) .* obj.magneticForceConstant;
             %For Validation:
-            force = (force.*0) + ((0.45.*10^6) * obj.magneticForceConstant);
+            force = (force.*0) + ((0.3.*10^6) * obj.magneticForceConstant);
             force = force .* [1 0];
         end
         function force = calculateDipoleForce(obj, particleLocation, particleTorque)
