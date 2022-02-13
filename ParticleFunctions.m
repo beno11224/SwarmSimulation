@@ -13,8 +13,9 @@ classdef ParticleFunctions
     methods (Access = public)
         %Constructor
         function obj = ParticleFunctions(permeabilityOfFreeSpace, particleDiameter, particleMass, fluidViscocity, staticFrictionCoefficient, motionFrictionCoefficient, workspaceSize)
-            obj.magneticForceConstant = double(permeabilityOfFreeSpace * 4/3*pi*(particleDiameter*7/2)^3); %7 is for rod shaped aggregates
-            obj.dragForceConstant = double(3*pi*fluidViscocity * particleDiameter*7);   %/9.8 why fluid viscocity div gravity??
+            obj.magneticForceConstant = double(permeabilityOfFreeSpace * 4/3*pi*(particleDiameter/2)^3);
+          %  obj.dragForceConstant = double(fluidViscocity * particleDiameter * particleDiameter);
+            obj.dragForceConstant = double(3*pi * fluidViscocity * particleDiameter .*10^-5);
             obj.dipoleForceConstant = double(3*permeabilityOfFreeSpace / 4*pi);
             obj.staticFrictionCoefficient = staticFrictionCoefficient;
             obj.movingFrictionCoefficient = motionFrictionCoefficient;
@@ -25,8 +26,9 @@ classdef ParticleFunctions
         end
         %So user can change parameters on the fly
         function obj = ChangeMetaValue(obj, permeabilityOfFreeSpace, particleDiameter, particleMass, fluidViscocity, staticFrictionCoefficient, motionFrictionCoefficient, workspaceSize)
-            obj.magneticForceConstant = double(permeabilityOfFreeSpace * 4/3*pi*(particleDiameter/2)^3);% * 10^2);%^6
-            obj.dragForceConstant = double(3*pi*fluidViscocity * particleDiameter);
+            obj.magneticForceConstant = double(4/3*pi*(particleDiameter/2)^3 * permeabilityOfFreeSpace * 58);
+          % obj.dragForceConstant = double(fluidViscocity * particleDiameter * particleDiameter);
+            obj.dragForceConstant = double(3*pi * fluidViscocity * particleDiameter.*10^-5);
             obj.dipoleForceConstant = double(3*permeabilityOfFreeSpace / 4*pi);
             obj.staticFrictionCoefficient = staticFrictionCoefficient;
             obj.movingFrictionCoefficient = motionFrictionCoefficient;
@@ -37,15 +39,11 @@ classdef ParticleFunctions
         end
         %public functions
         function force = calculateMagneticForce(obj, particleLocation, aCoils, bCoils)
-            %a coils 'push' in the positive direction, b coils 'push' in
-            %the negative direction
-            particleLocation = obj.realNum(particleLocation);
-            particleLocation(particleLocation < obj.workspaceSizeMinus) = obj.workspaceSizeMinus;
-            particleLocation(particleLocation > obj.workspaceSizePositive) = obj.workspaceSizePositive; 
-            %the 0.999 is used to prevent the particles from reaching the magnetic centres, as that messes up calculations.
-            force = double(obj.realNum((obj.magneticForceConstant .* aCoils) ./ ((particleLocation + (0.999 * obj.workspaceSizePositive)).^1.5)) + obj.realNum((obj.magneticForceConstant .* bCoils) ./ (((2 * obj.workspaceSizePositive) - (particleLocation + (0.999 * obj.workspaceSizePositive))).^ 1.5)));
-            %These lines are for validation testing
-            force = (force.*0) + ((0.*10^6) * obj.magneticForceConstant .* 58); %Msat is 58 - not sure what this does?
+            %Now just using aCoils for the minute, will remove b coils from
+            %Demo shortly, along with location.
+            force = (aCoils.*10^6) .* obj.magneticForceConstant;
+            %For Validation:
+            force = (force.*0) + ((0.45.*10^6) * obj.magneticForceConstant);
             force = force .* [1 0];
         end
         function force = calculateDipoleForce(obj, particleLocation, particleTorque)
@@ -60,8 +58,8 @@ classdef ParticleFunctions
             distanceMultiplier = permute(sum(xYdistanceBetweenAllParticles,1),[3,2,1]);
             force = sumOfAllDipoleMoments .* distanceMultiplier;
         end
-        function force = calculateDragForce(obj, particleVelocity, flowVelocity) %This is somehow SOOOOOOO wrong
-            force = ((particleVelocity - flowVelocity) .* obj.dragForceConstant);%.*0.00000000001;
+        function force = calculateDragForce(obj, particleVelocity, flowVelocity)
+            force = ((particleVelocity - flowVelocity) .* obj.dragForceConstant);
         end
         function [wallContact, particleLocation, particleVelocity] = isParticleOnWallPIP(obj, particleLocation, particleVelocity, particleForce, polygon, tMax)
             %this just returns anything INSIDE the polygon, not anything on
@@ -188,7 +186,12 @@ classdef ParticleFunctions
         
         function velocity = calculateCurrentVelocityCD(obj,previousVelocity, previousAcceleration, particleForce, particleMass, timeSinceLastUpdate)            
             currentAcceleration = obj.calculateAcceleration(particleForce, particleMass);
-            velocity = previousVelocity + 0.5.*(currentAcceleration + previousAcceleration).*timeSinceLastUpdate; %timeSinceLastUpdate must be fairly constant for this to work - maybe avg time?
+            hypotheticalDeltaVelocity = 0.5.*(currentAcceleration + previousAcceleration).* timeSinceLastUpdate; %timeSinceLastUpdate must be fairly constant for this to work - maybe avg time?
+            if(any(abs(hypotheticalDeltaVelocity) > 0.000001))
+                hypotheticalDeltaVelocity(hypotheticalDeltaVelocity > 0) = 0.000001;
+                hypotheticalDeltaVelocity(hypotheticalDeltaVelocity < 0) = -0.000001;
+            end
+            velocity = previousVelocity +  hypotheticalDeltaVelocity;
         end
         
         function location = calculateCurrentLocationCD(obj,previousLocation, previousVelocity, previousAcceleration, timeSinceLastUpdate)

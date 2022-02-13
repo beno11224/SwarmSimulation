@@ -2,12 +2,12 @@ function timerCallback(app)
     if(~app.currentlyDoingWorkSemaphore)
         app.currentlyDoingWorkSemaphore = true; %let the earlier tasks complete first, try and force other to leave things alone
         %'zero' the force by writing over it with the magnetic Force.
-        magforce = app.particleFunctions.calculateMagneticForce(app.particleArrayLocation, [app.X1mAGauge.Value*1000 app.Y1mAGauge.Value*1000], [app.X2mAGauge.Value*1000 app.Y2mAGauge.Value*1000]);
+        magforce = app.particleFunctions.calculateMagneticForce(app.particleArrayLocation, [app.X1mAGauge.Value app.Y1mAGauge.Value], [app.X2mAGauge.Value app.Y2mAGauge.Value]);
         app.particleArrayForce = magforce;
         %determine if particles are in collision with the wall - particles are inelastic - no bouncing.
         [wallContact, app.particleArrayLocation, app.particleArrayVelocity] = app.particleFunctions.isParticleOnWallPIP(app.particleArrayLocation, app.particleArrayVelocity, app.particleArrayForce, app.polygon, app.tMax);
         %dipole force
-    %    app.particleArrayForce = app.particleArrayForce - app.particleFunctions.calculateDipoleForce(app.particleArrayLocation, app.particleArrayForce); %TODO torque != force surely?
+      %  app.particleArrayForce = app.particleArrayForce - app.particleFunctions.calculateDipoleForce(app.particleArrayLocation, app.particleArrayForce); %TODO torque != force surely?
         %flow velocity for each particle - used for drag calculation
         vFlow = app.particleFunctions.calculateFlow(real(app.particleArrayLocation), app.fd.FlowValues, app.polygon, app.UIAxes);
                 %Use to test app %vFlow = [0.001 0; 0.001 0; 0.001 0];% Flow right
@@ -32,19 +32,20 @@ function timerCallback(app)
         
         %drag (using last iterations velocity) %Reduce velocity by 10^-6, .* 0.000001
         %and flow by relevant value (set to 0.0000005 is decent)
-        dragCurrentVelocity = app.particleFunctions.calculateCurrentVelocityCD(app.particleArrayPreviousVelocity, app.particleArrayPreviousAcceleration, app.particleArrayForce, app.particleFunctions.particleMass, app.tMax);
-        dragforce = app.particleFunctions.calculateDragForce(dragCurrentVelocity .* 0.000001, vFlow.*0 .* 10^-6);%.0000005);%0.0000005 IS PROBABLY THE BEST VALUE HERE!
-        app.particleArrayForce = app.particleArrayForce - dragforce;
+        dragForce = app.particleFunctions.calculateDragForce(app.particleArrayVelocity, vFlow.*0);% .* 10^-6);%.0000005);%0.0000005 IS PROBABLY THE BEST VALUE HERE!
+       % avgDragForce = (dragForce + app.particleArrayPreviousVelocity) / 2;
+        app.particleArrayForce = app.particleArrayForce - dragForce;
+       % app.particleArrayPreviousVelocity = dragForce;
         
         temporaryVelocity = app.particleArrayVelocity;
         temporaryLocation = app.particleArrayLocation;
         
         %calculate the new velocity
-        app.particleArrayVelocity = app.particleFunctions.calculateCurrentVelocityCD(app.particleArrayPreviousVelocity, app.particleArrayPreviousAcceleration, app.particleArrayForce, app.particleFunctions.particleMass, app.tMax);
+        app.particleArrayVelocity = app.particleFunctions.calculateCurrentVelocityCD(temporaryVelocity, app.particleArrayPreviousAcceleration, app.particleArrayForce, app.particleFunctions.particleMass, app.tMax);
         %calculate the new locations
-        app.particleArrayLocation = app.particleFunctions.calculateCurrentLocationCD(app.particleArrayPreviousLocation, app.particleArrayPreviousVelocity, app.particleArrayPreviousAcceleration, app.tMax);
+        app.particleArrayLocation = app.particleFunctions.calculateCurrentLocationCD(app.particleArrayPreviousLocation, temporaryVelocity, app.particleArrayPreviousAcceleration, app.tMax);
         %Make sure that we have the correct data stored for the next loop.
-        app.particleArrayPreviousVelocity = temporaryVelocity;
+    %    app.particleArrayPreviousVelocity = temporaryVelocity;
         app.particleArrayPreviousLocation = temporaryLocation;
         app.particleArrayPreviousAcceleration = app.particleFunctions.calculateAcceleration(app.particleArrayForce, app.tMax);
         %now check for wallContact and the trajectories of the other particles.
@@ -62,8 +63,7 @@ function timerCallback(app)
         %Log this all to a file for data collection
         fprintf(app.fileID,  round(etime(clock,app.startTime)*1000) + "," + goalPercentage + sprintf(",%d,%d,%d,%d", app.X1mAGauge.Value,app.Y1mAGauge.Value,app.X2mAGauge.Value,app.Y2mAGauge.Value) + ","  + mat2str(app.particleArrayLocation) + "," + mat2str(app.particleArrayVelocity) + "\r\n");
      %For writing other stuff to file 
-        %fprintf(app.fileID,  round(etime(clock,app.startTime)*1000) + "," + magforce(1,1) + "," + magforce(1,2) + "," + dragforce(1,1)+ "," + dragforce(1,2) + "," + app.particleArrayVelocity(1,1) + "," + app.particleArrayVelocity(1,1) + "\r\n");
-        %goalPercentage + sprintf(",%d,%d,%d,%d", app.X1mAGauge.Value,app.Y1mAGauge.Value,app.X2mAGauge.Value,app.Y2mAGauge.Value) + mat2str(app.particleArrayLocation) + "," + mat2str(app.particleArrayVelocity) + "\r\n");
+    %    fprintf(app.fileID,  round(etime(clock,app.startTime)*1000) + "," + magforce(1,1) + "," + magforce(1,2) + "," + dragForce(1,1)+ "," + dragForce(1,2) + "," + app.particleArrayVelocity(1,1) + "," + app.particleArrayVelocity(1,1) + "\r\n");
         app.currentlyDoingWorkSemaphore = false;
     else
         fprintf(app.fileID,  round(etime(clock,app.startTime)*1000) + "," + "BADTIMING " + sprintf(",%d,%d,%d,%d", app.X1mAGauge.Value,app.Y1mAGauge.Value,app.X2mAGauge.Value,app.Y2mAGauge.Value) + mat2str(app.particleArrayLocation) + "," + mat2str(app.particleArrayVelocity) + "\r\n");
