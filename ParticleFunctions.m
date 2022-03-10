@@ -13,9 +13,8 @@ classdef ParticleFunctions
     methods (Access = public)
         %Constructor
         function obj = ParticleFunctions(permeabilityOfFreeSpace, particleDiameter, particleMass, fluidViscocity, staticFrictionCoefficient, motionFrictionCoefficient, workspaceSize)
-            obj.magneticForceConstant = double(permeabilityOfFreeSpace * 4/3*pi*(particleDiameter/2)^3);
-          %  obj.dragForceConstant = double(fluidViscocity * particleDiameter * particleDiameter);
-            obj.dragForceConstant = double(3*pi * fluidViscocity * particleDiameter .*10^-6);
+            obj.magneticForceConstant = double(permeabilityOfFreeSpace * 58 * 4/3*pi*(particleDiameter/2)^3);
+            obj.dragForceConstant = double(3*pi * fluidViscocity * particleDiameter);
             obj.dipoleForceConstant = double(3*permeabilityOfFreeSpace / 4*pi);
             obj.staticFrictionCoefficient = staticFrictionCoefficient;
             obj.movingFrictionCoefficient = motionFrictionCoefficient;
@@ -27,8 +26,7 @@ classdef ParticleFunctions
         %So user can change parameters on the fly
         function obj = ChangeMetaValue(obj, permeabilityOfFreeSpace, particleDiameter, particleMass, fluidViscocity, staticFrictionCoefficient, motionFrictionCoefficient, workspaceSize)
             obj.magneticForceConstant = double(4/3*pi*(particleDiameter/2)^3 * permeabilityOfFreeSpace * 58);
-          % obj.dragForceConstant = double(fluidViscocity * particleDiameter * particleDiameter);
-            obj.dragForceConstant = double(3*pi * fluidViscocity * particleDiameter.*10^-6);
+            obj.dragForceConstant = double(3*pi * fluidViscocity * particleDiameter);
             obj.dipoleForceConstant = double(3*permeabilityOfFreeSpace / 4*pi);
             obj.staticFrictionCoefficient = staticFrictionCoefficient;
             obj.movingFrictionCoefficient = motionFrictionCoefficient;
@@ -38,13 +36,9 @@ classdef ParticleFunctions
             obj.workspaceSizeMinus = -1 * workspaceSize; %this is the location of the other side of the workspace
         end
         %public functions
-        function force = calculateMagneticForce(obj, particleLocation, aCoils, bCoils)
-            %Now just using aCoils for the minute, will remove b coils from
-            %Demo shortly, along with location.
-            force = (aCoils.*10^6) .* obj.magneticForceConstant;
-            %For Validation:
-            force = (force.*0) + ((0.3.*10^6) * obj.magneticForceConstant);
-            force = force .* [1 0];
+        function force = calculateMagneticForce(obj, aCoils)
+            %Now just using aCoils for the minute, will remove b coils from demo shortly.
+            force = (aCoils.*10^8) .* obj.magneticForceConstant;
         end
         function force = calculateDipoleForce(obj, particleLocation, particleTorque)
             xYdistanceBetweenAllParticles = particleLocation - permute(particleLocation,[3,2,1]);
@@ -59,11 +53,10 @@ classdef ParticleFunctions
             force = sumOfAllDipoleMoments .* distanceMultiplier;
         end
         function force = calculateDragForce(obj, particleVelocity, flowVelocity)
-            force = ((particleVelocity - flowVelocity) .* obj.dragForceConstant);
+            force = ((particleVelocity - flowVelocity) .* obj.dragForceConstant); %Stokes Drag Equation
         end
         function [wallContact, particleLocation, particleVelocity] = isParticleOnWallPIP(obj, particleLocation, particleVelocity, particleForce, polygon, tMax)
-            %this just returns anything INSIDE the polygon, not anything on
-            %the walls
+            %this just returns anything INSIDE the polygon, not anything on the walls
             in = inpolygon(particleLocation(:,1), particleLocation(:,2), polygon.currentPoly(:,1), polygon.currentPoly(:,2));
 
             %https://stackoverflow.com/questions/563198/how-do-you-detect-where-two-line-segments-intersect
@@ -184,14 +177,30 @@ classdef ParticleFunctions
             velocity = obj.calculateAcceleration(particleForce, particleMass) ./ timeSinceLastUpdate;
         end
         
-        function velocity = calculateCurrentVelocityCD(obj,previousVelocity, previousAcceleration, particleForce, particleMass, timeSinceLastUpdate)            
+        function [velocity,acceleration] = calculateCurrentVelocityCD(obj,previousVelocity, previousAcceleration, particleForce, particleMass, timeSinceLastUpdate)            
             currentAcceleration = obj.calculateAcceleration(particleForce, particleMass);
             hypotheticalDeltaVelocity = 0.5.*(currentAcceleration + previousAcceleration).* timeSinceLastUpdate; %timeSinceLastUpdate must be fairly constant for this to work - maybe avg time?
-            if(any(abs(hypotheticalDeltaVelocity) > 0.000001))
-                hypotheticalDeltaVelocity(hypotheticalDeltaVelocity > 0) = 0.000001;
-                hypotheticalDeltaVelocity(hypotheticalDeltaVelocity < 0) = -0.000001;
+            rateOfChange = obj.realNum((hypotheticalDeltaVelocity - previousVelocity) ./ previousVelocity);
+            
+          %  hypotheticalPositiveDeltaVelocity = hypotheticalDeltaVelocity;
+          %  hypotheticalPositiveDeltaVelocity(hypotheticalDeltaVelocity < 0) = abs(hypotheticalPositiveDeltaVelocity(hypotheticalDeltaVelocity < 0) .* 2);
+          %  rateOfChange = (hypotheticalPositiveDeltaVelocity./previousVelocity) - 1
+            cappedRateOfChange = 0.1;
+            if(any(any(abs(rateOfChange) > cappedRateOfChange)))
+                %All this bit is wrong, is just compounding velocity
+               % a = hypotheticalDeltaVelocity - previousVelocity
+               % b = a .* cappedRateOfChange
+                %hypotheticalDeltaVelocity = hypotheticalDeltaVelocity - real((hypotheticalDeltaVelocity - previousVelocity .* cappedRateOfChange));
+                %newRateOfChange = ones(size(rateOfChange)) .* cappedRateOfChange;
+                newRateOfChange = rateOfChange;
+                newRateOfChange(abs(rateOfChange) > cappedRateOfChange) = cappedRateOfChange;
+                newRateOfChange(rateOfChange < 0) = (cappedRateOfChange) .* -0.5;
+                hypotheticalDeltaVelocity = obj.realNum((newRateOfChange) .* previousVelocity);
+                acceleration = hypotheticalDeltaVelocity / timeSinceLastUpdate;%currentAcceleration .* (newRateOfChange);
+            else
+                acceleration = currentAcceleration;
             end
-            velocity = previousVelocity +  hypotheticalDeltaVelocity;
+            velocity = previousVelocity + hypotheticalDeltaVelocity;
         end
         
         function location = calculateCurrentLocationCD(obj,previousLocation, previousVelocity, previousAcceleration, timeSinceLastUpdate)
@@ -209,13 +218,12 @@ classdef ParticleFunctions
             newLocations = newParticleLocation + obj.realNum(vectoredResetParticlesToCorrectLocations);            
             %Now allow only velocity perpendicular to the contact                       
             newVelocity = particleVelocity;
-            %newVelocity(positionsOfAnyParticleCollisions ~= 0) = 0;
         end
         function [location, newVelocity] = moveParticle(obj, particleLocation, particleVelocity, timeModifier)
             %unCheckedLocation = particleLocation + obj.realNum(particleVelocity .* timeModifier);
             %[location,newVelocity] = calculateCollisionsAfter(obj, particleLocation, unCheckedLocation, particleVelocity, timeModifier);
             %Comment above and Uncomment below to prevent particleCollisions
-            location = particleLocation + obj.realNum(particleVelocity);% .* timeModifier);
+            location = particleLocation + obj.realNum(particleVelocity);
             newVelocity = particleVelocity;
         end
         
@@ -235,7 +243,8 @@ classdef ParticleFunctions
         end
         
         function inGoalZone = isParticleInEndZone(obj, poly, particleLocations)
-            inGoalZone = inpolygon(particleLocations(:,1), particleLocations(:,2), poly(:,1), poly(:,2));
+            [in,on] = inpolygon(particleLocations(:,1), particleLocations(:,2), poly(:,1), poly(:,2));
+            inGoalZone = in | on;
             %TODO put any other logic for goal zone in here
         end
         
