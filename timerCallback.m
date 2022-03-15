@@ -5,7 +5,7 @@ function timerCallback(app)
         magforce = app.particleFunctions.calculateMagneticForce([app.X1MAGauge.Value app.Y1MAGauge.Value]);
         app.particleArrayForce = magforce;
         %determine if particles are in collision with the wall - particles are inelastic - no bouncing.
-        [wallContact, app.particleArrayLocation, app.particleArrayVelocity] = app.particleFunctions.isParticleOnWallPIP(app.particleArrayLocation, app.particleArrayVelocity, app.particleArrayForce, app.polygon, app.tMax);
+       % [wallContact, app.particleArrayLocation, app.particleArrayVelocity] = app.particleFunctions.isParticleOnWallPIP(app.particleArrayLocation, app.particleArrayVelocity, app.particleArrayForce, app.polygon, app.tMax);
         %dipole force
       %  app.particleArrayForce = app.particleArrayForce - app.particleFunctions.calculateDipoleForce(app.particleArrayLocation, app.particleArrayForce); %TODO torque != force surely?
         %flow velocity for each particle - used for drag calculation
@@ -32,14 +32,14 @@ function timerCallback(app)
         app.particleArrayForce = app.particleArrayForce - dragForce;
         
         temporaryVelocity = app.particleArrayVelocity;
-        temporaryLocation = app.particleArrayLocation;
+       % temporaryLocation = app.particleArrayLocation;
         
         %calculate the new locations
-        app.particleArrayLocation = app.particleFunctions.calculateCurrentLocationCD(app.particleArrayPreviousLocation, temporaryVelocity, app.particleArrayPreviousAcceleration, app.tMax);
+        app.particleArrayLocation = app.particleFunctions.calculateCurrentLocationCD(app.particleArrayLocation, temporaryVelocity, app.particleArrayPreviousAcceleration, app.tMax);
         %Make sure that we have the correct data stored for the next loop.        
         %calculate the new velocity
         [app.particleArrayVelocity,app.particleArrayPreviousAcceleration] = app.particleFunctions.calculateCurrentVelocityCD(temporaryVelocity, app.particleArrayPreviousAcceleration, app.particleArrayForce, app.particleFunctions.particleMass, app.tMax);
-        app.particleArrayPreviousLocation = temporaryLocation;
+       % app.particleArrayPreviousLocation = temporaryLocation;
 
         app.haltParticlesInEndZone = app.particleFunctions.isParticleInEndZone(app.polygon.currentEndZone,app.particleArrayLocation);
         goalPercentage = sum(app.haltParticlesInEndZone) / app.numParticles; %TODO store which exit each particle is in (0 is not in exit, 1,2... are the numbers of the exit channel)

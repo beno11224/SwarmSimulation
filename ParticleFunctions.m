@@ -13,7 +13,7 @@ classdef ParticleFunctions
     methods (Access = public)
         %Constructor
         function obj = ParticleFunctions(permeabilityOfFreeSpace, particleDiameter, particleMass, fluidViscocity, staticFrictionCoefficient, motionFrictionCoefficient, workspaceSize)
-            obj.magneticForceConstant = double(permeabilityOfFreeSpace * 58 * 4/3*pi*(particleDiameter/2)^3);
+            obj.magneticForceConstant = double(permeabilityOfFreeSpace * 58 ./ (4 * pi * 10^-6) * 4/3*pi*(particleDiameter/2)^3);
             obj.dragForceConstant = double(3*pi * fluidViscocity * particleDiameter);
             obj.dipoleForceConstant = double(3*permeabilityOfFreeSpace / 4*pi);
             obj.staticFrictionCoefficient = staticFrictionCoefficient;
@@ -25,7 +25,7 @@ classdef ParticleFunctions
         end
         %So user can change parameters on the fly
         function obj = ChangeMetaValue(obj, permeabilityOfFreeSpace, particleDiameter, particleMass, fluidViscocity, staticFrictionCoefficient, motionFrictionCoefficient, workspaceSize)
-            obj.magneticForceConstant = double(4/3*pi*(particleDiameter/2)^3 * permeabilityOfFreeSpace * 58);
+            obj.magneticForceConstant = double(permeabilityOfFreeSpace * 58 ./ (4 * pi * 10^-6) * 4/3*pi*(particleDiameter/2)^3);
             obj.dragForceConstant = double(3*pi * fluidViscocity * particleDiameter);
             obj.dipoleForceConstant = double(3*permeabilityOfFreeSpace / 4*pi);
             obj.staticFrictionCoefficient = staticFrictionCoefficient;
@@ -38,7 +38,7 @@ classdef ParticleFunctions
         %public functions
         function force = calculateMagneticForce(obj, aCoils)
             %Now just using aCoils for the minute, will remove b coils from demo shortly.
-            force = (aCoils.*10^8) .* obj.magneticForceConstant;
+            force = (aCoils.*10^6) .* obj.magneticForceConstant;
         end
         function force = calculateDipoleForce(obj, particleLocation, particleTorque)
             xYdistanceBetweenAllParticles = particleLocation - permute(particleLocation,[3,2,1]);
@@ -185,7 +185,7 @@ classdef ParticleFunctions
           %  hypotheticalPositiveDeltaVelocity = hypotheticalDeltaVelocity;
           %  hypotheticalPositiveDeltaVelocity(hypotheticalDeltaVelocity < 0) = abs(hypotheticalPositiveDeltaVelocity(hypotheticalDeltaVelocity < 0) .* 2);
           %  rateOfChange = (hypotheticalPositiveDeltaVelocity./previousVelocity) - 1
-            cappedRateOfChange = 0.1;
+            cappedRateOfChange = 1.1;
             if(any(any(abs(rateOfChange) > cappedRateOfChange)))
                 %All this bit is wrong, is just compounding velocity
                % a = hypotheticalDeltaVelocity - previousVelocity
@@ -194,8 +194,9 @@ classdef ParticleFunctions
                 %newRateOfChange = ones(size(rateOfChange)) .* cappedRateOfChange;
                 newRateOfChange = rateOfChange;
                 newRateOfChange(abs(rateOfChange) > cappedRateOfChange) = cappedRateOfChange;
-                newRateOfChange(rateOfChange < 0) = (cappedRateOfChange) .* -0.5;
-                hypotheticalDeltaVelocity = obj.realNum((newRateOfChange) .* previousVelocity);
+                newRateOfChange(rateOfChange < 0) = (cappedRateOfChange) .* -1;
+               % hypotheticalDeltaVelocity = obj.realNum((newRateOfChange) .* previousVelocity);
+                hypotheticalDeltaVelocity = obj.realNum((newRateOfChange./rateOfChange) .* hypotheticalDeltaVelocity);
                 acceleration = hypotheticalDeltaVelocity / timeSinceLastUpdate;%currentAcceleration .* (newRateOfChange);
             else
                 acceleration = currentAcceleration;
@@ -204,6 +205,9 @@ classdef ParticleFunctions
         end
         
         function location = calculateCurrentLocationCD(obj,previousLocation, previousVelocity, previousAcceleration, timeSinceLastUpdate)
+            a = previousVelocity .* timeSinceLastUpdate
+            b = 0.5.*previousAcceleration.*timeSinceLastUpdate^2
+            c = a + b
             location = previousLocation + previousVelocity .* timeSinceLastUpdate + 0.5.*previousAcceleration.*timeSinceLastUpdate^2; %as above for time
         end
         
