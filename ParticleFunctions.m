@@ -13,7 +13,7 @@ classdef ParticleFunctions
     methods (Access = public)
         %Constructor
         function obj = ParticleFunctions(permeabilityOfFreeSpace, particleDiameter, particleMass, fluidViscocity, staticFrictionCoefficient, motionFrictionCoefficient, workspaceSize)
-            obj.magneticForceConstant = double(permeabilityOfFreeSpace * 58 ./ (4 * pi * 10^-6) * 4/3*pi*(particleDiameter/2)^3);
+            obj.magneticForceConstant = double(permeabilityOfFreeSpace .* 58 .* 2.25 .* 10^3 .* 4/3.*pi.*(particleDiameter/2)^3); % ./ (4 * pi * 10^-6) %What's this?
             obj.dragForceConstant = double(3*pi * fluidViscocity * particleDiameter);
             obj.dipoleForceConstant = double(3*permeabilityOfFreeSpace / 4*pi);
             obj.staticFrictionCoefficient = staticFrictionCoefficient;
@@ -25,7 +25,7 @@ classdef ParticleFunctions
         end
         %So user can change parameters on the fly
         function obj = ChangeMetaValue(obj, permeabilityOfFreeSpace, particleDiameter, particleMass, fluidViscocity, staticFrictionCoefficient, motionFrictionCoefficient, workspaceSize)
-            obj.magneticForceConstant = double(permeabilityOfFreeSpace * 58 ./ (4 * pi * 10^-6) * 4/3*pi*(particleDiameter/2)^3);
+            obj.magneticForceConstant = double(permeabilityOfFreeSpace .* 58 .* 2.25 .* 10^3 .* 4/3.*pi.*(particleDiameter/2)^3); % ./ (4 * pi * 10^-6) %What's this?
             obj.dragForceConstant = double(3*pi * fluidViscocity * particleDiameter);
             obj.dipoleForceConstant = double(3*permeabilityOfFreeSpace / 4*pi);
             obj.staticFrictionCoefficient = staticFrictionCoefficient;
@@ -33,7 +33,7 @@ classdef ParticleFunctions
             obj.particleMass = particleMass;
             obj.particleDiameter = particleDiameter;
             obj.workspaceSizePositive = workspaceSize;
-            obj.workspaceSizeMinus = -1 * workspaceSize; %this is the location of the other side of the workspace
+            obj.workspaceSizeMinus = -1 * workspaceSize;
         end
         %public functions
         function force = calculateMagneticForce(obj, aCoils)
