@@ -2,7 +2,7 @@ function timerCallback(app)
     if(~app.currentlyDoingWorkSemaphore)
         app.currentlyDoingWorkSemaphore = true; %let the earlier tasks complete first, try and force other to leave things alone
         %'zero' the force by writing over it with the magnetic Force.
-        magforce = app.particleFunctions.calculateMagneticForce([app.X1MAGauge.Value app.Y1MAGauge.Value]);
+        magforce = app.particleFunctions.calculateMagneticForce([app.X1mAGauge.Value app.Y1mAGauge.Value]);
         app.particleArrayForce = magforce;
         %determine if particles are in collision with the wall - particles are inelastic - no bouncing.
        % [wallContact, app.particleArrayLocation, app.particleArrayVelocity] = app.particleFunctions.isParticleOnWallPIP(app.particleArrayLocation, app.particleArrayVelocity, app.particleArrayForce, app.polygon, app.tMax);
@@ -51,12 +51,12 @@ function timerCallback(app)
             app.timePassed = app.timePassed + app.timestep;
         end
           %Log this all to a file for data collection
-        %fprintf(app.fileID,  app.timePassed + "," + goalPercentage + sprintf(",%d,%d,%d,%d", app.X1MAGauge.Value,app.Y1MAGauge.Value,app.X2MAGauge.Value,app.Y2MAGauge.Value) + ","  + mat2str(app.particleArrayLocation) + "," + mat2str(app.particleArrayVelocity) + "\r\n");
+        %fprintf(app.fileID,  app.timePassed + "," + goalPercentage + sprintf(",%d,%d,%d,%d", app.X1mAGauge.Value,app.Y1mAGauge.Value,app.X2MAGauge.Value,app.Y2MAGauge.Value) + ","  + mat2str(app.particleArrayLocation) + "," + mat2str(app.particleArrayVelocity) + "\r\n");
           %For writing other stuff to file
         %fprintf(app.fileID,  app.timePassed + "," + magforce(1,1) + "," + magforce(1,2) + "," + dragForce(1,1)+ "," + dragForce(1,2) + "," + app.particleArrayVelocity(1,1) + "," + app.particleArrayVelocity(1,2) + "\r\n");
       fprintf(app.fileID, app.timePassed + "," + magforce(1,1) + "," + dragForce(1,1)+ "," + goalPercentage + "," + app.particleArrayVelocity(1,1)+ "," + app.particleArrayLocation(1,1) + "\r\n");
         app.currentlyDoingWorkSemaphore = false;
     else
-        fprintf(app.fileID,  app.timePassed + "," + "BADTIMING " + sprintf(",%d,%d,%d,%d", app.X1MAGauge.Value,app.Y1MAGauge.Value,app.X2MAGauge.Value,app.Y2MAGauge.Value) + mat2str(app.particleArrayLocation) + "," + mat2str(app.particleArrayVelocity) + "\r\n");
+        fprintf(app.fileID,  app.timePassed + "," + "BADTIMING " + sprintf(",%d,%d,%d,%d", app.X1mAGauge.Value,app.Y1mAGauge.Value,app.X2mAGauge.Value,app.Y2mAGauge.Value) + mat2str(app.particleArrayLocation) + "," + mat2str(app.particleArrayVelocity) + "\r\n");
     end
 end

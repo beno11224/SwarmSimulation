@@ -13,16 +13,16 @@ classdef ParticleFunctions
     methods (Access = public)
         %Constructor
         function obj = ParticleFunctions(permeabilityOfFreeSpace, particleDiameter, particleMass, fluidViscocity, staticFrictionCoefficient, motionFrictionCoefficient, workspaceSize)
-            obj = obj.ChangeMetaValues(obj,permeabilityOfFreeSpace, particleDiameter, particleMass, fluidViscocity, staticFrictionCoefficient, motionFrictionCoefficient, workspaceSize);
+            obj = obj.ChangeMetaValues(permeabilityOfFreeSpace, particleDiameter, particleMass, fluidViscocity, staticFrictionCoefficient, motionFrictionCoefficient, workspaceSize);
 
         end
         %So user can change parameters on the fly
         function obj = ChangeMetaValue(obj, permeabilityOfFreeSpace, particleDiameter, particleMass, fluidViscocity, staticFrictionCoefficient, motionFrictionCoefficient, workspaceSize)
-            obj = obj.ChangeMetaValues(obj,permeabilityOfFreeSpace, particleDiameter, particleMass, fluidViscocity, staticFrictionCoefficient, motionFrictionCoefficient, workspaceSize);
+            obj = obj.ChangeMetaValues(permeabilityOfFreeSpace, particleDiameter, particleMass, fluidViscocity, staticFrictionCoefficient, motionFrictionCoefficient, workspaceSize);
         end
         
-        function obj = ChangeMetaValues(obj, permeabilityOfFreeSpace, particleDiameter, particleMass, fluidViscocity, staticFrictionCoefficient, motionFrictionCoefficient, workspaceSize)
-            obj.magneticForceConstant = double(permeabilityOfFreeSpace .* 58 .* 2.25 .* 10^3 .* 4/3.*pi.*(particleDiameter/2)^3) .* 4000; % ./ (4 * pi * 10^-6) %What's this?
+        function obj = ChangeMetaValues(obj,permeabilityOfFreeSpace, particleDiameter, particleMass, fluidViscocity, staticFrictionCoefficient, motionFrictionCoefficient, workspaceSize)
+            obj.magneticForceConstant = double(permeabilityOfFreeSpace .* 58 .* 2.25 .* 10^3 .* 4/3.*pi.*(particleDiameter/2)^3) .* 2.5;%7.5; %4000 is the extra factor
             obj.dragForceConstant = double(3*pi * fluidViscocity * particleDiameter);
             obj.dipoleForceConstant = double(3*permeabilityOfFreeSpace / 4*pi);
             obj.staticFrictionCoefficient = staticFrictionCoefficient;
@@ -177,13 +177,15 @@ classdef ParticleFunctions
         
         function [velocity,acceleration] = calculateCurrentVelocityCD(obj,previousVelocity, previousAcceleration, particleForce, particleMass, timeSinceLastUpdate)            
             currentAcceleration = obj.calculateAcceleration(particleForce, particleMass);
+            previousVelocity(previousVelocity == 0) = 1*10^-12;
             hypotheticalDeltaVelocity = 0.5.*(currentAcceleration + previousAcceleration).* timeSinceLastUpdate; %timeSinceLastUpdate must be fairly constant for this to work - maybe avg time?
-            rateOfChange = obj.realNum((hypotheticalDeltaVelocity - previousVelocity) ./ previousVelocity);
+            rateOfChange = (hypotheticalDeltaVelocity - previousVelocity) ./ previousVelocity;
             
           %  hypotheticalPositiveDeltaVelocity = hypotheticalDeltaVelocity;
           %  hypotheticalPositiveDeltaVelocity(hypotheticalDeltaVelocity < 0) = abs(hypotheticalPositiveDeltaVelocity(hypotheticalDeltaVelocity < 0) .* 2);
           %  rateOfChange = (hypotheticalPositiveDeltaVelocity./previousVelocity) - 1
             cappedRateOfChange = 1.1;
+            reduceInfiniteTo = realmin; %from 0, the rateOfChange is infite - must prevent this from exploding to start with.
             if(any(any(abs(rateOfChange) > cappedRateOfChange)))
                 %All this bit is wrong, is just compounding velocity
                % a = hypotheticalDeltaVelocity - previousVelocity
@@ -193,6 +195,11 @@ classdef ParticleFunctions
                 newRateOfChange = rateOfChange;
                 newRateOfChange(abs(rateOfChange) > cappedRateOfChange) = cappedRateOfChange;
                 newRateOfChange(rateOfChange < 0) = (cappedRateOfChange) .* -1;
+                
+                rateOfChange(isinf(rateOfChange)) = 1;
+                rateOfChange(isnan(rateOfChange)) = 1;
+                newRateOfChange(isinf(rateOfChange)) = reduceInfiniteTo;
+                newRateOfChange(isnan(rateOfChange)) = reduceInfiniteTo;
                % hypotheticalDeltaVelocity = obj.realNum((newRateOfChange) .* previousVelocity);
                 hypotheticalDeltaVelocity = obj.realNum((newRateOfChange./rateOfChange) .* hypotheticalDeltaVelocity);
                 acceleration = hypotheticalDeltaVelocity / timeSinceLastUpdate;%currentAcceleration .* (newRateOfChange);
@@ -203,9 +210,9 @@ classdef ParticleFunctions
         end
         
         function location = calculateCurrentLocationCD(obj,previousLocation, previousVelocity, previousAcceleration, timeSinceLastUpdate)
-            a = previousVelocity .* timeSinceLastUpdate
-            b = 0.5.*previousAcceleration.*timeSinceLastUpdate^2
-            c = a + b
+            a = previousVelocity .* timeSinceLastUpdate;
+            b = 0.5.*previousAcceleration.*timeSinceLastUpdate^2;
+            finalDeltaVelocity = a + b
             location = previousLocation + previousVelocity .* timeSinceLastUpdate + 0.5.*previousAcceleration.*timeSinceLastUpdate^2; %as above for time
         end
         
