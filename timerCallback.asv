@@ -58,8 +58,7 @@ function timerCallback(app)
         %fprintf(app.fileID,  app.timePassed + "," + goalPercentage + sprintf(",%d,%d,%d,%d", app.X1MAGauge.Value,app.Y1MAGauge.Value,app.X2MAGauge.Value,app.Y2MAGauge.Value) + ","  + mat2str(app.particleArrayLocation) + "," + mat2str(app.particleArrayVelocity) + "\r\n");
           %For writing other stuff to file
         %fprintf(app.fileID,  app.timePassed + "," + magforce(1,1) + "," + magforce(1,2) + "," + dragForce(1,1)+ "," + dragForce(1,2) + "," + app.particleArrayVelocity(1,1) + "," + app.particleArrayVelocity(1,2) + "\r\n");
-        newTimePassed = round(etime(clock,app.startTime)*1000);
-        fprintf(app.fileID, newTimePassed + "," + app.timePassed + "," + app.tMax + "," + app.timeLag + "," + magforce(1,1) + "," + dragForce(1,1)+ "," + goalPercentage + "," + app.particleArrayVelocity(1,1)+ "," + app.particleArrayLocation(1,1) + "\r\n");
+      fprintf(app.fileID, round(etime(clock,app.startTime)*1000), + "app.timePassed + "," + app.tMax + "," + app.timeLag + "," + magforce(1,1) + "," + dragForce(1,1)+ "," + goalPercentage + "," + app.particleArrayVelocity(1,1)+ "," + app.particleArrayLocation(1,1) + "\r\n");
         app.currentlyDoingWorkSemaphore = false;
     else
         fprintf(app.fileID,  app.timePassed + "," + "BADTIMING " + sprintf(",%d,%d,%d,%d", app.X1MAGauge.Value,app.Y1MAGauge.Value,app.X2MAGauge.Value,app.Y2MAGauge.Value) + mat2str(app.particleArrayLocation) + "," + mat2str(app.particleArrayVelocity) + "\r\n");

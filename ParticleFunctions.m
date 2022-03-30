@@ -22,7 +22,7 @@ classdef ParticleFunctions
         end
         
         function obj = ChangeMetaValues(obj,permeabilityOfFreeSpace, particleDiameter, particleMass, fluidViscocity, staticFrictionCoefficient, motionFrictionCoefficient, workspaceSize)
-            obj.magneticForceConstant = double(permeabilityOfFreeSpace .* 58 .* 2.25 .* 10^3 .* 4/3.*pi.*(particleDiameter/2)^3) .* 2.5;%7.5; %4000 is the extra factor
+            obj.magneticForceConstant = double(permeabilityOfFreeSpace .* 58 .* 2.25 .* 10^3 .* 4/3.*pi.*(particleDiameter/2)^3);% .* 40;%0.5;%2.5;%7.5; %4000 is the extra factor
             obj.dragForceConstant = double(3*pi * fluidViscocity * particleDiameter);
             obj.dipoleForceConstant = double(3*permeabilityOfFreeSpace / 4*pi);
             obj.staticFrictionCoefficient = staticFrictionCoefficient;
@@ -184,7 +184,7 @@ classdef ParticleFunctions
           %  hypotheticalPositiveDeltaVelocity = hypotheticalDeltaVelocity;
           %  hypotheticalPositiveDeltaVelocity(hypotheticalDeltaVelocity < 0) = abs(hypotheticalPositiveDeltaVelocity(hypotheticalDeltaVelocity < 0) .* 2);
           %  rateOfChange = (hypotheticalPositiveDeltaVelocity./previousVelocity) - 1
-            cappedRateOfChange = 1.1;
+            cappedRateOfChange = 3;%1.1;
             reduceInfiniteTo = realmin; %from 0, the rateOfChange is infite - must prevent this from exploding to start with.
             if(any(any(abs(rateOfChange) > cappedRateOfChange)))
                 %All this bit is wrong, is just compounding velocity
@@ -210,9 +210,9 @@ classdef ParticleFunctions
         end
         
         function location = calculateCurrentLocationCD(obj,previousLocation, previousVelocity, previousAcceleration, timeSinceLastUpdate)
-            a = previousVelocity .* timeSinceLastUpdate;
-            b = 0.5.*previousAcceleration.*timeSinceLastUpdate^2;
-            finalDeltaVelocity = a + b
+            %a = previousVelocity .* timeSinceLastUpdate;
+            %b = 0.5.*previousAcceleration.*timeSinceLastUpdate^2;
+            %finalDeltaVelocity = a + b
             location = previousLocation + previousVelocity .* timeSinceLastUpdate + 0.5.*previousAcceleration.*timeSinceLastUpdate^2; %as above for time
         end
         
