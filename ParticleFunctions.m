@@ -22,7 +22,7 @@ classdef ParticleFunctions
         end
         
         function obj = ChangeMetaValues(obj,permeabilityOfFreeSpace, particleDiameter, particleMass, fluidViscocity, staticFrictionCoefficient, motionFrictionCoefficient, workspaceSize)
-            obj.magneticForceConstant = double(permeabilityOfFreeSpace .* 58 .* 2.25 .* 10^3 .* 4/3.*pi.*(particleDiameter/2)^3);% .* 40;%0.5;%2.5;%7.5; %4000 is the extra factor
+            obj.magneticForceConstant = double(permeabilityOfFreeSpace .* 58 .* 2.25 .* 10^3 .* 4/3.*pi.*(particleDiameter/2)^3) .* 1; %4000 is the extra factor
             obj.dragForceConstant = double(3*pi * fluidViscocity * particleDiameter);
             obj.dipoleForceConstant = double(3*permeabilityOfFreeSpace / 4*pi);
             obj.staticFrictionCoefficient = staticFrictionCoefficient;
@@ -177,35 +177,35 @@ classdef ParticleFunctions
         
         function [velocity,acceleration] = calculateCurrentVelocityCD(obj,previousVelocity, previousAcceleration, particleForce, particleMass, timeSinceLastUpdate)            
             currentAcceleration = obj.calculateAcceleration(particleForce, particleMass);
-            previousVelocity(previousVelocity == 0) = 1*10^-12;
             hypotheticalDeltaVelocity = 0.5.*(currentAcceleration + previousAcceleration).* timeSinceLastUpdate; %timeSinceLastUpdate must be fairly constant for this to work - maybe avg time?
-            rateOfChange = (hypotheticalDeltaVelocity - previousVelocity) ./ previousVelocity;
             
-          %  hypotheticalPositiveDeltaVelocity = hypotheticalDeltaVelocity;
-          %  hypotheticalPositiveDeltaVelocity(hypotheticalDeltaVelocity < 0) = abs(hypotheticalPositiveDeltaVelocity(hypotheticalDeltaVelocity < 0) .* 2);
-          %  rateOfChange = (hypotheticalPositiveDeltaVelocity./previousVelocity) - 1
-            cappedRateOfChange = 3;%1.1;
-            reduceInfiniteTo = realmin; %from 0, the rateOfChange is infite - must prevent this from exploding to start with.
-            if(any(any(abs(rateOfChange) > cappedRateOfChange)))
-                %All this bit is wrong, is just compounding velocity
-               % a = hypotheticalDeltaVelocity - previousVelocity
-               % b = a .* cappedRateOfChange
-                %hypotheticalDeltaVelocity = hypotheticalDeltaVelocity - real((hypotheticalDeltaVelocity - previousVelocity .* cappedRateOfChange));
-                %newRateOfChange = ones(size(rateOfChange)) .* cappedRateOfChange;
-                newRateOfChange = rateOfChange;
-                newRateOfChange(abs(rateOfChange) > cappedRateOfChange) = cappedRateOfChange;
-                newRateOfChange(rateOfChange < 0) = (cappedRateOfChange) .* -1;
-                
-                rateOfChange(isinf(rateOfChange)) = 1;
-                rateOfChange(isnan(rateOfChange)) = 1;
-                newRateOfChange(isinf(rateOfChange)) = reduceInfiniteTo;
-                newRateOfChange(isnan(rateOfChange)) = reduceInfiniteTo;
-               % hypotheticalDeltaVelocity = obj.realNum((newRateOfChange) .* previousVelocity);
-                hypotheticalDeltaVelocity = obj.realNum((newRateOfChange./rateOfChange) .* hypotheticalDeltaVelocity);
-                acceleration = hypotheticalDeltaVelocity / timeSinceLastUpdate;%currentAcceleration .* (newRateOfChange);
+          %{  
+            rateOfChange = (hypotheticalDeltaVelocity - previousVelocity) ./ previousVelocity; 
+            %capRateofChangeAt = 5;%3;%1.1;
+            %TODO can't use average or max for these particles, must do it
+            %matrix wise. check it works then change it to matrix wise
+            %capRateofChangeAt = (log(abs(previousVelocity)+0.000000000000000001)/log(0.00005)) - 0.5;
+            %capRateofChangeAt = (log(abs(previousVelocity)+0.000001)/log(0.005)) - 1.8;
+            capRateofChangeAt = (1*10e3 .* abs(previousVelocity) + 0.1).^-2;
+            capRateofChangeAt(capRateofChangeAt < 0.1) = 0.1; %limit the lower end.
+            rateOfChange(isinf(rateOfChange)) = intmax;
+            rateOfChange(isnan(rateOfChange)) = 0;
+            if(any(any(abs(rateOfChange) > capRateofChangeAt)))
+                cappedRateOfChange = rateOfChange;
+                cappedRateOfChange(abs(rateOfChange) > capRateofChangeAt) = capRateofChangeAt(abs(rateOfChange) > capRateofChangeAt); %cap it
+                cappedRateOfChange(rateOfChange < 0) = ((capRateofChangeAt(rateOfChange < 0))./2) .* -1; %replace any negative signs, halve negative rate of change
+                %set the capped deltaVelocity
+                hypotheticalDeltaVelocity = obj.realNum((cappedRateOfChange./rateOfChange) .* hypotheticalDeltaVelocity);
+                %set the capped acceleration
+                acceleration = hypotheticalDeltaVelocity / timeSinceLastUpdate;
             else
                 acceleration = currentAcceleration;
             end
+
+          %}  
+
+            acceleration = currentAcceleration;
+            %set the velocity based on capped or not capped deltaVelocity
             velocity = previousVelocity + hypotheticalDeltaVelocity;
         end
         

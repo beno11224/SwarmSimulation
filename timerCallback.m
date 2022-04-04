@@ -2,8 +2,12 @@ function timerCallback(app)
     if(~app.currentlyDoingWorkSemaphore)
         app.currentlyDoingWorkSemaphore = true; %let the earlier tasks complete first, try and force other to leave things alone
         %'zero' the force by writing over it with the magnetic Force.
-        magforce = app.particleFunctions.calculateMagneticForce([app.X1MAGauge.Value app.Y1MAGauge.Value]);
-        app.particleArrayForce = magforce;
+        
+        %TODO make sure to ramp this up/down - use the steps decided before
+        %to determine how many steps to use
+        
+        currentMagforce = app.particleFunctions.calculateMagneticForce([app.X1MAGauge.Value app.Y1MAGauge.Value]);
+        %app.particleArrayForce = magforce;
         %determine if particles are in collision with the wall - particles are inelastic - no bouncing.
       %  [wallContact, app.particleArrayLocation, app.particleArrayVelocity] = app.particleFunctions.isParticleOnWallPIP(app.particleArrayLocation, app.particleArrayVelocity, app.particleArrayForce, app.polygon, app.tMax);
         %dipole force
@@ -19,47 +23,61 @@ function timerCallback(app)
         if(app.timestep > 0)
             app.tMax = app.timestep;
         else
+            
             timeNow = clock;
-            app.tMax = round(etime(timeNow,app.lastUpdate)*1000);
+            app.tMax = round(etime(timeNow,app.lastUpdate)*1000)/1000;
             app.lastUpdate = timeNow;
-            if app.tMax > (3 * app.simTimerPeriodMilis)
+            if app.tMax > (3 * app.simTimerPeriod)
                 %just treat this as lag here, 3* the time is too long.
                 %Users may just experience convential computer lag
                 %here, hopefully only in the range of 100-400ms
-                app.timeLag = app.timeLag + (app.tMax - app.simTimerPeriodMilis);
-                app.tMax = app.simTimerPeriodMilis;
+                app.timeLag = app.timeLag + (app.tMax - app.simTimerPeriod);
+                app.tMax = app.simTimerPeriod;
             end
         end
-        %drag (using last iterations velocity)
-        dragForce = app.particleFunctions.calculateDragForce(app.particleArrayVelocity, vFlow);
-        app.particleArrayForce = app.particleArrayForce - dragForce;
-        
-        temporaryVelocity = app.particleArrayVelocity;
-       % temporaryLocation = app.particleArrayLocation;
-        
-        %calculate the new locations
-        app.particleArrayLocation = app.particleFunctions.calculateCurrentLocationCD(app.particleArrayLocation, temporaryVelocity, app.particleArrayPreviousAcceleration, app.tMax);
-        %Make sure that we have the correct data stored for the next loop.        
-        %calculate the new velocity
-        [app.particleArrayVelocity,app.particleArrayPreviousAcceleration] = app.particleFunctions.calculateCurrentVelocityCD(temporaryVelocity, app.particleArrayPreviousAcceleration, app.particleArrayForce, app.particleFunctions.particleMass, app.tMax);
-       % app.particleArrayPreviousLocation = temporaryLocation;
-
-        app.haltParticlesInEndZone = app.particleFunctions.isParticleInEndZone(app.polygon.currentEndZone,app.particleArrayLocation);
-        goalPercentage = sum(app.haltParticlesInEndZone) / app.numParticles; %TODO store which exit each particle is in (0 is not in exit, 1,2... are the numbers of the exit channel)
-
-        if(app.timestep == 0)
-            %app.timePassed = round(etime(clock,app.startTime)*1000);
-            app.timePassed = app.timePassed + app.tMax;
-        else
+        smallerTMaxTotalSteps = 50; %can modify total steps here
+        smallerTMaxStep = app.simTimerPeriod / smallerTMaxTotalSteps;
+        for smallerTMaxIndex = 1:smallerTMaxTotalSteps 
+          %  smallerTMax = smallerTMaxIndex * smallerTMaxStep; %YOU WALLY
+          %  this is not what to do! FIX this...
             
-            app.timePassed = app.timePassed + app.timestep;
+            deltaMagForce = (currentMagforce - app.previousMagforce) .* (smallerTMaxIndex ./  smallerTMaxTotalSteps); %TODO make this correct, changes to MagField
+            app.particleArrayForce = app.previousMagforce + deltaMagForce;
+
+            %drag (using last iterations velocity)
+            dragForce = app.particleFunctions.calculateDragForce(app.particleArrayVelocity, vFlow);
+            app.particleArrayForce = app.particleArrayForce - dragForce;
+            
+            temporaryVelocity = app.particleArrayVelocity;
+            temporaryLocation = app.particleArrayLocation;
+            
+            %calculate the new locations 
+            app.particleArrayLocation = app.particleFunctions.calculateCurrentLocationCD(app.particleArrayLocation, temporaryVelocity, app.particleArrayPreviousAcceleration, smallerTMaxStep);
+            %Make sure that we have the correct data stored for the next loop.        
+            %calculate the new velocity
+            [app.particleArrayVelocity,app.particleArrayPreviousAcceleration] = app.particleFunctions.calculateCurrentVelocityCD(temporaryVelocity, app.particleArrayPreviousAcceleration, app.particleArrayForce, app.particleFunctions.particleMass, smallerTMaxStep);
+            app.particleArrayPreviousLocation = temporaryLocation;
+    
+            app.haltParticlesInEndZone = app.particleFunctions.isParticleInEndZone(app.polygon.currentEndZone,app.particleArrayLocation);
+            goalPercentage = sum(app.haltParticlesInEndZone) / app.numParticles; %TODO store which exit each particle is in (0 is not in exit, 1,2... are the numbers of the exit channel)
+    
+            %Maybe can set this to go off outside the loop?
+            
+            if(app.timestep == 0)
+                %app.timePassed = round(etime(clock,app.startTime)*1000);
+                app.timePassed = app.timePassed + smallerTMaxStep;
+            else
+                
+                app.timePassed = app.timePassed + app.timestep / smallerTMaxTotalSteps;
+            end
+              %Log this all to a file for data collection
+            %fprintf(app.fileID,  app.timePassed + "," + goalPercentage + sprintf(",%d,%d,%d,%d", app.X1MAGauge.Value,app.Y1MAGauge.Value,app.X2MAGauge.Value,app.Y2MAGauge.Value) + ","  + mat2str(app.particleArrayLocation) + "," + mat2str(app.particleArrayVelocity) + "\r\n");
+              %For writing other stuff to file
+            %fprintf(app.fileID,  app.timePassed + "," + magforce(1,1) + "," + magforce(1,2) + "," + dragForce(1,1)+ "," + dragForce(1,2) + "," + app.particleArrayVelocity(1,1) + "," + app.particleArrayVelocity(1,2) + "\r\n");
+            actualTimePassed = round(etime(clock,app.startTime)*1000)/1000;
+            fprintf(app.fileID, actualTimePassed + "," + app.timePassed + "," + smallerTMaxStep + "," + app.timeLag + "," + (app.previousMagforce(1,1) + deltaMagForce(1,1)) + "," + dragForce(1,1)+ "," + goalPercentage + "," + app.particleArrayVelocity(1,1)+ "," + app.particleArrayLocation(1,1) + "\r\n");
         end
-          %Log this all to a file for data collection
-        %fprintf(app.fileID,  app.timePassed + "," + goalPercentage + sprintf(",%d,%d,%d,%d", app.X1MAGauge.Value,app.Y1MAGauge.Value,app.X2MAGauge.Value,app.Y2MAGauge.Value) + ","  + mat2str(app.particleArrayLocation) + "," + mat2str(app.particleArrayVelocity) + "\r\n");
-          %For writing other stuff to file
-        %fprintf(app.fileID,  app.timePassed + "," + magforce(1,1) + "," + magforce(1,2) + "," + dragForce(1,1)+ "," + dragForce(1,2) + "," + app.particleArrayVelocity(1,1) + "," + app.particleArrayVelocity(1,2) + "\r\n");
-        newTimePassed = round(etime(clock,app.startTime)*1000);
-        fprintf(app.fileID, newTimePassed + "," + app.timePassed + "," + app.tMax + "," + app.timeLag + "," + magforce(1,1) + "," + dragForce(1,1)+ "," + goalPercentage + "," + app.particleArrayVelocity(1,1)+ "," + app.particleArrayLocation(1,1) + "\r\n");
+        app.previousMagforce = currentMagforce;
         app.currentlyDoingWorkSemaphore = false;
     else
         fprintf(app.fileID,  app.timePassed + "," + "BADTIMING " + sprintf(",%d,%d,%d,%d", app.X1MAGauge.Value,app.Y1MAGauge.Value,app.X2MAGauge.Value,app.Y2MAGauge.Value) + mat2str(app.particleArrayLocation) + "," + mat2str(app.particleArrayVelocity) + "\r\n");
