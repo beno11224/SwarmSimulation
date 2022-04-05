@@ -177,9 +177,10 @@ classdef ParticleFunctions
         
         function [velocity,acceleration] = calculateCurrentVelocityCD(obj,previousVelocity, previousAcceleration, particleForce, particleMass, timeSinceLastUpdate)            
             currentAcceleration = obj.calculateAcceleration(particleForce, particleMass);
+            %v = u + at - just the at bit here.
             hypotheticalDeltaVelocity = 0.5.*(currentAcceleration + previousAcceleration).* timeSinceLastUpdate; %timeSinceLastUpdate must be fairly constant for this to work - maybe avg time?
             
-          %{  
+            %{
             rateOfChange = (hypotheticalDeltaVelocity - previousVelocity) ./ previousVelocity; 
             %capRateofChangeAt = 5;%3;%1.1;
             %TODO can't use average or max for these particles, must do it
@@ -202,7 +203,7 @@ classdef ParticleFunctions
                 acceleration = currentAcceleration;
             end
 
-          %}  
+            %}
 
             acceleration = currentAcceleration;
             %set the velocity based on capped or not capped deltaVelocity
@@ -213,6 +214,8 @@ classdef ParticleFunctions
             %a = previousVelocity .* timeSinceLastUpdate;
             %b = 0.5.*previousAcceleration.*timeSinceLastUpdate^2;
             %finalDeltaVelocity = a + b
+            %s = ut + 0.5at^2
+            %is the previous acceleration wrong to use?
             location = previousLocation + previousVelocity .* timeSinceLastUpdate + 0.5.*previousAcceleration.*timeSinceLastUpdate^2; %as above for time
         end
         

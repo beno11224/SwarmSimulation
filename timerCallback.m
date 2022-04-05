@@ -35,14 +35,15 @@ function timerCallback(app)
                 app.tMax = app.simTimerPeriod;
             end
         end
-        smallerTMaxTotalSteps = 50; %can modify total steps here
+        smallerTMaxTotalSteps = 150; %can modify total steps here. low as you can, without stopping the simulation. Any more speed comes from making the sim more efficient or slowing it down (not real time)
         smallerTMaxStep = app.simTimerPeriod / smallerTMaxTotalSteps;
+        smallerTMaxStepReduced = smallerTMaxStep / 1000; %use this to just run the simulation x times slower
         for smallerTMaxIndex = 1:smallerTMaxTotalSteps 
           %  smallerTMax = smallerTMaxIndex * smallerTMaxStep; %YOU WALLY
           %  this is not what to do! FIX this...
             
             deltaMagForce = (currentMagforce - app.previousMagforce) .* (smallerTMaxIndex ./  smallerTMaxTotalSteps); %TODO make this correct, changes to MagField
-            app.particleArrayForce = app.previousMagforce + deltaMagForce;
+            app.particleArrayForce = app.previousMagforce .* 1750 + deltaMagForce;
 
             %drag (using last iterations velocity)
             dragForce = app.particleFunctions.calculateDragForce(app.particleArrayVelocity, vFlow);
@@ -52,10 +53,10 @@ function timerCallback(app)
             temporaryLocation = app.particleArrayLocation;
             
             %calculate the new locations 
-            app.particleArrayLocation = app.particleFunctions.calculateCurrentLocationCD(app.particleArrayLocation, temporaryVelocity, app.particleArrayPreviousAcceleration, smallerTMaxStep);
+            app.particleArrayLocation = app.particleFunctions.calculateCurrentLocationCD(app.particleArrayLocation, temporaryVelocity, app.particleArrayPreviousAcceleration, smallerTMaxStepReduced);
             %Make sure that we have the correct data stored for the next loop.        
             %calculate the new velocity
-            [app.particleArrayVelocity,app.particleArrayPreviousAcceleration] = app.particleFunctions.calculateCurrentVelocityCD(temporaryVelocity, app.particleArrayPreviousAcceleration, app.particleArrayForce, app.particleFunctions.particleMass, smallerTMaxStep);
+            [app.particleArrayVelocity,app.particleArrayPreviousAcceleration] = app.particleFunctions.calculateCurrentVelocityCD(temporaryVelocity, app.particleArrayPreviousAcceleration, app.particleArrayForce, app.particleFunctions.particleMass, smallerTMaxStepReduced);
             app.particleArrayPreviousLocation = temporaryLocation;
     
             app.haltParticlesInEndZone = app.particleFunctions.isParticleInEndZone(app.polygon.currentEndZone,app.particleArrayLocation);
@@ -75,7 +76,7 @@ function timerCallback(app)
               %For writing other stuff to file
             %fprintf(app.fileID,  app.timePassed + "," + magforce(1,1) + "," + magforce(1,2) + "," + dragForce(1,1)+ "," + dragForce(1,2) + "," + app.particleArrayVelocity(1,1) + "," + app.particleArrayVelocity(1,2) + "\r\n");
             actualTimePassed = round(etime(clock,app.startTime)*1000)/1000;
-            fprintf(app.fileID, actualTimePassed + "," + app.timePassed + "," + smallerTMaxStep + "," + app.timeLag + "," + (app.previousMagforce(1,1) + deltaMagForce(1,1)) + "," + dragForce(1,1)+ "," + goalPercentage + "," + app.particleArrayVelocity(1,1)+ "," + app.particleArrayLocation(1,1) + "\r\n");
+            fprintf(app.fileID, actualTimePassed + "," + app.timePassed + "," + smallerTMaxStep + "," + smallerTMaxStepReduced + "," + app.timeLag + "," + (app.previousMagforce(1,1) + deltaMagForce(1,1)) + "," + dragForce(1,1)+ "," + goalPercentage + "," + app.particleArrayVelocity(1,1)+ "," + app.particleArrayLocation(1,1) + "\r\n");
         end
         app.previousMagforce = currentMagforce;
         app.currentlyDoingWorkSemaphore = false;
