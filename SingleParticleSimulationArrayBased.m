@@ -1,7 +1,7 @@
 clear;
 close all;
 
-timeStep = 0.000001;
+timeStep = 0.000001; %0.000001 is the fastest allowable for a 'normal' PC - faster ones can go up a bit.
 maxTime = 3;
 recordEvery = maxTime / 30000;
 individualParticleDiameter = 800 * 10^-9;
