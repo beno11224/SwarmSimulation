@@ -180,14 +180,14 @@ classdef ParticleFunctions
             %v = u + at - just the at bit here.
             hypotheticalDeltaVelocity = 0.5.*(currentAcceleration + previousAcceleration).* timeSinceLastUpdate; %timeSinceLastUpdate must be fairly constant for this to work - maybe avg time?
             
-            %{
+            
             rateOfChange = (hypotheticalDeltaVelocity - previousVelocity) ./ previousVelocity; 
             %capRateofChangeAt = 5;%3;%1.1;
             %TODO can't use average or max for these particles, must do it
             %matrix wise. check it works then change it to matrix wise
             %capRateofChangeAt = (log(abs(previousVelocity)+0.000000000000000001)/log(0.00005)) - 0.5;
             %capRateofChangeAt = (log(abs(previousVelocity)+0.000001)/log(0.005)) - 1.8;
-            capRateofChangeAt = (1*10e3 .* abs(previousVelocity) + 0.1).^-2;
+            capRateofChangeAt = (1*10e3 .* abs(previousVelocity./10) + 0.1).^-2;
             capRateofChangeAt(capRateofChangeAt < 0.1) = 0.1; %limit the lower end.
             rateOfChange(isinf(rateOfChange)) = intmax;
             rateOfChange(isnan(rateOfChange)) = 0;
@@ -203,9 +203,9 @@ classdef ParticleFunctions
                 acceleration = currentAcceleration;
             end
 
-            %}
+            
 
-            acceleration = currentAcceleration;
+           % acceleration = currentAcceleration;
             %set the velocity based on capped or not capped deltaVelocity
             velocity = previousVelocity + hypotheticalDeltaVelocity;
         end

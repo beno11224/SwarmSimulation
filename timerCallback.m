@@ -35,9 +35,9 @@ function timerCallback(app)
                 app.tMax = app.simTimerPeriod;
             end
         end
-        smallerTMaxTotalSteps = 150; %can modify total steps here. low as you can, without stopping the simulation. Any more speed comes from making the sim more efficient or slowing it down (not real time)
+        smallerTMaxTotalSteps = 200; %150%can modify total steps here. low as you can, without stopping the simulation. Any more speed comes from making the sim more efficient or slowing it down (not real time)
         smallerTMaxStep = app.simTimerPeriod / smallerTMaxTotalSteps;
-        smallerTMaxStepReduced = smallerTMaxStep / 1000; %use this to just run the simulation x times slower
+        smallerTMaxStepReduced = smallerTMaxStep / 50; %use this to just run the simulation x times slower
         for smallerTMaxIndex = 1:smallerTMaxTotalSteps 
           %  smallerTMax = smallerTMaxIndex * smallerTMaxStep; %YOU WALLY
           %  this is not what to do! FIX this...
