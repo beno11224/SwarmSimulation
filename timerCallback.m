@@ -2,21 +2,25 @@ function timerCallback(app)
     if(~app.currentlyDoingWorkSemaphore)
         app.currentlyDoingWorkSemaphore = true; %let the earlier tasks complete first, try and force other to leave things alone        
         
-        currentMagforce = app.particleFunctions.calculateMagneticForce([app.X1MAGauge.Value app.Y1MAGauge.Value]);% .* 1750;
-        vFlow = app.particleFunctions.calculateFlow(real(app.particleArrayLocation), app.fd.FlowValues, app.polygon, app.UIAxes);
-        vFlow = vFlow .* 0;
+        currentMagforce = app.particleFunctions.calculateMagneticForce([app.X1MAGauge.Value app.Y1MAGauge.Value]) .* 22; %was .*0.75
+        %vFlow = app.particleFunctions.calculateFlow(real(app.particleArrayLocation), app.fd.FlowValues, app.polygon, app.UIAxes);
+        vFlow = app.particleArrayLocation .* 0;
 
         magForceAlpha = 0.05;
         magForce = app.previousMagforce;
-        smallerTMaxTotalSteps = 50; %200 %Any more speed comes from making the sim more efficient or slowing it down (not real time)
+        smallerTMaxTotalSteps = 150; %50%200 %Any more speed comes from making the sim more efficient or slowing it down (not real time)
         smallerTMaxStep = app.simTimerPeriod / smallerTMaxTotalSteps;
-        smallerTMaxStepReduced = smallerTMaxStep / 50; %use this to just run the simulation x times slower
+        smallerTMaxStepReduced = smallerTMaxStep / 20; %use this to just run the simulation x times slower
         for smallerTMaxIndex = 1:smallerTMaxTotalSteps 
             magForce = magForce .* (1-magForceAlpha) + currentMagforce.* magForceAlpha;
             app.particleArrayForce = magForce;
 
             %determine if particles are in collision with the wall - particles are inelastic - no bouncing.
-            [wallContact, app.particleArrayLocation, app.particleArrayVelocity] = app.particleFunctions.isParticleOnWallPIP(app.particleArrayLocation, app.particleArrayVelocity, app.particleArrayForce, app.polygon, app.tMax);
+            [wallContact, app.particleArrayLocation, app.particleArrayVelocity] = app.particleFunctions.isParticleOnWallPIP(app.particleArrayLocation, app.particleArrayVelocity, app.particleArrayForce, app.polygon, smallerTMaxStepReduced);
+
+            if(any(~isnan(wallContact)))
+                fprintf(app.fileID,"HIT\r\n");
+            end
 
             %drag (using last iterations velocity)
             dragForce = app.particleFunctions.calculateDragForce(app.particleArrayVelocity, vFlow);
@@ -24,6 +28,8 @@ function timerCallback(app)
             
             %friction
             app.particleArrayForce = app.particleArrayForce - app.particleFunctions.calculateFrictionForce(app.particleArrayVelocity, app.particleArrayForce, wallContact);
+%TODO friction is too high for some reason? might be fixed once particles
+%move correct way while in contact with wall
 
             temporaryVelocity = app.particleArrayVelocity;
             temporaryLocation = app.particleArrayLocation;
@@ -45,7 +51,8 @@ function timerCallback(app)
             else                
                 app.timePassed = app.timePassed + app.timestep / smallerTMaxTotalSteps;
             end
-            fprintf(app.fileID, app.timePassed + "," + app.timeLag + "," + (magForce(1,1)) + "," + dragForce(1,1)+ "," + goalPercentage + "," + app.particleArrayVelocity(1,1)+ "," + app.particleArrayLocation(1,1) + "\r\n");
+            fprintf(app.fileID, app.timePassed + "," + app.timeLag + "," + mat2str(magForce) + "," + mat2str(dragForce)+ "," + goalPercentage + "," + mat2str(app.particleArrayVelocity)+ "," + mat2str(app.particleArrayLocation) + "\r\n");
+            %fprintf(app.fileID, app.timePassed + "," + app.timeLag + "," + (magForce(1,1)) + "," + dragForce(1,1)+ "," + goalPercentage + "," + app.particleArrayVelocity(1,1)+ "," + app.particleArrayLocation(1,1) + "\r\n");
         end
         app.previousMagforce = magForce;
         app.currentlyDoingWorkSemaphore = false;

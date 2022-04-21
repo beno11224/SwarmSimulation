@@ -56,7 +56,7 @@ classdef ParticleFunctions
         function [wallContact, particleLocation, particleVelocity] = isParticleOnWallPIP(obj, particleLocation, particleVelocity, particleForce, polygon, tMax)
             %this just returns anything INSIDE the polygon, not anything on the walls
             in = inpolygon(particleLocation(:,1), particleLocation(:,2), polygon.currentPoly(:,1), polygon.currentPoly(:,2));
-
+ 
             %https://stackoverflow.com/questions/563198/how-do-you-detect-where-two-line-segments-intersect
             particleVelocityVectorS = squeeze(repmat(-particleVelocity.*tMax,[1,1,length(polygon.currentPolyVector)]));
             polygonVectorR = permute(repmat(polygon.currentPolyVector', [1,1,size(particleVelocity,1)]),[3,1,2]);
@@ -83,12 +83,13 @@ classdef ParticleFunctions
             wallContact = polygon.currentPolyVector(indexOfClosestVector(:,:,3),:);
             wallContact = wallContact .* ~in;
             wallContact = wallContact ./ norm(wallContact); %to unit vector
-            wallContact(~any(wallContact,2),:) = NaN; %Set 1's to nan
             %particleVelocity is determined by vector projection of velocity onto
             %wall contact
             newParticleVelocity = obj.vectorProjection(particleVelocity,wallContact);
-            particleVelocity = particleVelocity .* isnan(wallContact) + newParticleVelocity .* ~isnan(wallContact);
-                
+            wallContact(~any(wallContact,2),:) = NaN; %Set 1's to nan
+            newVelocityDistribution = 0.5;
+            %particleVelocity = particleVelocity .* isnan(wallContact) + particleVelocity .* (1 - newVelocityDistribution) .* ~isnan(wallContact)  + newParticleVelocity .* newVelocityDistribution .* ~isnan(wallContact);          
+            particleVelocity = particleVelocity .* isnan(wallContact) + newParticleVelocity .* ~isnan(wallContact);         
         end
         
         function velocity = calculateFlow(obj, particleLocation, flowMatrix, polygon, axes)
@@ -100,9 +101,9 @@ classdef ParticleFunctions
             model.geometryFromMesh(tnodes, telements);
             mesh = generateMesh(model, 'Hmax', 0.000073);%was 0.001 for old one.
             
-            %plot(axes, mesh.Nodes(1,:), mesh.Nodes(2,:), '.','markerSize', 5 , 'color', 'red'); %visualise nodes
+            plot(axes, mesh.Nodes(1,:), mesh.Nodes(2,:), '.','markerSize', 5 , 'color', 'red'); %visualise nodes
             
-            %flowMatrix = flowMatrix .* 3000;
+            flowMatrix = flowMatrix .* 3000;
             
             %for i = 1:size(mesh.Nodes,2)
             %    ab = plot(axes, mesh.Nodes(1,i), mesh.Nodes(2,i), '.', 'markerSize', 23, 'color', 'yellow');
@@ -113,9 +114,10 @@ classdef ParticleFunctions
             %    delete(abz);
             %end
             
-            closestNode = findNodes(mesh, 'nearest', particleLocation');
-            velocity(:,1) = flowMatrix(closestNode,1);
-            velocity(:,2) = flowMatrix(closestNode,2);
+           % closestNode = findNodes(mesh, 'nearest', particleLocation');
+           % velocity(:,1) = flowMatrix(closestNode,1);
+           % velocity(:,2) = flowMatrix(closestNode,2);
+           velocity = particleLocation .* 0;
         end
        
         function writeMeshToFile(obj,polygon)
