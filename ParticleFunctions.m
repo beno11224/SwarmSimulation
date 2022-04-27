@@ -87,13 +87,18 @@ classdef ParticleFunctions
                     wallContact = polygon.currentPolyVector(indexOfClosestVector(:,:,3),:);
                     wallContact = wallContact .* ~in;
                     wallContact = wallContact ./ norm(wallContact); %to unit vector
+
                     %particleVelocity is determined by vector projection of velocity onto
                     %wall contact
-                    newParticleVelocity = obj.vectorProjection(particleVelocity,wallContact);
+                    %Use vector rejection to project force along the wall.
+                    velocityOrthogonalToWallContact = obj.vectorProjection(particleVelocity,orthogonalWallContact);
+                    testForSign = velocityOrthogonalToWallContact .* orthogonalWallContact;
+                    velocityOrthogonalToWallContact(testForSign < 0) = 0;  %TODO this needs to have the sign match - it can't be going the wrong way.                                       
+                    newParticleVelocity = obj.vectorProjection(particleVelocity,wallContact) + velocityOrthogonalToWallContact;
                     wallContact(~any(wallContact,2),:) = NaN; %Set 1's to nan
                     % newVelocityDistribution = 0.5;
                      %particleVelocity = particleVelocity .* isnan(wallContact) + particleVelocity .* (1 - newVelocityDistribution) .* ~isnan(wallContact)  + newParticleVelocity .* newVelocityDistribution .* ~isnan(wallContact);          
-                    particleVelocity = particleVelocity .* isnan(wallContact) - newParticleVelocity .* ~isnan(wallContact); 
+                    particleVelocity = particleVelocity .* isnan(wallContact) + newParticleVelocity .* ~isnan(wallContact); 
                 else
                     [minTimeModifier, indexOfClosestVector] = min(abs(allTimeParticleCrossedLine),[],2);
                     minTimeModifier = obj.realNum(minTimeModifier(:,:,3)) .* -1;
