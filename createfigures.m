@@ -20,8 +20,8 @@ axes1 = axes('Parent',figure1);
 hold(axes1,'on');
 
 % Create multiple line objects using matrix input to plot
-plot1 = plot(magForce,tSim);
-plot2 = plot(magForce,tExp);
+plot1 = plot(magForce,tSim,'.-');
+plot2 = plot(magForce,tExp,'.-');
 set(plot1,'DisplayName','Simulation');
 set(plot2,'DisplayName','Real world Experimental Data');
 
@@ -35,6 +35,7 @@ xlabel('Magnetic Gradient (MA/m^2)');
 title('Time taken to travel 1mm for differing magnetic gradients');
 
 box(axes1,'on');
+grid(axes1,'on');
 hold(axes1,'off');
 % Create legend
 legend(axes1,'show');
@@ -44,14 +45,14 @@ legend(axes1,'show');
 if(length(vSim) > 1)
     % Create figure
     figure2 = figure;
-    
     % Create axes
     axes2 = axes('Parent',figure2);
     hold(axes2,'on');
+    grid(axes2,'on');
     
     % Create multiple line objects using matrix input to plot
-    plot3 = plot(magForce,vSim);
-    plot4 = plot(magForce,vExp);
+    plot3 = plot(magForce,vSim,'.-');
+    plot4 = plot(magForce,vExp,'.-');
     set(plot3,'DisplayName','Simulation');
     set(plot4,'DisplayName','Real world Experimental Data');
     

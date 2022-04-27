@@ -22,7 +22,7 @@ classdef ParticleFunctions
         end
         
         function obj = ChangeMetaValues(obj,permeabilityOfFreeSpace, particleDiameter, particleMass, fluidViscocity, staticFrictionCoefficient, motionFrictionCoefficient, workspaceSize)
-            obj.magneticForceConstant = double(permeabilityOfFreeSpace .* 58 .* 2.25 .* 10^3 .* 4/3.*pi.*(particleDiameter/2)^3) .* 1; %4000 is the extra factor
+            obj.magneticForceConstant = double(permeabilityOfFreeSpace .* 58 .* 2.25 .* 10^3 .* 4/3.*pi.*(particleDiameter/2)^3) .* 22;
             obj.dragForceConstant = double(3*pi * fluidViscocity * particleDiameter);
             obj.dipoleForceConstant = double(3*permeabilityOfFreeSpace / 4*pi);
             obj.staticFrictionCoefficient = staticFrictionCoefficient;
@@ -53,43 +53,72 @@ classdef ParticleFunctions
         function force = calculateDragForce(obj, particleVelocity, flowVelocity)
             force = ((particleVelocity - flowVelocity) .* obj.dragForceConstant); %Stokes Drag Equation
         end
-        function [wallContact, particleLocation, particleVelocity] = isParticleOnWallPIP(obj, particleLocation, particleVelocity, particleForce, polygon, tMax)
+        function [wallContact, orthogonalWallContact, particleLocation, particleVelocity] = isParticleOnWallPIP(obj, particleLocation, particleVelocity, particleForce, polygon, tMax)
             %this just returns anything INSIDE the polygon, not anything on the walls
             in = inpolygon(particleLocation(:,1), particleLocation(:,2), polygon.currentPoly(:,1), polygon.currentPoly(:,2));
- 
-            %https://stackoverflow.com/questions/563198/how-do-you-detect-where-two-line-segments-intersect
-            particleVelocityVectorS = squeeze(repmat(-particleVelocity.*tMax,[1,1,length(polygon.currentPolyVector)]));
-            polygonVectorR = permute(repmat(polygon.currentPolyVector', [1,1,size(particleVelocity,1)]),[3,1,2]);
-            particleStartQ = squeeze(repmat(particleLocation,[1,1,length(polygon.currentPolyVector)]));
-            polyLineStartP = permute(repmat(polygon.currentPoly(1:end-1,:)', [1,1,size(particleVelocity,1)]),[3,1,2]);
-            timeParticleCrossedLine = obj.multiplierOfLineVectorOfIntersectionOfTwoLines(particleStartQ, particleVelocityVectorS, polyLineStartP, polygonVectorR);
-            
-            %Now tidy the matricies up to something useable
-            timeParticleCrossedLine(timeParticleCrossedLine <= 0) = NaN;
-            timeParticleCrossedLine(timeParticleCrossedLine > 1) = NaN; %remove 0 to prevent errors in min calculation %==0
-            [minTimeModifier, indexOfClosestVector] = min(timeParticleCrossedLine,[],2);
-            minTimeModifier = obj.realNum(minTimeModifier(:,:,3));
-            minTimeModifier = minTimeModifier .* ~in; %So we only care about the particles that are not in the space
-            
-            %remember tMax is the TIME not a DISTANCE
-            %Similarly minTimeModifier is a Multiplier of TMAX
-            %(it means nothing on it's own!)
-            %location is current, velocity and tMax are from the previous calculations
-            reverseVelocityAmmount = ((minTimeModifier.*tMax) .* -particleVelocity) .* 1.015; %move the particle 1.5% away from the wall to prevent sticking
-            particleLocation = particleLocation + real(reverseVelocityAmmount); %plus as the particleVelocity was negative
-                        
-            %WallContact shows the vector orthogonal to the wall. All other values in 
-            %WallContact are nans to show there is no contact
-            wallContact = polygon.currentPolyVector(indexOfClosestVector(:,:,3),:);
-            wallContact = wallContact .* ~in;
-            wallContact = wallContact ./ norm(wallContact); %to unit vector
-            %particleVelocity is determined by vector projection of velocity onto
-            %wall contact
-            newParticleVelocity = obj.vectorProjection(particleVelocity,wallContact);
-            wallContact(~any(wallContact,2),:) = NaN; %Set 1's to nan
-            newVelocityDistribution = 0.5;
-            %particleVelocity = particleVelocity .* isnan(wallContact) + particleVelocity .* (1 - newVelocityDistribution) .* ~isnan(wallContact)  + newParticleVelocity .* newVelocityDistribution .* ~isnan(wallContact);          
-            particleVelocity = particleVelocity .* isnan(wallContact) + newParticleVelocity .* ~isnan(wallContact);         
+            wallContact = particleVelocity .* nan;
+            orthogonalWallContact = wallContact;
+
+            if(any(~in))
+                %https://stackoverflow.com/questions/563198/how-do-you-detect-where-two-line-segments-intersect
+                particleVelocityVectorS = squeeze(repmat(-particleVelocity.*tMax,[1,1,length(polygon.currentPolyVector)]));
+                polygonVectorR = permute(repmat(polygon.currentPolyVector', [1,1,size(particleVelocity,1)]),[3,1,2]);
+                particleStartQ = squeeze(repmat(particleLocation,[1,1,length(polygon.currentPolyVector)]));
+                polyLineStartP = permute(repmat(polygon.currentPoly(1:end-1,:)', [1,1,size(particleVelocity,1)]),[3,1,2]);
+                timeParticleCrossedLine = obj.multiplierOfLineVectorOfIntersectionOfTwoLines(particleStartQ, particleVelocityVectorS, polyLineStartP, polygonVectorR);
+                %Now tidy the matricies up to something useable
+                allTimeParticleCrossedLine = timeParticleCrossedLine;
+                timeParticleCrossedLine(timeParticleCrossedLine <= 0) = nan;
+                timeParticleCrossedLine(timeParticleCrossedLine > 1) = NaN; %remove 0 to prevent errors in min calculation %==0
+                if(any(any(any(~isnan(timeParticleCrossedLine)))))
+                    [minTimeModifier, indexOfClosestVector] = min(timeParticleCrossedLine,[],2);
+                    minTimeModifier = obj.realNum(minTimeModifier(:,:,3)) .* -1;
+                    minTimeModifier = minTimeModifier .* ~in; %So we only care about the particles that are not in the space
+                    
+                    %remember tMax is the TIME not a DISTANCE
+                    %Similarly minTimeModifier is a Multiplier of TMAX
+                    %(it means nothing on it's own!)
+                    %location is current, velocity and tMax are from the previous calculations
+                    reverseVelocityAmmount = ((minTimeModifier.*tMax) .* -particleVelocity) .* 1.015; %move the particle 1.5% away from the wall to prevent sticking
+                    particleLocation = particleLocation + real(reverseVelocityAmmount); %plus as the particleVelocity was negative
+                   
+                    %WallContact shows the vector orthogonal to the wall. All other values in 
+                    %WallContact are nans to show there is no contact
+                    wallContact = polygon.currentPolyVector(indexOfClosestVector(:,:,3),:);
+                    wallContact = wallContact .* ~in;
+                    wallContact = wallContact ./ norm(wallContact); %to unit vector
+                    %particleVelocity is determined by vector projection of velocity onto
+                    %wall contact
+                    newParticleVelocity = obj.vectorProjection(particleVelocity,wallContact);
+                    wallContact(~any(wallContact,2),:) = NaN; %Set 1's to nan
+                    % newVelocityDistribution = 0.5;
+                     %particleVelocity = particleVelocity .* isnan(wallContact) + particleVelocity .* (1 - newVelocityDistribution) .* ~isnan(wallContact)  + newParticleVelocity .* newVelocityDistribution .* ~isnan(wallContact);          
+                    particleVelocity = particleVelocity .* isnan(wallContact) - newParticleVelocity .* ~isnan(wallContact); 
+                else
+                    [minTimeModifier, indexOfClosestVector] = min(abs(allTimeParticleCrossedLine),[],2);
+                    minTimeModifier = obj.realNum(minTimeModifier(:,:,3)) .* -1;
+                    minTimeModifier = minTimeModifier .* ~in; %So we only care about the particles that are not in the space
+                    reverseVelocityAmmount = ((minTimeModifier(~in).*tMax) .* -particleVelocity(~in)) .* 1.015; %move the particle 1.5% away from the wall to prevent sticking
+                    particleLocation(~in) = particleLocation(~in) + real(reverseVelocityAmmount); %plus as the particleVelocity was negative
+                    wallContact = polygon.currentPolyVector(indexOfClosestVector(:,:,3),:);
+                    wallContact = wallContact .* ~in;
+                    wallContact = wallContact ./ norm(wallContact); %to unit vector
+                    wallContact(~any(wallContact,2),:) = NaN; %Set 1's to nan
+                    particleVelocity(~in) = 0; 
+                end
+                orthogonalWallContact = wallContact .* 0;
+                velForWorkingStuffOut = particleVelocity + 1;
+                for wallContactCount = 1:length(particleVelocity)
+                    if(any(~isnan(wallContact(wallContactCount,:))))
+                        orthogonalWallContact(wallContactCount,:) = velForWorkingStuffOut(wallContactCount,:) - obj.vectorProjection(velForWorkingStuffOut(wallContactCount,:),wallContact(wallContactCount,:));
+                        orthogonalWallContact(wallContactCount,:) = orthogonalWallContact(wallContactCount,:) ./ norm(orthogonalWallContact(wallContactCount,:));
+                        newPoint = particleLocation + orthogonalWallContact .* 0.0001; %go 0.1mm - this should be the right distance to go past a wall if there was one, but not past the one opposite.
+                        if(~inpolygon(newPoint(1), newPoint(2),polygon.currentPoly(:,1), polygon.currentPoly(:,2)))
+                            orthogonalWallContact(wallContactCount,:) = orthogonalWallContact(wallContactCount,:) .* -1;
+                        end
+                    end
+                end            
+            end
         end
         
         function velocity = calculateFlow(obj, particleLocation, flowMatrix, polygon, axes)
@@ -177,11 +206,30 @@ classdef ParticleFunctions
             velocity = obj.calculateAcceleration(particleForce, particleMass) ./ timeSinceLastUpdate;
         end
         
-        function [velocity,acceleration] = calculateCurrentVelocityCD(obj,previousVelocity, previousAcceleration, particleForce, particleMass, timeSinceLastUpdate)            
+        function [velocity,acceleration] = calculateCurrentVelocityCD(obj, orthogonalWallContact, wallContact, previousVelocity, previousAcceleration, particleForce, particleMass, timeSinceLastUpdate)            
             currentAcceleration = obj.calculateAcceleration(particleForce, particleMass);
             %v = u + at - just the at bit here.
             hypotheticalDeltaVelocity = 0.5.*(currentAcceleration + previousAcceleration).* timeSinceLastUpdate; %timeSinceLastUpdate must be fairly constant for this to work - maybe avg time?
             
+            wallContactVelocity = 0 .* hypotheticalDeltaVelocity;
+            for i = 1:length(hypotheticalDeltaVelocity)
+                %is the particle on a wall?
+                if(any(~isnan(wallContact(i,:))))
+                    %Use vector rejection to project force along the wall.
+                    velocityOrthogonalToWallContact = obj.vectorProjection(hypotheticalDeltaVelocity(i,:),orthogonalWallContact(i,:));
+                    testForSign = velocityOrthogonalToWallContact .* orthogonalWallContact(i,:);
+                    velocityOrthogonalToWallContact(testForSign < 0) = 0;  %TODO this needs to have the sign match - it can't be going the wrong way.
+                    %vectorprokected = obj.vectorProjection(hypotheticalDeltaVelocity(i,:),wallContact(i,:));
+                    wallContactVelocity(i,:) = obj.vectorProjection(hypotheticalDeltaVelocity(i,:),wallContact(i,:)) + velocityOrthogonalToWallContact; %TODO now missing the part orthogonal to wall contact. how???
+                    %perpendicularWallVelocity = hypotheticalDeltaVelocity - obj.vectorProjection(hypotheticalDeltaVelocity(i,:),wallContact(i,:));
+                  %  if(inpolygon(location(i,1),location(i,2),polygon(??,1),polygon(??,2))) %TODO this needs to work better
+                  %      wallContactVelocity(i,:) = wallContactVelocity(i,:) + TODO;
+                  %  end
+                end
+            end
+            %wallContactVelocity = vectorProjection( (hypotheticalDeltaVelocity .* ~isnan(wallContact)) , wallContact );
+            hypotheticalDeltaVelocity = hypotheticalDeltaVelocity .* isnan(wallContact) + wallContactVelocity; %Try this?
+
             
             rateOfChange = (hypotheticalDeltaVelocity - previousVelocity) ./ previousVelocity; 
             %capRateofChangeAt = 5;%3;%1.1;
@@ -209,7 +257,7 @@ classdef ParticleFunctions
 
            % acceleration = currentAcceleration;
             %set the velocity based on capped or not capped deltaVelocity
-            velocity = previousVelocity + hypotheticalDeltaVelocity;
+            velocity = (previousVelocity + hypotheticalDeltaVelocity);% .* ~haltTheseParticles;
         end
         
         function location = calculateCurrentLocationCD(obj,previousLocation, previousVelocity, previousAcceleration, timeSinceLastUpdate)
@@ -283,6 +331,13 @@ classdef ParticleFunctions
         %C must be scalar, AB must be vector
         function vec = scalarToVector(obj,C,AB)
             vec = (AB./norm(AB)) .* C;            
+        end
+
+        %Shortest distand from a point to a line
+        function dist = distPointToLine(obj,point,lineA,lineB)
+            a = lineA - lineB;
+            b = point - lineB;
+            dist = norm(cross(a,b)) / norm(a);
         end
         
         %vector projection of AB along line CD
