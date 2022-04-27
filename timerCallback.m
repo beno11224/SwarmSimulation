@@ -35,9 +35,9 @@ function timerCallback(app)
             [app.particleArrayVelocity,app.particleArrayPreviousAcceleration] = app.particleFunctions.calculateCurrentVelocityCD(orthogonalWallContact, wallContact, temporaryVelocity, app.particleArrayPreviousAcceleration, app.particleArrayForce, app.particleFunctions.particleMass, smallerTMaxStepReduced);
             app.particleArrayPreviousLocation = temporaryLocation;
     
-            app.haltParticlesInEndZone = app.particleFunctions.isParticleInEndZone(app.polygon.currentEndZone,app.particleArrayLocation);
-            goalPercentage = sum(app.haltParticlesInEndZone) / app.numParticles; %TODO store which exit each particle is in (0 is not in exit, 1,2... are the numbers of the exit channel)
-    
+            endZoneParticles = app.particleFunctions.isParticleInEndZone([app.polygon.currentEndZone],app.particleArrayLocation);
+            app.haltParticlesInEndZone = (sum(endZoneParticles,2) > 0); %TODO need to check the dimension is correct
+            goalPercentage = sum(endZoneParticles,2) ./ app.numParticles; %TODO check this code works...
             
             if(app.timestep == 0)
                 %app.timePassed = round(etime(clock,app.startTime)*1000);

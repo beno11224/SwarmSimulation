@@ -309,12 +309,13 @@ classdef ParticleFunctions
             end
         end
         
-        function inGoalZone = isParticleInEndZone(obj, goalZones, particleLocations)
-            inGoalZone = zeros(length(particleLocations),length(goalZones));
+        function inGoalZone = isParticleInEndZone(obj, poly, particleLocations)
+            inGoalZone = zzero
             for goalZoneIndex = 1:length(goalZones)
-                [in,on] = inpolygon(particleLocations(:,1), particleLocations(:,2), goalZones(goalZoneIndex,:,1), goalZones(goalZoneIndex,:,2));
+                [in,on] = inpolygon(particleLocations(:,1), particleLocations(:,2), poly(:,1), poly(:,2));
                 inGoalZone{:,goalZoneIndex} = in | on;
             end
+            %TODO put any other logic for goal zone in here
         end
         
         %Helper function used for collision detection for both
