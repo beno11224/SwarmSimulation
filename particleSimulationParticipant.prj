@@ -1,89 +1,28 @@
-<deployment-project plugin="plugin.ezdeploy" plugin-version="1.0">
-  <configuration build-checksum="2908385898" file="F:\Uni\Simulations\SwarmSimulation\particleSimulationParticipant.prj" location="F:\Uni\Simulations\SwarmSimulation" name="particleSimulationParticipant" preferred-package-location="F:\Uni\Simulations\SwarmSimulation\particleSimulationParticipant\for_redistribution" preferred-package-type="package.type.exe" target="target.ezdeploy.standalone" target-name="Application Compiler">
+<deployment-project plugin="plugin.webdeploy" plugin-version="1.0">
+  <configuration file="D:\Uni\Simulations\SwarmSimulation\particleSimulationParticipant.prj" location="D:\Uni\Simulations\SwarmSimulation" name="particleSimulationParticipant" target="target.webdeploy" target-name="Web App Compiler">
     <param.appname>particleSimulationParticipant</param.appname>
-    <param.icon />
-    <param.icons />
-    <param.version>1.0</param.version>
-    <param.authnamewatermark />
-    <param.email />
-    <param.company />
-    <param.summary />
-    <param.description />
-    <param.screenshot />
-    <param.guid />
-    <param.installpath.string>\particleSimulationParticipant\</param.installpath.string>
-    <param.installpath.combo>option.installpath.programfiles</param.installpath.combo>
-    <param.logo />
-    <param.install.notes />
-    <param.target.install.notes />
-    <param.intermediate>${PROJECT_ROOT}\particleSimulationParticipant\for_testing</param.intermediate>
-    <param.files.only>${PROJECT_ROOT}\particleSimulationParticipant\for_redistribution_files_only</param.files.only>
-    <param.output>${PROJECT_ROOT}\particleSimulationParticipant\for_redistribution</param.output>
-    <param.logdir>${PROJECT_ROOT}\particleSimulationParticipant</param.logdir>
-    <param.enable.clean.build>false</param.enable.clean.build>
-    <param.user.defined.mcr.options />
-    <param.target.type>subtarget.standalone</param.target.type>
-    <param.support.packages />
-    <param.web.mcr>true</param.web.mcr>
-    <param.package.mcr>false</param.package.mcr>
-    <param.no.mcr>false</param.no.mcr>
-    <param.web.mcr.name>MyAppInstaller_web</param.web.mcr.name>
-    <param.package.mcr.name>MyAppInstaller_mcr</param.package.mcr.name>
-    <param.no.mcr.name>MyAppInstaller_app</param.no.mcr.name>
-    <param.windows.command.prompt>true</param.windows.command.prompt>
-    <param.create.log>false</param.create.log>
-    <param.log.file />
-    <param.native.matlab>false</param.native.matlab>
+    <param.intermediate>${PROJECT_ROOT}\particleSimulationParticipant</param.intermediate>
+    <param.files.only>${PROJECT_ROOT}\particleSimulationParticipant</param.files.only>
+    <param.output />
     <param.checkbox>false</param.checkbox>
-    <param.example />
-    <param.help.text>Syntax 
-	  -? 
-	 
- Input Arguments 
-	 -?  print help on how to use the application 
-	 input arguments</param.help.text>
+    <param.logdir>${PROJECT_ROOT}\particleSimulationParticipant</param.logdir>
+    <param.target.type>subtarget.web.app</param.target.type>
+    <param.user.defined.mcr.options />
+    <param.support.packages />
     <unset>
-      <param.icon />
-      <param.icons />
-      <param.version />
-      <param.authnamewatermark />
-      <param.email />
-      <param.company />
-      <param.summary />
-      <param.description />
-      <param.screenshot />
-      <param.guid />
-      <param.installpath.string />
-      <param.installpath.combo />
-      <param.logo />
-      <param.install.notes />
-      <param.target.install.notes />
       <param.intermediate />
       <param.files.only />
       <param.output />
-      <param.logdir />
-      <param.enable.clean.build />
-      <param.user.defined.mcr.options />
-      <param.target.type />
-      <param.support.packages />
-      <param.web.mcr />
-      <param.package.mcr />
-      <param.no.mcr />
-      <param.web.mcr.name />
-      <param.package.mcr.name />
-      <param.no.mcr.name />
-      <param.windows.command.prompt />
-      <param.create.log />
-      <param.log.file />
-      <param.native.matlab />
       <param.checkbox />
-      <param.example />
+      <param.logdir />
+      <param.target.type />
+      <param.user.defined.mcr.options />
+      <param.support.packages />
     </unset>
-    <fileset.main>
+    <fileset.web.main>
       <file>${PROJECT_ROOT}\particleSimulationParticipant.mlapp</file>
-    </fileset.main>
+    </fileset.web.main>
     <fileset.resources />
-    <fileset.package />
     <fileset.depfun>
       <file>${PROJECT_ROOT}\drawTimerCallback.m</file>
       <file>${PROJECT_ROOT}\FlowData.m</file>
@@ -93,14 +32,13 @@
       <file>${PROJECT_ROOT}\results.csv</file>
       <file>${PROJECT_ROOT}\timerCallback.m</file>
     </fileset.depfun>
+    <fileset.package />
     <build-deliverables>
-      <file location="${PROJECT_ROOT}\particleSimulationParticipant\for_testing" name="splash.png" optional="false">F:\Uni\Simulations\SwarmSimulation\particleSimulationParticipant\for_testing\splash.png</file>
-      <file location="${PROJECT_ROOT}\particleSimulationParticipant\for_testing" name="readme.txt" optional="true">F:\Uni\Simulations\SwarmSimulation\particleSimulationParticipant\for_testing\readme.txt</file>
-      <file location="${PROJECT_ROOT}\particleSimulationParticipant\for_testing" name="particleSimulationParticipant.exe" optional="false">F:\Uni\Simulations\SwarmSimulation\particleSimulationParticipant\for_testing\particleSimulationParticipant.exe</file>
+      <file location="${PROJECT_ROOT}\particleSimulationParticipant" name="particleSimulationParticipant.ctf" optional="false">D:\Uni\Simulations\SwarmSimulation\particleSimulationParticipant\particleSimulationParticipant.ctf</file>
     </build-deliverables>
     <workflow />
     <matlab>
-      <root>F:\Matlab</root>
+      <root>D:\MatlabOLD</root>
       <toolboxes>
         <toolbox name="matlabcoder" />
       </toolboxes>

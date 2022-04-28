@@ -1,5 +1,5 @@
 <deployment-project plugin="plugin.webdeploy" plugin-version="1.0">
-  <configuration file="C:\Users\bj20907\Documents\GitHub\SwarmSimulation\app1_1.prj" location="C:\Users\bj20907\Documents\GitHub\SwarmSimulation" name="app1_1" target="target.webdeploy" target-name="Web App Compiler">
+  <configuration file="D:\Uni\Simulations\SwarmSimulation\app1_1.prj" location="D:\Uni\Simulations\SwarmSimulation" name="app1_1" target="target.webdeploy" target-name="Web App Compiler">
     <param.appname>app1_1</param.appname>
     <param.intermediate>${PROJECT_ROOT}\app1_1</param.intermediate>
     <param.files.only>${PROJECT_ROOT}\app1_1</param.files.only>
@@ -26,49 +26,12 @@
     <fileset.depfun />
     <fileset.package />
     <build-deliverables>
-      <file location="${PROJECT_ROOT}\app1_1" name="app1_1.ctf" optional="false">C:\Users\bj20907\Documents\GitHub\SwarmSimulation\app1_1\app1_1.ctf</file>
+      <file location="${PROJECT_ROOT}\app1_1" name="app1_1.ctf" optional="false">D:\Uni\Simulations\SwarmSimulation\app1_1\app1_1.ctf</file>
     </build-deliverables>
     <workflow />
     <matlab>
-      <root>\\matlab\matlab\R2020a</root>
-      <toolboxes>
-        <toolbox name="matlabcoder" />
-        <toolbox name="embeddedcoder" />
-        <toolbox name="gpucoder" />
-        <toolbox name="fixedpoint" />
-        <toolbox name="matlabhdlcoder" />
-        <toolbox name="neuralnetwork" />
-      </toolboxes>
-      <toolbox>
-        <matlabcoder>
-          <enabled>true</enabled>
-        </matlabcoder>
-      </toolbox>
-      <toolbox>
-        <embeddedcoder>
-          <enabled>true</enabled>
-        </embeddedcoder>
-      </toolbox>
-      <toolbox>
-        <gpucoder>
-          <enabled>true</enabled>
-        </gpucoder>
-      </toolbox>
-      <toolbox>
-        <fixedpoint>
-          <enabled>true</enabled>
-        </fixedpoint>
-      </toolbox>
-      <toolbox>
-        <matlabhdlcoder>
-          <enabled>true</enabled>
-        </matlabhdlcoder>
-      </toolbox>
-      <toolbox>
-        <neuralnetwork>
-          <enabled>true</enabled>
-        </neuralnetwork>
-      </toolbox>
+      <root>C:\Program Files\MATLAB\R2022a</root>
+      <toolboxes />
     </matlab>
     <platform>
       <unix>false</unix>
