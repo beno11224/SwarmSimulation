@@ -86,7 +86,7 @@ classdef ParticleFunctions
                 timeParticleCrossedLine(timeParticleCrossedLine <= 0) = nan;
                 
 %%%%%%%%%%%%%%%  Remove this for the minute.
-                timeParticleCrossedLine(timeParticleCrossedLine > 20) = NaN; %remove 0 to prevent errors in min calculation %==0
+                %timeParticleCrossedLine(timeParticleCrossedLine > 1) = NaN; %remove 0 to prevent errors in min calculation %==0
 
                 [minTimeModifier, indexOfClosestVector] = min(timeParticleCrossedLine,[],2);
                 minTimeModifier = obj.realNum(minTimeModifier);% WHY * -1?? .* -1;
@@ -110,7 +110,7 @@ classdef ParticleFunctions
                 %moving away from wall.
                 orthogonalWallContact = wallContact .* 0;
                 velForWorkingStuffOut = particleVelocity + 1;
-             %   finalCheckIsIn = inpolygon(particleLocation(:,1), particleLocation(:,2), polygon.currentPoly(:,1), polygon.currentPoly(:,2));
+                finalCheckIsIn = inpolygon(particleLocation(:,1), particleLocation(:,2), polygon.currentPoly(:,1), polygon.currentPoly(:,2));
                 for wallContactCount = 1:length(particleVelocity)
                     if(~in(wallContactCount))
                     %if(any(~isnan(wallContact(wallContactCount,:))))
@@ -121,33 +121,15 @@ classdef ParticleFunctions
                             orthogonalWallContact(wallContactCount,:) = orthogonalWallContact(wallContactCount,:) .* -1;
                         end
                     end
-               
                     if(~finalCheckIsIn(wallContactCount))
                         %Then the particle didn't get back inside the shape
                         % - move to closest line.
                         closestLineDistance = realmax;
-                        closestLineVector = 0;
-                        for lineIndex = 1:( length(polygon.currentPoly) - 1 )
-                            currentNewDist = obj.distPointToLine(particleLocation(wallContactCount,:), polygon.currentPoly(lineIndex,:), polygon.currentPoly(lineIndex + 1,:));
-                            if(currentNewDist < closestLineDistance)
-                                closestLineVector = polygon.currentPoly(lineIndex,:) - polygon.currentPoly(lineIndex + 1,:);
-                                closestLineDistance = currentNewDist;
-                            end
+                        closestLineIndex = 0;
+                        for lineIndex = 1:length(polygon.currentPoly)
+                            if()
                         end
-
-                        unitVectorOrthogonalToCollision =  velForWorkingStuffOut(wallContactCount,:) - obj.vectorProjection(velForWorkingStuffOut(wallContactCount,:),closestLineVector);
-                        unitVectorOrthogonalToCollision = unitVectorOrthogonalToCollision ./ norm(unitVectorOrthogonalToCollision);
-                        temporaryOrthogonalUnitVectorPoint = particleLocation(wallContactCount,:) + unitVectorOrthogonalToCollision .* 0.0001; %go 0.1mm - this should be the right distance to go past a wall if there was one, but not past the one opposite.
-                        if(~inpolygon(temporaryOrthogonalUnitVectorPoint(1), temporaryOrthogonalUnitVectorPoint(2),polygon.currentPoly(:,1), polygon.currentPoly(:,2)))
-                            unitVectorOrthogonalToCollision = unitVectorOrthogonalToCollision .* -1;
-                        end
-                        
-                        particleVelocity(wallContactCount,:) = 0;
-
-                       % a = unitVectorOrthogonalToCollision .* closestLineDistance;
-                        particleLocation(wallContactCount,:) = particleLocation(wallContactCount,:) + unitVectorOrthogonalToCollision .* closestLineDistance;
                     end
-               
                 end
  
                 %particleVelocity is determined by vector projection of velocity onto wall contact
@@ -452,8 +434,6 @@ classdef ParticleFunctions
         function dist = distPointToLine(obj,point,lineA,lineB)
             a = lineA - lineB;
             b = point - lineB;
-            a(3) = 0;
-            b(3) = 0;
             dist = norm(cross(a,b)) / norm(a);
         end
         
