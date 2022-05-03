@@ -78,15 +78,11 @@ classdef ParticleFunctions
 
                 timeParticleCrossedLine = timeParticleCrossedLine .* squeeze(onPolygon);
 
-%%%%%%%%%%%%%%%  Remove This Line?
-              %  %Store the original result incase we need it later.
-              %  allTimeParticleCrossedLine = timeParticleCrossedLine;
                 %We only want lines the particle has passed, not lines
                 %they will pass in future.
                 timeParticleCrossedLine(timeParticleCrossedLine <= 0) = nan;
-                
-%%%%%%%%%%%%%%%  Remove this for the minute.
-                timeParticleCrossedLine(timeParticleCrossedLine > 20) = NaN; %remove 0 to prevent errors in min calculation %==0
+                %remove 0 to prevent errors in min calculation %==0
+                timeParticleCrossedLine(timeParticleCrossedLine > 20) = nan;
 
                 [minTimeModifier, indexOfClosestVector] = min(timeParticleCrossedLine,[],2);
                 minTimeModifier = obj.realNum(minTimeModifier);% WHY * -1?? .* -1;
@@ -110,10 +106,11 @@ classdef ParticleFunctions
                 %moving away from wall.
                 orthogonalWallContact = wallContact .* 0;
                 velForWorkingStuffOut = particleVelocity + 1;
-             %   finalCheckIsIn = inpolygon(particleLocation(:,1), particleLocation(:,2), polygon.currentPoly(:,1), polygon.currentPoly(:,2));
+                finalCheckIsIn = inpolygon(particleLocation(:,1), particleLocation(:,2), polygon.currentPoly(:,1), polygon.currentPoly(:,2));
                 for wallContactCount = 1:length(particleVelocity)
                     if(~in(wallContactCount))
-                    %if(any(~isnan(wallContact(wallContactCount,:))))
+                    % TODO Small issue with wallContact esp on negative
+                    % surfaces. Best to try and fix this another time.
                         orthogonalWallContact(wallContactCount,:) = velForWorkingStuffOut(wallContactCount,:) - obj.vectorProjection(velForWorkingStuffOut(wallContactCount,:),wallContact(wallContactCount,:));
                         orthogonalWallContact(wallContactCount,:) = orthogonalWallContact(wallContactCount,:) ./ norm(orthogonalWallContact(wallContactCount,:));
                         newPoint = particleLocation + orthogonalWallContact .* 0.0001; %go 0.1mm - this should be the right distance to go past a wall if there was one, but not past the one opposite.
@@ -143,11 +140,8 @@ classdef ParticleFunctions
                         end
                         
                         particleVelocity(wallContactCount,:) = 0;
-
-                       % a = unitVectorOrthogonalToCollision .* closestLineDistance;
                         particleLocation(wallContactCount,:) = particleLocation(wallContactCount,:) + unitVectorOrthogonalToCollision .* closestLineDistance;
                     end
-               
                 end
  
                 %particleVelocity is determined by vector projection of velocity onto wall contact
@@ -165,69 +159,6 @@ classdef ParticleFunctions
                 wallContact(~any(wallContact,2),:) = NaN; %Set 1's to nan
                 %Only modify velocities if they are 'wallContact' particles.
                 particleVelocity = particleVelocity .* isnan(wallContact) + newParticleVelocity .* ~isnan(wallContact); 
-
-
-
-
-                %{
-                %If any of the particles have crossed a line within the
-                %last 
-                if(any(any(any(~isnan(timeParticleCrossedLine)))))
-                    [minTimeModifier, indexOfClosestVector] = min(timeParticleCrossedLine,[],2);
-                    minTimeModifier = obj.realNum(minTimeModifier(:,:,3)) .* -1;
-                    minTimeModifier = minTimeModifier .* ~in; %So we only care about the particles that are not in the space
-                    
-                    %remember tMax is the TIME not a DISTANCE
-                    %Similarly minTimeModifier is a Multiplier of TMAX
-                    %(it means nothing on it's own!)
-                    %location is current, velocity and tMax are from the previous calculations
-                    reverseVelocityAmmount = ((minTimeModifier.*tMax) .* -particleVelocity) .* 1.015; %move the particle 1.5% away from the wall to prevent sticking
-                    particleLocation = particleLocation + real(reverseVelocityAmmount); %plus as the particleVelocity was negative
-                   
-                    %WallContact shows the vector orthogonal to the wall. All other values in 
-                    %WallContact are nans to show there is no contact
-                    wallContact = polygon.currentPolyVector(indexOfClosestVector(:,:,3),:);
-                    wallContact = wallContact .* ~in;
-                    wallContact = wallContact ./ norm(wallContact); %to unit vector
-
-                    %particleVelocity is determined by vector projection of velocity onto
-                    %wall contact
-                    %Use vector rejection to project force along the wall.
-                    velocityOrthogonalToWallContact = obj.vectorProjection(particleVelocity,orthogonalWallContact);
-                    testForSign = velocityOrthogonalToWallContact .* orthogonalWallContact;
-                    velocityOrthogonalToWallContact(testForSign < 0) = 0;  %TODO this needs to have the sign match - it can't be going the wrong way. 
-                    a = obj.vectorProjection(particleVelocity,wallContact);
-                    newParticleVelocity = obj.vectorProjection(particleVelocity,wallContact) + velocityOrthogonalToWallContact;
-                    wallContact(~any(wallContact,2),:) = NaN; %Set 1's to nan
-                    % newVelocityDistribution = 0.5;
-                     %particleVelocity = particleVelocity .* isnan(wallContact) + particleVelocity .* (1 - newVelocityDistribution) .* ~isnan(wallContact)  + newParticleVelocity .* newVelocityDistribution .* ~isnan(wallContact);          
-                    particleVelocity = particleVelocity .* isnan(wallContact) + newParticleVelocity .* ~isnan(wallContact); 
-                else
-                    [minTimeModifier, indexOfClosestVector] = min(abs(allTimeParticleCrossedLine),[],2);
-                    minTimeModifier = obj.realNum(minTimeModifier(:,:,3)) .* -1;
-                    minTimeModifier = minTimeModifier .* ~in; %So we only care about the particles that are not in the space
-                    reverseVelocityAmmount = ((minTimeModifier(~in).*tMax) .* -particleVelocity(~in)) .* 1.015; %move the particle 1.5% away from the wall to prevent sticking
-                    particleLocation(~in) = particleLocation(~in) + real(reverseVelocityAmmount); %plus as the particleVelocity was negative
-                    wallContact = polygon.currentPolyVector(indexOfClosestVector(:,:,3),:);
-                    wallContact = wallContact .* ~in;
-                    wallContact = wallContact ./ norm(wallContact); %to unit vector
-                    wallContact(~any(wallContact,2),:) = NaN; %Set 1's to nan
-                    particleVelocity(~in) = 0; 
-                end
-                orthogonalWallContact = wallContact .* 0;
-                velForWorkingStuffOut = particleVelocity + 1;
-                for wallContactCount = 1:length(particleVelocity)
-                    if(any(~isnan(wallContact(wallContactCount,:))))
-                        orthogonalWallContact(wallContactCount,:) = velForWorkingStuffOut(wallContactCount,:) - obj.vectorProjection(velForWorkingStuffOut(wallContactCount,:),wallContact(wallContactCount,:));
-                        orthogonalWallContact(wallContactCount,:) = orthogonalWallContact(wallContactCount,:) ./ norm(orthogonalWallContact(wallContactCount,:));
-                        newPoint = particleLocation + orthogonalWallContact .* 0.0001; %go 0.1mm - this should be the right distance to go past a wall if there was one, but not past the one opposite.
-                        if(~inpolygon(newPoint(1), newPoint(2),polygon.currentPoly(:,1), polygon.currentPoly(:,2)))
-                            orthogonalWallContact(wallContactCount,:) = orthogonalWallContact(wallContactCount,:) .* -1;
-                        end
-                    end
-                end 
-                %}
-
             end
         end
         
@@ -238,25 +169,27 @@ classdef ParticleFunctions
             tnodes = tr.Points';
             telements = tr.ConnectivityList';
             model.geometryFromMesh(tnodes, telements);
-            mesh = generateMesh(model, 'Hmax', 0.000073);%was 0.001 for old one.
+            mesh = generateMesh(model, 'Hmax', 0.001);%was 0.000073 for old one.
             
+            %{    
             plot(axes, mesh.Nodes(1,:), mesh.Nodes(2,:), '.','markerSize', 5 , 'color', 'red'); %visualise nodes
             
             flowMatrix = flowMatrix .* 3000;
             
-            %for i = 1:size(mesh.Nodes,2)
-            %    ab = plot(axes, mesh.Nodes(1,i), mesh.Nodes(2,i), '.', 'markerSize', 23, 'color', 'yellow');
-            %    abz = plot(axes,[mesh.Nodes(1,i); mesh.Nodes(1,i) + flowMatrix(i,1)], [mesh.Nodes(2,i); mesh.Nodes(2,i) + flowMatrix(i,2)], 'color', 'red');
-            %    abc(1,:) = [i i+11];
-            %    abc(2,:) = flowMatrix(i,:);
-            %    delete(ab);
-            %    delete(abz);
-            %end
-            
-           % closestNode = findNodes(mesh, 'nearest', particleLocation');
-           % velocity(:,1) = flowMatrix(closestNode,1);
-           % velocity(:,2) = flowMatrix(closestNode,2);
-           velocity = particleLocation .* 0;
+            for i = 1:size(mesh.Nodes,2)
+                ab = plot(axes, mesh.Nodes(1,i), mesh.Nodes(2,i), '.', 'markerSize', 23, 'color', 'yellow');
+                abz = plot(axes,[mesh.Nodes(1,i); mesh.Nodes(1,i) + flowMatrix(i,1)], [mesh.Nodes(2,i); mesh.Nodes(2,i) + flowMatrix(i,2)], 'color', 'red');
+                abc(1,:) = [i i+11];
+                abc(2,:) = flowMatrix(i,:);
+                delete(ab);
+                delete(abz);
+            end
+            %}
+
+            closestNode = findNodes(mesh, 'nearest', particleLocation');
+            velocity(:,1) = flowMatrix(closestNode,1);
+            velocity(:,2) = flowMatrix(closestNode,2);
+           %velocity = particleLocation .* 0;
         end
        
         function writeMeshToFile(obj,polygon)
