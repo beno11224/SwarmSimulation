@@ -106,6 +106,7 @@ classdef ParticleFunctions
                 %moving away from wall.
                 orthogonalWallContact = wallContact .* 0;
                 velForWorkingStuffOut = particleVelocity + 1;
+                
                 finalCheckIsIn = inpolygon(particleLocation(:,1), particleLocation(:,2), polygon.currentPoly(:,1), polygon.currentPoly(:,2));
                 for wallContactCount = 1:length(particleVelocity)
                     if(~in(wallContactCount))
@@ -143,13 +144,13 @@ classdef ParticleFunctions
                         particleLocation(wallContactCount,:) = particleLocation(wallContactCount,:) + unitVectorOrthogonalToCollision .* closestLineDistance;
                     end
                 end
- 
+                
                 %particleVelocity is determined by vector projection of velocity onto wall contact
                 %work out the orthogonal velocity - only allow into the polygon
                 velocityOrthogonalToWall = obj.vectorProjection(particleVelocity,orthogonalWallContact);
                 testForSign = velocityOrthogonalToWall .* orthogonalWallContact;
                 velocityOrthogonalToWall(testForSign < 0) = 0;                
-                %Work out the velocity parallel to the wall
+                %Work out the velocity parallel to the walll
                 velocityParallelToWall = obj.vectorProjection(particleVelocity,wallContact);
                 %Sum two velocities to get resultant
                 newParticleVelocity = velocityParallelToWall + velocityOrthogonalToWall;
@@ -256,7 +257,7 @@ classdef ParticleFunctions
             
             wallContactVelocity = 0 .* hypotheticalDeltaVelocity;
             for i = 1:length(hypotheticalDeltaVelocity)
-                %is the particle on a wall?
+                %is the particle on a wall? 
                 if(any(~isnan(wallContact(i,:))))
                     %Use vector rejection to project force along the wall.
                     velocityOrthogonalToWallContact = obj.vectorProjection(hypotheticalDeltaVelocity(i,:),orthogonalWallContact(i,:));
