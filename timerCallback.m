@@ -4,7 +4,7 @@ function timerCallback(app)
         
         currentMagforce = app.particleFunctions.calculateMagneticForce([app.X1MAGauge.Value app.Y1MAGauge.Value]);
         vFlow = app.particleFunctions.calculateFlow(real(app.particleArrayLocation), app.fd.FlowValues, app.polygon, app.UIAxes);
-        vFlow = app.particleArrayLocation .* 0 .* app.FluidFlowmsEditField.Value;
+        vFlow = vFlow .* app.FluidFlowmsEditField.Value;
 
         magForceAlpha = 0.05;
         magForce = app.previousMagforce;
@@ -23,7 +23,7 @@ function timerCallback(app)
             app.particleArrayForce = app.particleArrayForce - dragForce;
             
             %friction
-      %      app.particleArrayForce = app.particleArrayForce - app.particleFunctions.calculateFrictionForce(app.particleArrayVelocity, app.particleArrayForce, wallContact);
+            app.particleArrayForce = app.particleArrayForce - app.particleFunctions.calculateFrictionForce(app.particleArrayVelocity, app.particleArrayForce, wallContact);
 
             temporaryVelocity = app.particleArrayVelocity;
             temporaryLocation = app.particleArrayLocation;
