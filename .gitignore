@@ -2,3 +2,5 @@
 test1.csv
 test1.csv
 results.csv
+results.csv
+*.csv
