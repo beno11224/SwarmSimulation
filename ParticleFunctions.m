@@ -65,7 +65,6 @@ classdef ParticleFunctions
                 for outOfBoundsCount = 1:length(polygon.outOfBoundsPolys)
                     [inOOB,onOOB] = inpolygon(particleLocation(:,1), particleLocation(:,2), polygon.outOfBoundsPolys(outOfBoundsCount,:,1), polygon.outOfBoundsPolys(outOfBoundsCount,:,2));
                     inOnOOB = inOOB|onOOB; %Or together to get anything that is in or on the polygon
-
                     if(any(inOnOOB))
                         wallContact(inOnOOB == 1,:) = polygon.currentPolyVector(outOfBoundsCount,:);                     
                         orthogonalWallContact(inOnOOB == 1,:) = polygon.hardCodedOrthogonalWallContacts(outOfBoundsCount,:);
@@ -181,7 +180,7 @@ classdef ParticleFunctions
             
             wallContactVelocity = 0 .* hypotheticalDeltaVelocity;
             for i = 1:length(hypotheticalDeltaVelocity)
-                %is the particle on a wall?
+                %is the particle on a wall? 
                 if(any(~isnan(wallContact(i,:))))
                     %Use vector rejection to project force along the wall.
                     velocityOrthogonalToWallContact = obj.vectorProjection(hypotheticalDeltaVelocity(i,:),orthogonalWallContact(i,:));

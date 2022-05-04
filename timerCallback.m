@@ -8,7 +8,7 @@ function timerCallback(app)
 
         magForceAlpha = 0.05;
         magForce = app.previousMagforce;
-        smallerTMaxTotalSteps = 75; %Any more speed comes from making the sim more efficient or slowing it down (not real time) %150
+        smallerTMaxTotalSteps = 15; %Any more speed comes from making the sim more efficient or slowing it down (not real time) %150
         smallerTMaxStep = app.simTimerPeriod / smallerTMaxTotalSteps;
         smallerTMaxStepReduced = smallerTMaxStep / 50; %use this to just run the simulation x times slower   %20
         for smallerTMaxIndex = 1:smallerTMaxTotalSteps 
@@ -17,8 +17,7 @@ function timerCallback(app)
 
             %determine if particles are in collision with the wall - particles are inelastic - no bouncing.
             [wallContact, orthogonalWallContact, app.particleArrayLocation, app.particleArrayVelocity] = app.particleFunctions.isParticleOnWallPIP(app.particleArrayLocation, app.particleArrayVelocity, app.particleArrayForce, app.polygon, smallerTMaxStepReduced);
-            wallContact = app.particleArrayLocation .* nan;
-            orthogonalWallContact = wallContact;
+
             %drag (using last iterations velocity)
             dragForce = app.particleFunctions.calculateDragForce(app.particleArrayVelocity, vFlow);
             app.particleArrayForce = app.particleArrayForce - dragForce;
