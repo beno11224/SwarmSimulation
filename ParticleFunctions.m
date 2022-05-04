@@ -58,107 +58,32 @@ classdef ParticleFunctions
             in = inpolygon(particleLocation(:,1), particleLocation(:,2), polygon.currentPoly(:,1), polygon.currentPoly(:,2));
             wallContact = particleVelocity .* nan;
             orthogonalWallContact = wallContact;
-
+            distMove = particleVelocity .* 0;
             %If no particles are outside the shape, we can skip all this.
+            velForWorkingStuffOut = particleVelocity(1,:) + 1;
             if(any(~in))
-                %https://stackoverflow.com/questions/563198/how-do-you-detect-where-two-line-segments-intersect
-                particleVelocityVectorS = squeeze(repmat(-particleVelocity.*tMax,[1,1,length(polygon.currentPolyVector)]));
-                polygonVectorR = permute(repmat(polygon.currentPolyVector', [1,1,size(particleVelocity,1)]),[3,1,2]);
-                particleStartQ = squeeze(repmat(particleLocation,[1,1,length(polygon.currentPolyVector)]));
-                polyLineStartP = permute(repmat(polygon.currentPoly(1:end-1,:)', [1,1,size(particleVelocity,1)]),[3,1,2]);
-                timeParticleCrossedLine = obj.multiplierOfLineVectorOfIntersectionOfTwoLines(particleStartQ, particleVelocityVectorS, polyLineStartP, polygonVectorR);
-                timeParticleCrossedLine = timeParticleCrossedLine(:,:,3);
-                
-                %Check that the values we've got are actually line segments
-                %that make up the shape
-                t2 = permute(timeParticleCrossedLine,[1,3,2]);
-                t2(:,2,:) = t2(:,1,:);                    
-                intersectionLocations = particleStartQ + particleVelocityVectorS .* t2;
-                [unusedIn,onPolygon] = inpolygon(intersectionLocations(:,1,:),intersectionLocations(:,2,:),polygon.currentPoly(:,1), polygon.currentPoly(:,2));
+                for outOfBoundsCount = 1:length(polygon.outOfBoundsPolys)
+                    [inOOB,onOOB] = inpolygon(particleLocation(:,1), particleLocation(:,2), polygon.outOfBoundsPolys(outOfBoundsCount,:,1), polygon.outOfBoundsPolys(outOfBoundsCount,:,2));
+                    inOnOOB = inOOB|onOOB; %Or together to get anything that is in or on the polygon
 
-                timeParticleCrossedLine = timeParticleCrossedLine .* squeeze(onPolygon);
-
-                %We only want lines the particle has passed, not lines
-                %they will pass in future.
-                timeParticleCrossedLine(timeParticleCrossedLine <= 0) = nan;
-                %remove 0 to prevent errors in min calculation %==0
-                timeParticleCrossedLine(timeParticleCrossedLine > 20) = nan;
-
-                [minTimeModifier, indexOfClosestVector] = min(timeParticleCrossedLine,[],2);
-                minTimeModifier = obj.realNum(minTimeModifier);% WHY * -1?? .* -1;
-                minTimeModifier = minTimeModifier .* ~in; %So we only care about the particles that are not in the polygon
-
-                %remember tMax is the TIME not a DISTANCE
-                %Similarly minTimeModifier is a Multiplier of TMAX
-                %(it means nothing on it's own!)
-                %location is current, velocity and tMax are from the previous calculations
-                reverseVelocityAmmount = ((minTimeModifier.*tMax) .* -particleVelocity) .* 1.015; %move the particle 1.5% away from the wall to prevent sticking
-                particleLocation = particleLocation + real(reverseVelocityAmmount); %plus as the particleVelocity above is negative
-
-                %WallContact shows the vector orthogonal to the wall. All other values in 
-                %WallContact are nans to show there is no contact
-                wallContact = polygon.currentPolyVector(indexOfClosestVector,:);
-                wallContact = wallContact .* ~in;
-                wallContact = wallContact ./ norm(wallContact); %to unit vector
-
-                %OrthogonalWallContact should always point inside the
-                %polygon - used to determine if a particle is colliding or
-                %moving away from wall.
-                orthogonalWallContact = wallContact .* 0;
-                velForWorkingStuffOut = particleVelocity + 1;
-                finalCheckIsIn = inpolygon(particleLocation(:,1), particleLocation(:,2), polygon.currentPoly(:,1), polygon.currentPoly(:,2));
-                for wallContactCount = 1:length(particleVelocity)
-                    if(~in(wallContactCount))
-                    % TODO Small issue with wallContact esp on negative
-                    % surfaces. Best to try and fix this another time.
-                        orthogonalWallContact(wallContactCount,:) = velForWorkingStuffOut(wallContactCount,:) - obj.vectorProjection(velForWorkingStuffOut(wallContactCount,:),wallContact(wallContactCount,:));
-                        orthogonalWallContact(wallContactCount,:) = orthogonalWallContact(wallContactCount,:) ./ norm(orthogonalWallContact(wallContactCount,:));
-                        newPoint = particleLocation + orthogonalWallContact .* 0.0001; %go 0.1mm - this should be the right distance to go past a wall if there was one, but not past the one opposite.
-                        if(~inpolygon(newPoint(1), newPoint(2),polygon.currentPoly(:,1), polygon.currentPoly(:,2)))
-                            orthogonalWallContact(wallContactCount,:) = orthogonalWallContact(wallContactCount,:) .* -1;
-                        end
-                    end
-               
-                    if(~finalCheckIsIn(wallContactCount))
-                        %Then the particle didn't get back inside the shape
-                        % - move to closest line.
-                        closestLineDistance = realmax;
-                        closestLineVector = 0;
-                        for lineIndex = 1:( length(polygon.currentPoly) - 1 )
-                            currentNewDist = obj.distPointToLine(particleLocation(wallContactCount,:), polygon.currentPoly(lineIndex,:), polygon.currentPoly(lineIndex + 1,:));
-                            if(currentNewDist < closestLineDistance)
-                                closestLineVector = polygon.currentPoly(lineIndex,:) - polygon.currentPoly(lineIndex + 1,:);
-                                closestLineDistance = currentNewDist;
-                            end
-                        end
-
-                        unitVectorOrthogonalToCollision =  velForWorkingStuffOut(wallContactCount,:) - obj.vectorProjection(velForWorkingStuffOut(wallContactCount,:),closestLineVector);
-                        unitVectorOrthogonalToCollision = unitVectorOrthogonalToCollision ./ norm(unitVectorOrthogonalToCollision);
-                        temporaryOrthogonalUnitVectorPoint = particleLocation(wallContactCount,:) + unitVectorOrthogonalToCollision .* 0.0001; %go 0.1mm - this should be the right distance to go past a wall if there was one, but not past the one opposite.
-                        if(~inpolygon(temporaryOrthogonalUnitVectorPoint(1), temporaryOrthogonalUnitVectorPoint(2),polygon.currentPoly(:,1), polygon.currentPoly(:,2)))
-                            unitVectorOrthogonalToCollision = unitVectorOrthogonalToCollision .* -1;
-                        end
-                        
-                        particleVelocity(wallContactCount,:) = 0;
-                        particleLocation(wallContactCount,:) = particleLocation(wallContactCount,:) + unitVectorOrthogonalToCollision .* closestLineDistance;
+                    if(any(inOnOOB))
+                        wallContact(inOnOOB == 1,:) = polygon.currentPolyVector(outOfBoundsCount,:);                     
+                        orthogonalWallContact(inOnOOB == 1,:) = polygon.hardCodedOrthogonalWallContacts(outOfBoundsCount,:);
+                        distMove(inOnOOB == 1,:) = obj.distPointToLine(particleLocation(inOnOOB == 1,:), polygon.currentPoly(outOfBoundsCount,:), polygon.currentPoly(outOfBoundsCount + 1,:)) .* orthogonalWallContact(inOnOOB == 1,:);
                     end
                 end
- 
-                %particleVelocity is determined by vector projection of velocity onto wall contact
-                %work out the orthogonal velocity - only allow into the polygon
-                velocityOrthogonalToWall = obj.vectorProjection(particleVelocity,orthogonalWallContact);
-                testForSign = velocityOrthogonalToWall .* orthogonalWallContact;
-                velocityOrthogonalToWall(testForSign < 0) = 0;                
-                %Work out the velocity parallel to the wall
-                velocityParallelToWall = obj.vectorProjection(particleVelocity,wallContact);
-                %Sum two velocities to get resultant
-                newParticleVelocity = velocityParallelToWall + velocityOrthogonalToWall;
+                particleLocation = particleLocation + distMove;
+                
+                parallelVelocity = particleLocation .* 0;
+                perpendicularVelocity = parallelVelocity;
+                testForSign = parallelVelocity;
 
-                %Now fix any weird wallContact discrepancies so it works
-                %with the rest of the codebase
-                wallContact(~any(wallContact,2),:) = NaN; %Set 1's to nan
-                %Only modify velocities if they are 'wallContact' particles.
-                particleVelocity = particleVelocity .* isnan(wallContact) + newParticleVelocity .* ~isnan(wallContact); 
+                parallelVelocity(~in,:) = obj.vectorProjection(particleVelocity(~in,:),wallContact(~in,:));
+                perpendicularVelocity(~in,:) = obj.vectorProjection(particleVelocity(~in,:),orthogonalWallContact(~in,:));
+                testForSign(~in,:) = perpendicularVelocity(~in,:) .* orthogonalWallContact(~in,:);
+                perpendicularVelocity(testForSign < 0) = 0;  %this needs to have the sign match - it can't be going the wrong way.
+                   
+                particleVelocity = particleVelocity .* in + parallelVelocity + perpendicularVelocity;                
             end
         end
         
