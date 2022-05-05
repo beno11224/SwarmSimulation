@@ -58,12 +58,12 @@ classdef ParticleFunctions
             in = inpolygon(particleLocation(:,1), particleLocation(:,2), polygon.currentPoly(:,1), polygon.currentPoly(:,2));
             wallContact = particleVelocity .* nan;
             orthogonalWallContact = wallContact;
-            distMove = particleVelocity .* 0;
-            totalOut = sum(~in);
             %If no particles are outside the shape, we can skip all this.
           %  velForWorkingStuffOut = particleVelocity(1,:) + 1;
             particleInc = 0;
             if(any(~in))
+                distMove = particleVelocity .* 0;
+                totalOut = sum(~in);
                 dists = zeros(length(wallContact),1);
                 for outOfBoundsCount = 1:length(polygon.outOfBoundsPolys)
                     [inOOB,onOOB] = inpolygon(particleLocation(:,1), particleLocation(:,2), polygon.outOfBoundsPolys(outOfBoundsCount,:,1), polygon.outOfBoundsPolys(outOfBoundsCount,:,2));

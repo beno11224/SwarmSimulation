@@ -23,6 +23,8 @@ function timerCallback(app)
             app.particleArrayForce = app.particleArrayForce - dragForce;
             
             %friction
+        %TODO Friction doesn't seem to do anything here - maybe check
+        %negative/positive?
             app.particleArrayForce = app.particleArrayForce - app.particleFunctions.calculateFrictionForce(app.particleArrayVelocity, app.particleArrayForce, orthogonalWallContact);
 
             temporaryVelocity = app.particleArrayVelocity;
