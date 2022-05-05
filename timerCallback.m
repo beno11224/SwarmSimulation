@@ -1,6 +1,6 @@
 function timerCallback(app)
-    if(~app.currentlyDoingWorkSemaphore)
-        app.currentlyDoingWorkSemaphore = true; %let the earlier tasks complete first, try and force other to leave things alone        
+  %  if(~app.currentlyDoingWorkSemaphore)
+  %      app.currentlyDoingWorkSemaphore = true; %let the earlier tasks complete first, try and force other to leave things alone        
         
         currentMagforce = app.particleFunctions.calculateMagneticForce([app.X1MAGauge.Value app.Y1MAGauge.Value]);
         vFlow = app.particleFunctions.calculateFlow(real(app.particleArrayLocation), app.fd.FlowValues, app.polygon, app.UIAxes);
@@ -8,7 +8,7 @@ function timerCallback(app)
 
         magForceAlpha = 0.05;
         magForce = app.previousMagforce;
-        smallerTMaxTotalSteps = 15; %Any more speed comes from making the sim more efficient or slowing it down (not real time) %150
+        smallerTMaxTotalSteps = 25; %Any more speed comes from making the sim more efficient or slowing it down (not real time) %150
         smallerTMaxStep = app.simTimerPeriod / smallerTMaxTotalSteps;
         smallerTMaxStepReduced = smallerTMaxStep / 50; %use this to just run the simulation x times slower   %20
         for smallerTMaxIndex = 1:smallerTMaxTotalSteps 
@@ -23,7 +23,7 @@ function timerCallback(app)
             app.particleArrayForce = app.particleArrayForce - dragForce;
             
             %friction
-            app.particleArrayForce = app.particleArrayForce - app.particleFunctions.calculateFrictionForce(app.particleArrayVelocity, app.particleArrayForce, wallContact);
+            app.particleArrayForce = app.particleArrayForce - app.particleFunctions.calculateFrictionForce(app.particleArrayVelocity, app.particleArrayForce, orthogonalWallContact);
 
             temporaryVelocity = app.particleArrayVelocity;
             temporaryLocation = app.particleArrayLocation;
@@ -50,7 +50,7 @@ function timerCallback(app)
         end
         app.previousMagforce = magForce;
         app.currentlyDoingWorkSemaphore = false;
-    else
-        fprintf(app.fileID,  app.timePassed + "," + "BADTIMING " + sprintf(",%d,%d,%d,%d", app.X1MAGauge.Value,app.Y1MAGauge.Value,app.X2MAGauge.Value,app.Y2MAGauge.Value) + mat2str(app.particleArrayLocation) + "," + mat2str(app.particleArrayVelocity) + "\r\n");
-    end
+ %   else
+ %       fprintf(app.fileID,  app.timePassed + "," + "BADTIMING " + sprintf(",%d,%d,%d,%d", app.X1MAGauge.Value,app.Y1MAGauge.Value,app.X2MAGauge.Value,app.Y2MAGauge.Value) + mat2str(app.particleArrayLocation) + "," + mat2str(app.particleArrayVelocity) + "\r\n");
+ %   end
 end

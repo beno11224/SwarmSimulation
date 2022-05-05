@@ -59,18 +59,34 @@ classdef ParticleFunctions
             wallContact = particleVelocity .* nan;
             orthogonalWallContact = wallContact;
             distMove = particleVelocity .* 0;
+            totalOut = sum(~in);
             %If no particles are outside the shape, we can skip all this.
-            velForWorkingStuffOut = particleVelocity(1,:) + 1;
+          %  velForWorkingStuffOut = particleVelocity(1,:) + 1;
+            particleInc = 0;
             if(any(~in))
+                dists = zeros(length(wallContact),1);
                 for outOfBoundsCount = 1:length(polygon.outOfBoundsPolys)
                     [inOOB,onOOB] = inpolygon(particleLocation(:,1), particleLocation(:,2), polygon.outOfBoundsPolys(outOfBoundsCount,:,1), polygon.outOfBoundsPolys(outOfBoundsCount,:,2));
                     inOnOOB = inOOB|onOOB; %Or together to get anything that is in or on the polygon
                     if(any(inOnOOB))
-                        wallContact(inOnOOB == 1,:) = polygon.currentPolyVector(outOfBoundsCount,:);                     
-                        orthogonalWallContact(inOnOOB == 1,:) = polygon.hardCodedOrthogonalWallContacts(outOfBoundsCount,:);
-                        distMove(inOnOOB == 1,:) = obj.distPointToLine(particleLocation(inOnOOB == 1,:), polygon.currentPoly(outOfBoundsCount,:), polygon.currentPoly(outOfBoundsCount + 1,:)) .* orthogonalWallContact(inOnOOB == 1,:);
+                        wallContactVector = polygon.currentPolyVector(outOfBoundsCount,:);
+                        orthogonalWallContactVector = polygon.hardCodedOrthogonalWallContacts(outOfBoundsCount,:);
+                        for particleIndex = 1:length(wallContact)
+                            %Not ideal, but wouldn't work in matrix form.
+                            if(inOnOOB(particleIndex) == 1)
+                                wallContact(particleIndex,:) = wallContactVector;
+                                orthogonalWallContact(particleIndex,:) = orthogonalWallContactVector;
+                                dists(particleIndex) = obj.distPointToLine(particleLocation(particleIndex,:), polygon.currentPoly(outOfBoundsCount,:), polygon.currentPoly(outOfBoundsCount + 1,:));
+                                particleInc = particleInc + 1;
+                            end
+                        end
+                        if(particleInc >= totalOut)
+                            break;
+                        end
                     end
-                end
+                end                     
+                distMove = dists .* orthogonalWallContact;
+                distMove(isnan(distMove)) = 0;
                 particleLocation = particleLocation + distMove;
                 
                 parallelVelocity = particleLocation .* 0;
@@ -134,24 +150,23 @@ classdef ParticleFunctions
             fclose(fileidone);
         end
         
-        function force = calculateFrictionForce(obj, particleVelocity, particleForce, wallContact)            
+        function force = calculateFrictionForce(obj, particleVelocity, particleForce, orthogonalWallContact)            
             trueParticleVelocity = sum(abs(particleVelocity),2);
             movingParticles = trueParticleVelocity > 0;
             %intialise return matrix
-            force = zeros(size(particleForce));
+            force = particleForce .* 0;
+            coefficient = particleVelocity(:,1) .* 0;
+            coefficient(movingParticles == 1) = obj.movingFrictionCoefficient;
+            coefficient(coefficient == 0) = obj.staticFrictionCoefficient;
             for i = 1:length(particleForce)
-                %is the particle on a wall?
-                if(any(~isnan(wallContact(i,:))))
-                    %choose the coefficient based on particle moving or not
-                    if(movingParticles(i))
-                        coefficient = obj.movingFrictionCoefficient;
-                    else
-                        coefficient = obj.staticFrictionCoefficient; %TODO Currently not reached - if the particle is on the wall it must have velocity due to existing maths.
-                    end
-                    %Use vector rejection to project force into the wall.
-                    force(i,:) = particleForce(i,:) - obj.vectorProjection(particleForce(i,:),wallContact(i,:)) .* coefficient;
-                end
+                force(i,:) = obj.vectorProjection(particleForce(i,:),orthogonalWallContact(i,:)) .* coefficient(i);
             end
+            testForSign = force .* orthogonalWallContact;
+            force(testForSign > 0) = 0;
+            %Using the normal force, must convert to correct dimension
+            tempForce = force(:,1);
+            force(:,1) = force(:,2);
+            force(:,2) = tempForce;
         end
         
         function velocity = calculateCumulativeParticleVelocityComponentFromForce(obj, particleForce, oldVelocity, haltTheseParticles, wallContact, timeSinceLastUpdate)
