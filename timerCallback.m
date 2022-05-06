@@ -8,9 +8,9 @@ function timerCallback(app)
 
         magForceAlpha = 0.05;
         magForce = app.previousMagforce;
-        smallerTMaxTotalSteps = 25; %Any more speed comes from making the sim more efficient or slowing it down (not real time) %150
+        smallerTMaxTotalSteps = 75; %Any more speed comes from making the sim more efficient or slowing it down (not real time) %150
         smallerTMaxStep = app.simTimerPeriod / smallerTMaxTotalSteps;
-        smallerTMaxStepReduced = smallerTMaxStep / 50; %use this to just run the simulation x times slower   %20
+        smallerTMaxStepReduced = smallerTMaxStep / 30; %use this to just run the simulation x times slower   %20
         for smallerTMaxIndex = 1:smallerTMaxTotalSteps 
             magForce = magForce .* (1-magForceAlpha) + currentMagforce.* magForceAlpha;
             app.particleArrayForce = magForce;

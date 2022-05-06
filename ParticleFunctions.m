@@ -161,8 +161,10 @@ classdef ParticleFunctions
             for i = 1:length(particleForce)
                 force(i,:) = obj.vectorProjection(particleForce(i,:),orthogonalWallContact(i,:)) .* coefficient(i);
             end
-            testForSign = force .* orthogonalWallContact;
+            testForSign = force .* orthogonalWallContact; %TODO need to check this...
             force(testForSign > 0) = 0;
+            force(particleForce < 0 & force > 0) = force(particleForce < 0 & force > 0) .* -1; %Make  sign match force to allow it to be negated later
+            force(particleForce > 0 & force < 0) = force(particleForce > 0 & force < 0) .* -1; %Make  sign match force to allow it to be negated late
             %Using the normal force, must convert to correct dimension
             tempForce = force(:,1);
             force(:,1) = force(:,2);
