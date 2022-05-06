@@ -27,6 +27,8 @@ function timerCallback(app)
         %negative/positive?
             app.particleArrayForce = app.particleArrayForce - app.particleFunctions.calculateFrictionForce(app.particleArrayVelocity, app.particleArrayForce, orthogonalWallContact);
 
+            app.particleArrayForce = app.particleArrayForce .* ~app.haltParticlesInEndZone;
+            app.particleArrayVelocity = app.particleArrayVelocity .* ~app.haltParticlesInEndZone;
             temporaryVelocity = app.particleArrayVelocity;
             temporaryLocation = app.particleArrayLocation;
             
@@ -37,9 +39,9 @@ function timerCallback(app)
             [app.particleArrayVelocity,app.particleArrayPreviousAcceleration] = app.particleFunctions.calculateCurrentVelocityCD(orthogonalWallContact, wallContact, temporaryVelocity, app.particleArrayPreviousAcceleration, app.particleArrayForce, app.particleFunctions.particleMass, smallerTMaxStepReduced);
             app.particleArrayPreviousLocation = temporaryLocation;
     
-            endZoneParticles = app.particleFunctions.isParticleInEndZone(app.polygon.currentEndZone,app.particleArrayLocation);
-            app.haltParticlesInEndZone = (sum(endZoneParticles,2) > 0); %TODO need to check the dimension is correct
-            goalPercentage = sum(endZoneParticles,1) ./ app.numParticles; %TODO check this code works...
+            app.haltParticlesInEndZone = app.particleFunctions.isParticleInEndZone(app.polygon.currentEndZone,app.particleArrayLocation);
+          %  app.haltParticlesInEndZone = (sum(endZoneParticles,2) > 0); %TODO need to check the dimension is correct
+            goalPercentage = sum(app.haltParticlesInEndZone,1) ./ app.numParticles; 
             
             if(app.timestep == 0)
                 %app.timePassed = round(etime(clock,app.startTime)*1000);
