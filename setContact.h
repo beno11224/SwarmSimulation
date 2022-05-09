@@ -1,0 +1,1 @@
+double[] setContact(boolean[] inOnOOB, double[] wallContactVector, doublep[] orthogonalWallContactVector, double[] particleLocation, double[] line);

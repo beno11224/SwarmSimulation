@@ -65,7 +65,6 @@ classdef ParticleFunctions
                 distMove = particleVelocity .* 0;
                 totalOut = sum(~in);
                 dists = zeros(length(wallContact),1);
-                
                 for outOfBoundsCount = 1:length(polygon.outOfBoundsPolys)
                     [inOOB,onOOB] = inpolygon(particleLocation(:,1), particleLocation(:,2), polygon.outOfBoundsPolys(outOfBoundsCount,:,1), polygon.outOfBoundsPolys(outOfBoundsCount,:,2));
                     inOnOOB = inOOB|onOOB; %Or together to get anything that is in or on the polygon
@@ -85,29 +84,7 @@ classdef ParticleFunctions
                             break;
                         end
                     end
-                end
-               %{ 
-                for outOfBoundsCount = 1:length(polygon.outOfBoundsPolys)
-                    [inOOB,onOOB] = inpolygon(particleLocation(:,1), particleLocation(:,2), polygon.outOfBoundsPolys(outOfBoundsCount,:,1), polygon.outOfBoundsPolys(outOfBoundsCount,:,2));
-                    inOnOOB = inOOB|onOOB; %Or together to get anything that is in or on the polygon
-                    if(any(inOnOOB))
-                        wallContactVector = polygon.currentPolyVector(outOfBoundsCount,:);
-                        orthogonalWallContactVector = polygon.hardCodedOrthogonalWallContacts(outOfBoundsCount,:);
-                        for particleIndex = 1:length(wallContact)
-                            %Not ideal, but wouldn't work in matrix form.
-                            if(inOnOOB(particleIndex) == 1)
-                                wallContact(particleIndex,:) = wallContactVector;
-                                orthogonalWallContact(particleIndex,:) = orthogonalWallContactVector;
-                                dists(particleIndex) = obj.distPointToLine(particleLocation(particleIndex,:), polygon.currentPoly(outOfBoundsCount,:), polygon.currentPoly(outOfBoundsCount + 1,:));
-                                particleInc = particleInc + 1;
-                            end
-                        end
-                        if(particleInc >= totalOut)
-                            break;
-                        end
-                    end
-                end 
-                %}
+                end                     
                 distMove = dists .* orthogonalWallContact;
                 distMove(isnan(distMove)) = 0;
                 particleLocation = particleLocation + distMove;
