@@ -59,22 +59,61 @@ classdef ParticleFunctions
             wallContact = particleVelocity .* nan;
             orthogonalWallContact = wallContact;
             %If no particles are outside the shape, we can skip all this.
+          %  velForWorkingStuffOut = particleVelocity(1,:) + 1;
+            particleInc = 0;
             if(any(~in))
                 distMove = particleVelocity .* 0;
-                dists = zeros(length(wallContact),1);                
+                totalOut = sum(~in);
+                dists = zeros(length(wallContact),1);
+                
                 for outOfBoundsCount = 1:length(polygon.outOfBoundsPolys)
                     [inOOB,onOOB] = inpolygon(particleLocation(:,1), particleLocation(:,2), polygon.outOfBoundsPolys(outOfBoundsCount,:,1), polygon.outOfBoundsPolys(outOfBoundsCount,:,2));
                     inOnOOB = inOOB|onOOB; %Or together to get anything that is in or on the polygon
                     if(any(inOnOOB))
                         repmatLength = length(inOnOOB);
-                        wallContactVector = repmat(polygon.currentPolyVector(outOfBoundsCount,:),repmatLength,1);
-                        orthogonalWallContactVector = repmat(polygon.hardCodedOrthogonalWallContacts(outOfBoundsCount,:),repmatLength,1);
-                        wallContact(inOnOOB == 1,:) = wallContactVector(inOOB == 1,:);
-                        orthogonalWallContact(inOnOOB == 1,:) = orthogonalWallContactVector(inOnOOB == 1,:);
-                        dists(inOnOOB == 1,:) = obj.distPointToLine(particleLocation(inOnOOB == 1,:), polygon.currentPoly(outOfBoundsCount,:), polygon.currentPoly(outOfBoundsCount + 1,:));
-
+                        inOnOOB = repmat(inOnOOB,repmatLength,2);
+                        wallContactVector = repmat(polygon.currentPolyVector(outOfBoundsCount,:),repmatLength,2);
+                        orthogonalWallContactVector = repmat(polygon.hardCodedOrthogonalWallContacts(outOfBoundsCount,:),repmatLength,2);
+                        wallContact(inOnOOB == 1) = 
+                        
+                        
+                        
+                        for particleIndex = 1:length(wallContact)
+                            %Not ideal, but wouldn't work in matrix form.
+                            if(inOnOOB(particleIndex) == 1)
+                                wallContact(particleIndex,:) = wallContactVector;
+                                orthogonalWallContact(particleIndex,:) = orthogonalWallContactVector;
+                                dists(particleIndex) = obj.distPointToLine(particleLocation(particleIndex,:), polygon.currentPoly(outOfBoundsCount,:), polygon.currentPoly(outOfBoundsCount + 1,:));
+                                particleInc = particleInc + 1;
+                            end
+                        end
+                        if(particleInc >= totalOut)
+                            break;
+                        end
                     end
                 end
+               %{ 
+                for outOfBoundsCount = 1:length(polygon.outOfBoundsPolys)
+                    [inOOB,onOOB] = inpolygon(particleLocation(:,1), particleLocation(:,2), polygon.outOfBoundsPolys(outOfBoundsCount,:,1), polygon.outOfBoundsPolys(outOfBoundsCount,:,2));
+                    inOnOOB = inOOB|onOOB; %Or together to get anything that is in or on the polygon
+                    if(any(inOnOOB))
+                        wallContactVector = polygon.currentPolyVector(outOfBoundsCount,:);
+                        orthogonalWallContactVector = polygon.hardCodedOrthogonalWallContacts(outOfBoundsCount,:);
+                        for particleIndex = 1:length(wallContact)
+                            %Not ideal, but wouldn't work in matrix form.
+                            if(inOnOOB(particleIndex) == 1)
+                                wallContact(particleIndex,:) = wallContactVector;
+                                orthogonalWallContact(particleIndex,:) = orthogonalWallContactVector;
+                                dists(particleIndex) = obj.distPointToLine(particleLocation(particleIndex,:), polygon.currentPoly(outOfBoundsCount,:), polygon.currentPoly(outOfBoundsCount + 1,:));
+                                particleInc = particleInc + 1;
+                            end
+                        end
+                        if(particleInc >= totalOut)
+                            break;
+                        end
+                    end
+                end 
+                %}
                 distMove = dists .* orthogonalWallContact;
                 distMove(isnan(distMove)) = 0;
                 particleLocation = particleLocation + distMove;
@@ -314,13 +353,11 @@ classdef ParticleFunctions
 
         %Shortest distand from a point to a line
         function dist = distPointToLine(obj,point,lineA,lineB)
-            for pointIndex = 1:size(point,1)
-                a = lineA - lineB;
-                b = point(pointIndex,:) - lineB;
-                a(3) = 0;
-                b(3) = 0;
-                dist(pointIndex) = norm(cross(a,b)) / norm(a);
-            end
+            a = lineA - lineB;
+            b = point - lineB;
+            a(3) = 0;
+            b(3) = 0;
+            dist = norm(cross(a,b)) / norm(a);
         end
         
         %vector projection of AB along line CD
