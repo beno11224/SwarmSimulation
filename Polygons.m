@@ -31,11 +31,11 @@ classdef Polygons
                len -len*0.5;
                len -len;
                len*0.5 -len;
-               len*0.25 -len;              
+               len*0.25 -len;
                -len*0.5 -len;
                -len*0.25 -len;
                -len -len;
-               -len -len;       
+               -len -len;
                -len -len*0.5;
                -len -len*0.25;
                -len len*0.5;
@@ -168,25 +168,40 @@ classdef Polygons
            
            obj.currentStartZone = squeeze(obj.allStartZones(1,:,:));
            
-           obj.allEndZones(1,:,:) = [len*0.75, -len;
+           obj.allEndZones(1,1,:,:) = [len*0.75, -len;
                 len, -len;
                 len, -len*0.75;
                 len*0.75, -len*0.75;
                 len*0.75, -len];
             
-           obj.allEndZones(2,:,:) = [0.00941 -0.00269
+           obj.allEndZones(2,1,:,:) = [0.00941 -0.00269
                0.00870 -0.0034;
                0.00799 -0.00269;
                0.00870 -0.00198;
-               0.00941 -0.00269];
+               0.00941 -0.00269];          
+           obj.allEndZones(2,2,:,:) = [-0.00096 -0.00754;%1st lower
+               -0.00025 -0.00683;
+               -0.0005 -0.006;%Values don't line up perfectly, but oh well - they are only used to stop particles
+               -0.0018 -0.0068;
+               -0.00096 -0.00754];
+           obj.allEndZones(2,3,:,:) = [0.00941 0.00438;%upper3rd
+               0.00870 0.00509;
+               0.00770 0.0047;%TODO check...
+               0.0092 0.004;%TODO
+               0.00941 0.00438];
+           obj.allEndZones(2,4,:,:) = [0.00006 0.00632;%upper2nd
+               -0.00096 0.00632;
+               -0.00099 0.006;%TODO check...
+               0.00009 0.006;%TODO
+               0.00006 0.00632];
+          
+        %   obj.allEndZones(3,:,:) = [0.00941 -0.00269
+        %       0.00870 -0.0034;
+        %       0.00799 -0.00269;
+        %       0.00870 -0.00198;
+        %       0.00941 -0.00269];
            
-           obj.allEndZones(3,:,:) = [0.00941 -0.00269
-               0.00870 -0.0034;
-               0.00799 -0.00269;
-               0.00870 -0.00198;
-               0.00941 -0.00269];
-           
-           obj.allEndZones(3,:,:) = [-0.0044 -0.004; %drag force test
+           obj.allEndZones(3,1,:,:) = [-0.0044 -0.004; %drag force test
                -0.0035 -0.004;
                -0.0035 -0.003;
                -0.0044 -0.003;
@@ -198,7 +213,7 @@ classdef Polygons
            %    0.00870 -0.00198;
            %    0.00941 -0.00269];
            
-           obj.allEndZones(4,:,:) = [-0.0084 -0.004; %magnetic force test
+           obj.allEndZones(4,1,:,:) = [-0.0084 -0.004; %magnetic force test
                -0.0065 -0.004;
                -0.0065 -0.003;
                -0.0084 -0.003;
@@ -216,7 +231,7 @@ classdef Polygons
            %    -len -len*0.35;
            %    -len -len*0.38]; 
             
-           obj.currentEndZone = squeeze(obj.allEndZones(1,:,:));
+           obj.currentEndZone = squeeze(obj.allEndZones(1,1,:,:));
            %{
            [-0.0095 -0.004; %Ex1
                -0.0045 -0.004;
@@ -317,26 +332,6 @@ classdef Polygons
                -0.01 -0.003];             
 
         obj.hardCodedOrthogonalWallContacts = [0 1; 
-            0.5 -0.5; %TODO
-            0.5 0.5; %TODO
-            0.5 -0.5;%TODO
-            0.5 0.5; %TODO
-            0 1;
-            0.5 -0.5; %TODO
-            0.5 0.5; %TODO
-            0.5 -0.5;%TODO
-            0.5 0.5; %TODO
-            0.5 -0.5;%TODO
-            0.5 0.5; %TODO
-            0 1;
-            1 0;
-            0 1;
-            1 0;
-            0.5 0.5;%TODO
-            0 1;
-            1 0];
-
-        obj.hardCodedOrthogonalWallContacts = [0 1; 
             0.7071 0.7071;
             -0.7071 0.7071;
             -0.7018 -0.7124;
@@ -368,7 +363,7 @@ classdef Polygons
                 obj.currentPolyVector(i,:) = obj.currentPoly(i,:) - obj.currentPoly(i+1,:);
             end
             obj.currentStartZone = squeeze(obj.allStartZones(num,:,:));
-            obj.currentEndZone = squeeze(obj.allEndZones(num,:,:));
+            obj.currentEndZone = squeeze(obj.allEndZones(num,:,:,:));
         end
     end
 end

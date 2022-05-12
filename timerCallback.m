@@ -10,7 +10,7 @@ function timerCallback(app)
         magForce = app.previousMagforce;
         smallerTMaxTotalSteps = 50; %Any more speed comes from making the sim more efficient or slowing it down (not real time) %150
         smallerTMaxStep = app.simTimerPeriod / smallerTMaxTotalSteps;
-        smallerTMaxStepReduced = smallerTMaxStep / 1; %use this to just run the simulation x times slower   %20
+        smallerTMaxStepReduced = smallerTMaxStep;% / 20; %use this to just run the simulation x times slower   %20
         for smallerTMaxIndex = 1:smallerTMaxTotalSteps 
             magForce = magForce .* (1-magForceAlpha) + currentMagforce.* magForceAlpha;
             app.particleArrayForce = magForce;
@@ -39,9 +39,12 @@ function timerCallback(app)
             [app.particleArrayVelocity,app.particleArrayPreviousAcceleration] = app.particleFunctions.calculateCurrentVelocityCD(orthogonalWallContact, wallContact, temporaryVelocity, app.particleArrayPreviousAcceleration, app.particleArrayForce, app.particleFunctions.particleMass, smallerTMaxStepReduced);
             app.particleArrayPreviousLocation = temporaryLocation;
     
-            app.haltParticlesInEndZone = app.particleFunctions.isParticleInEndZone(app.polygon.currentEndZone,app.particleArrayLocation);
-          %  app.haltParticlesInEndZone = (sum(endZoneParticles,2) > 0); %TODO need to check the dimension is correct
-            goalPercentage = sum(app.haltParticlesInEndZone,1) ./ app.numParticles; 
+            particlesInEndZone = app.particleFunctions.isParticleInEndZone(app.polygon.currentEndZone,app.particleArrayLocation);
+            app.haltParticlesInEndZone = any(particlesInEndZone,2);
+            goalPercentage = sum(particlesInEndZone,1) ./ app.numParticles;
+            goalPercentage = goalPercentage(1);
+
+            %goalPercentage = 0;
             
             if(app.timestep == 0)
                 %app.timePassed = round(etime(clock,app.startTime)*1000);
