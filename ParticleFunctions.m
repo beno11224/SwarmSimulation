@@ -64,7 +64,7 @@ classdef ParticleFunctions
                 dists = zeros(length(wallContact),1);                
                 for outOfBoundsCount = 1:length(polygon.outOfBoundsPolys)
                     [inOOB,onOOB] = inpolygon(particleLocation(:,1), particleLocation(:,2), polygon.outOfBoundsPolys(outOfBoundsCount,:,1), polygon.outOfBoundsPolys(outOfBoundsCount,:,2));
-                    inOnOOB = inOOB|onOOB; %Or together to get anything that is in or on the polygon
+                    inOnOOB = (inOOB|onOOB); %Or together to get anything that is in or on the polygon
                     if(any(inOnOOB))
                         repmatLength = length(inOnOOB);
                         wallContactVector = repmat(polygon.currentPolyVector(outOfBoundsCount,:),repmatLength,1);
@@ -72,7 +72,6 @@ classdef ParticleFunctions
                         wallContact(inOnOOB == 1,:) = wallContactVector(inOOB == 1,:);
                         orthogonalWallContact(inOnOOB == 1,:) = orthogonalWallContactVector(inOnOOB == 1,:);
                         dists(inOnOOB == 1,:) = obj.distPointToLine(particleLocation(inOnOOB == 1,:), polygon.currentPoly(outOfBoundsCount,:), polygon.currentPoly(outOfBoundsCount + 1,:));
-
                     end
                 end
                 distMove = dists .* orthogonalWallContact;
@@ -101,7 +100,7 @@ classdef ParticleFunctions
             model.geometryFromMesh(tnodes, telements);
             mesh = generateMesh(model, 'Hmax', 0.001);%was 0.000073 for old one.
             
-            %{    
+       %{         
             plot(axes, mesh.Nodes(1,:), mesh.Nodes(2,:), '.','markerSize', 5 , 'color', 'red'); %visualise nodes
             
             flowMatrix = flowMatrix .* 3000;
@@ -109,12 +108,13 @@ classdef ParticleFunctions
             for i = 1:size(mesh.Nodes,2)
                 ab = plot(axes, mesh.Nodes(1,i), mesh.Nodes(2,i), '.', 'markerSize', 23, 'color', 'yellow');
                 abz = plot(axes,[mesh.Nodes(1,i); mesh.Nodes(1,i) + flowMatrix(i,1)], [mesh.Nodes(2,i); mesh.Nodes(2,i) + flowMatrix(i,2)], 'color', 'red');
+                flowVel = flowMatrix(i,:)
                 abc(1,:) = [i i+11];
                 abc(2,:) = flowMatrix(i,:);
                 delete(ab);
                 delete(abz);
             end
-            %}
+       %}
 
             closestNode = findNodes(mesh, 'nearest', particleLocation');
             velocity(:,1) = flowMatrix(closestNode,1);
