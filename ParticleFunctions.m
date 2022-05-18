@@ -91,7 +91,7 @@ classdef ParticleFunctions
             end
         end
         
-        function velocity = calculateFlow(obj, particleLocation, flowMatrix, polygon, axes)
+        function velocity = calculateFlow(obj, particleLocation, flowMatrix, polygon, axes) 
             %Remove this once values are loaded in from file
             tr = triangulation(polyshape(polygon.currentPoly(:,1),polygon.currentPoly(:,2)));
             model = createpde(1);
