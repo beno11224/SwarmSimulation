@@ -3,26 +3,26 @@ function parametricFlowGraphs()
 close all;
 
 FlowVel = [0.001,0.0025, 0.005, 0.01, 0.015, 0.02, 0.025];
-AvgPercent = [99.6,96.8,97.6,82.8,54.8,36,18.8];
-Minpercent = [98,92,92,64,44,20,8];
-MaxPercent = [100,100,100,96,64,60,34];
-STDFlowErr = [0.4,1.356465997,1.469693846,5.782732918,3.666060556,7.720103626,4.409081537];
+AvgPercent = [99.77777778,98.4,98.4,79.4,59.2,39,29.4];
+%Minpercent = [98,92,92,64,44,20,8];
+%MaxPercent = [100,100,100,96,64,60,34];
+STDFlowErr = [0.25,1,0.777460253,4.110150038,5.40945674,4.394440933,4.310710176];
 
 particleSize = [50, 75, 100, 125, 150, 175,200];
-sizePercent = [69.33333333,80.66666667,79.33333333,70.66666667,68.66666667,63.33333333,74.66666667];
-MinSizepercent = [64,68,68,70,60,56,66];
-MaxSizepercent = [74,88,86,72,84,70,90];
-STDSizeErr = [2.905932629,6.359594676,5.696002497,0.666666667,7.688375063,4.05517502,7.688375063];
+sizePercent = [63,81.2,80.2,69.6,66.6,71.6,78.8];
+%MinSizepercent = [64,68,68,70,60,56,66];
+%MaxSizepercent = [74,88,86,72,84,70,90];
+STDSizeErr = [4.592264026,2.274496281,3.903844259,3.550273855,3.967086812,3.396730454,3.043389923];
 
 MagForce = [1,1.5,2,2.25];
-MFNFPercent = [98.4,100,98.8,99.6];
-MinMFNFpercent = [94,100,98,98];
-MaxMFNFpercent = [100,100,100,100];
-STDMFNFErr = [1.166190379,0,0.489897949,0.4];
-MFFPercent = [85.6,87.6,98.8,96.4];
-MinMFFpercent = [72,74,98,92];
-MaxMFFpercent = [100,100,100,100];
-STDMFFErr = [4.489988864,5.635601121,0.489897949,1.469693846];
+%MFNFPercent = [98.4,100,98.8,99.6];
+%MinMFNFpercent = [94,100,98,98];
+%MaxMFNFpercent = [100,100,100,100];
+%STDMFNFErr = [1.166190379,0,0.489897949,0.4];
+MFFPercent = [85.2,88,95.2,96.4];
+%MinMFFpercent = [72,74,98,92];
+%MaxMFFpercent = [100,100,100,100];
+STDMFFErr = [2.274496281,3.438345856,2.653299832,1.066666667];
 
 
 
@@ -47,7 +47,7 @@ ylabel('Percentage');
 ylim([0,100]);
 
 % Create xlabel
-xlabel('Flow (m/s)');
+xlabel('Fluid Flow Velocity (m/s)');
 
 % Create title
 title('Percentage of particles reaching the goal state');
@@ -113,7 +113,7 @@ hold(axes3,'on');
 %data3a = errorbar(MagForce,MFFPercent,MFFPercent - MinMFFpercent,MaxMFFpercent - MFFPercent);
 data3a = errorbar(MagForce,MFFPercent,STDMFFErr,'o--','MarkerSize',4,'MarkerEdgeColor','black','MarkerFaceColor','magenta');
 data3a.Color = 'black';
-set(data3a,'DisplayName','Flow 0.01m/s Percentage of particles reaching the goal state');
+set(data3a,'DisplayName','Percentage of particles reaching the goal state');
 
 % Create ylabel
 ylabel('Percentage');
