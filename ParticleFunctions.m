@@ -37,14 +37,14 @@ classdef ParticleFunctions
         function force = calculateMagneticForce(obj, aCoils,joyStick, h, v)
             %Now just using aCoils for the minute, will remove b coils from demo shortly.
             % force = (aCoils.*10^6) .* obj.magneticForceConstant;
-            if(joyStick == 0)
+            if(h .* v == 0)
                 totalForce = aCoils.* 10^6;
             else
-                horizontalJoyStick = axis(joyStick, h);
-                verticalJoyStick = axis(joyStick, v);
+                horizontalJoyStick = axis(joyStick, abs(h)) .* ((h < 0) .* -1);
+                verticalJoyStick = axis(joyStick, abs(v)) .* ((v < 0) .* -1);
                 totalForce = ones(size(aCoils)) .* [2.25 2.25] .* 10^6;
-                totalForce(1,:) = totalForce(1,:) .* horizontalJoyStick;
-                totalForce(2,:) = totalForce(2,:) .* verticalJoyStick;
+                totalForce(:,1) = totalForce(:,1) .* horizontalJoyStick;
+                totalForce(:,2) = totalForce(:,2) .* verticalJoyStick;
             end
 
             force = obj.magneticForceConstant .* totalForce;
