@@ -34,9 +34,20 @@ classdef ParticleFunctions
         end
         
         %public functions
-        function force = calculateMagneticForce(obj, aCoils)
+        function force = calculateMagneticForce(obj, aCoils,joyStick)
             %Now just using aCoils for the minute, will remove b coils from demo shortly.
-            force = (aCoils.*10^6) .* obj.magneticForceConstant;
+            % force = (aCoils.*10^6) .* obj.magneticForceConstant;
+            if(isNan(joyStick))
+                totalForce = aCoils.* 10^6;
+            else
+                lefth = axis(joyStick ,1);
+                leftv = axis(joyStick ,2);
+                totalForce = ones(size(aCoils)) .* [2.25 2.25] .* 10^6;
+                totalForce(1,:) = totalForce(1,:) .* lefth;
+                totalForce(2,:) = totalForce(2,:) .* leftv;
+            end
+
+            force = obj.magneticForceConstant .* totalForce;
         end
         function force = calculateDipoleForce(obj, particleLocation, particleTorque)
             xYdistanceBetweenAllParticles = particleLocation - permute(particleLocation,[3,2,1]);
@@ -100,11 +111,11 @@ classdef ParticleFunctions
             model.geometryFromMesh(tnodes, telements);
             mesh = generateMesh(model, 'Hmax', 0.001);%was 0.000073 for old one.
             
-       %{         
+                
             plot(axes, mesh.Nodes(1,:), mesh.Nodes(2,:), '.','markerSize', 5 , 'color', 'red'); %visualise nodes
             
             flowMatrix = flowMatrix .* 3000;
-            
+
             for i = 1:size(mesh.Nodes,2)
                 ab = plot(axes, mesh.Nodes(1,i), mesh.Nodes(2,i), '.', 'markerSize', 23, 'color', 'yellow');
                 abz = plot(axes,[mesh.Nodes(1,i); mesh.Nodes(1,i) + flowMatrix(i,1)], [mesh.Nodes(2,i); mesh.Nodes(2,i) + flowMatrix(i,2)], 'color', 'red');
@@ -114,7 +125,7 @@ classdef ParticleFunctions
                 delete(ab);
                 delete(abz);
             end
-       %}
+       
 
             closestNode = findNodes(mesh, 'nearest', particleLocation');
             velocity(:,1) = flowMatrix(closestNode,1);
