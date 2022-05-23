@@ -34,17 +34,17 @@ classdef ParticleFunctions
         end
         
         %public functions
-        function force = calculateMagneticForce(obj, aCoils,joyStick)
+        function force = calculateMagneticForce(obj, aCoils,joyStick, h, v)
             %Now just using aCoils for the minute, will remove b coils from demo shortly.
             % force = (aCoils.*10^6) .* obj.magneticForceConstant;
-            if(isNan(joyStick))
+            if(joyStick == 0)
                 totalForce = aCoils.* 10^6;
             else
-                lefth = axis(joyStick ,1);
-                leftv = axis(joyStick ,2);
+                horizontalJoyStick = axis(joyStick, h);
+                verticalJoyStick = axis(joyStick, v);
                 totalForce = ones(size(aCoils)) .* [2.25 2.25] .* 10^6;
-                totalForce(1,:) = totalForce(1,:) .* lefth;
-                totalForce(2,:) = totalForce(2,:) .* leftv;
+                totalForce(1,:) = totalForce(1,:) .* horizontalJoyStick;
+                totalForce(2,:) = totalForce(2,:) .* verticalJoyStick;
             end
 
             force = obj.magneticForceConstant .* totalForce;
@@ -111,7 +111,7 @@ classdef ParticleFunctions
             model.geometryFromMesh(tnodes, telements);
             mesh = generateMesh(model, 'Hmax', 0.001);%was 0.000073 for old one.
             
-                
+       %{    
             plot(axes, mesh.Nodes(1,:), mesh.Nodes(2,:), '.','markerSize', 5 , 'color', 'red'); %visualise nodes
             
             flowMatrix = flowMatrix .* 3000;
@@ -125,7 +125,7 @@ classdef ParticleFunctions
                 delete(ab);
                 delete(abz);
             end
-       
+       %}
 
             closestNode = findNodes(mesh, 'nearest', particleLocation');
             velocity(:,1) = flowMatrix(closestNode,1);

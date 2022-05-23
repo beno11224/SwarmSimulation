@@ -2,7 +2,7 @@ function timerCallback(app)
   %  if(~app.currentlyDoingWorkSemaphore)
   %      app.currentlyDoingWorkSemaphore = true; %let the earlier tasks complete first, try and force other to leave things alone        
         
-        currentMagforce = app.particleFunctions.calculateMagneticForce([app.X1MAGauge.Value app.Y1MAGauge.Value],app.joyStick);
+        currentMagforce = app.particleFunctions.calculateMagneticForce([app.X1MAGauge.Value app.Y1MAGauge.Value],app.joyStick, app.HorizontalJoyStickAxisEditField.Value, app.VerticalJoyStickAxisEditField.Value);
         vFlow = app.particleFunctions.calculateFlow(real(app.particleArrayLocation), app.fd.FlowValues, app.polygon, app.UIAxes);
         vFlow = vFlow .* app.FluidFlowmsEditField.Value;
 
@@ -24,7 +24,7 @@ function timerCallback(app)
 
            % exportgraphics(app.UIAxes,'test.png','Resolution',1200);
            % exportapp(app.UIFigure,'testFig.pdf');
-            exportapp(app.UIFigure,'testFig.png');
+          %  exportapp(app.UIFigure,'testFig.png');
             
             %friction
         %TODO Friction doesn't seem to do anything here - maybe check
