@@ -34,19 +34,28 @@ classdef ParticleFunctions
         end
         
         %public functions
-        function force = calculateMagneticForce(obj, aCoils,joyStick, h, v)
-            %Now just using aCoils for the minute, will remove b coils from demo shortly.
-            % force = (aCoils.*10^6) .* obj.magneticForceConstant;
-            if(joyStick == 0)
-                totalForce = aCoils.* 10^6;
-            else
-                horizontalJoyStick = axis(joyStick, h);
-                verticalJoyStick = axis(joyStick, v);
-                totalForce = ones(size(aCoils)) .* [2.25 2.25] .* 10^6;
-                totalForce(1,:) = totalForce(1,:) .* horizontalJoyStick;
-                totalForce(2,:) = totalForce(2,:) .* verticalJoyStick;
+        function force = calculateMagneticForce(obj, aCoils,joyStick, h, v, controlMethod)
+            switch(controlMethod)
+                case(controlMethod == 0)
+                %Now just using aCoils for the minute, will remove b coils from demo shortly.
+                % force = (aCoils.*10^6) .* obj.magneticForceConstant;
+                if( h .* v == 0)
+                    totalForce = aCoils.* 10^6;
+                else
+                    horizontalJoyStick = axis(joyStick, h);
+                    verticalJoyStick = axis(joyStick, v);
+                    totalForce = ones(size(aCoils)) .* [2.25 2.25] .* 10^6;
+                    totalForce(1,:) = totalForce(1,:) .* horizontalJoyStick;
+                    totalForce(2,:) = totalForce(2,:) .* verticalJoyStick;
+                end
+                case(controlMethod == 1)
+                    MouseXY = get(0, 'PointerLocation');
+                    totalForce = 1./MouseXY; %TODO - just need location of window - anything outside the window produces no force.
+                %case(controlMethod == 2)
+                    %TODO do haptic here.
+                otherwise
+                    totalForce = [0 0];
             end
-
             force = obj.magneticForceConstant .* totalForce;
         end
         function force = calculateDipoleForce(obj, particleLocation, particleTorque)

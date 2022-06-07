@@ -1,0 +1,12 @@
+[Haptik.Library] VERBOSE: Version 1.2.32.1084.20140325
+[Haptik.Library] VERBOSE: Loaded from C:\Users\bj20907\Documents\GitHub\SwarmSimulation\Haptik.Library.dll
+[Haptik.Library] VERBOSE: 06/07/22 14:23:19
+[Haptik.Library] SUCCESS: Loaded C:\Users\bj20907\Documents\GitHub\SwarmSimulation\Haptik.Config.txt from working directory
+[Haptik.Library] VERBOSE: Haptik HKLM Registry Key not Found
+[Haptik.Library] FAILURE: Failed to load Haptik.Falcon64.dll
+[Haptik.Library] VERBOSE:  %1 is not a valid Win32 application.
+[Haptik.Library] VERBOSE: Trying Fallbacks
+[Haptik.Library] FAILURE: Failed to load Haptik.Falcon.dll
+[Haptik.Library] VERBOSE:  %1 is not a valid Win32 application.
+[Haptik.Library] VERBOSE: No more fallbacks... plugin skipped
+[Haptik.Library] VERBOSE: Unloading...

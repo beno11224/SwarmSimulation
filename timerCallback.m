@@ -2,7 +2,7 @@ function timerCallback(app)
   %  if(~app.currentlyDoingWorkSemaphore)
   %      app.currentlyDoingWorkSemaphore = true; %let the earlier tasks complete first, try and force other to leave things alone        
         
-        currentMagforce = app.particleFunctions.calculateMagneticForce([app.X1MAGauge.Value app.Y1MAGauge.Value],app.joyStick, app.HorizontalJoyStickAxisEditField.Value, app.VerticalJoyStickAxisEditField.Value);
+        currentMagforce = app.particleFunctions.calculateMagneticForce([app.X1MAGauge.Value app.Y1MAGauge.Value],app.joyStick, app.HorizontalJoyStickAxisEditField.Value, app.VerticalJoyStickAxisEditField.Value, app.controlMethod);
         vFlow = app.particleFunctions.calculateFlow(real(app.particleArrayLocation), app.fd.FlowValues, app.polygon, app.UIAxes);
         vFlow = vFlow .* app.FluidFlowmsEditField.Value;
 

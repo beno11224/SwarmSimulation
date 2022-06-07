@@ -1,0 +1,7 @@
+HaptikLibrary.numberOfPlugins	=	1
+HaptikLibrary.plugin0_0	=	Haptik.Falcon64.dll
+HaptikLibrary.plugin0_1	=	Haptik.Falcon.dll
+HaptikLibrary.plugin1_0	=	Haptik_matlab.dll
+HaptikLibrary.allowMessageBoxes = FALSE
+HaptikLibrary.preventSplashScreen = TRUE
+
