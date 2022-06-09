@@ -34,7 +34,7 @@ classdef ParticleFunctions
         end
         
         %public functions
-        function force = calculateMagneticForce(obj, aCoils,joyStick, h, v, controlMethod)
+        function force = calculateMagneticForce(obj, aCoils,joyStick, h, v, controlMethod, mouseLocation)
             switch(controlMethod)
                 case(controlMethod == 0)
                 %Now just using aCoils for the minute, will remove b coils from demo shortly.
@@ -49,8 +49,13 @@ classdef ParticleFunctions
                     totalForce(2,:) = totalForce(2,:) .* verticalJoyStick;
                 end
                 case(controlMethod == 1)
-                    MouseXY = get(0, 'PointerLocation');
-                    totalForce = 1./MouseXY; %TODO - just need location of window - anything outside the window produces no force.
+                    if(any(mouseLocation < 0) || any(mouseLocation > 1))
+                        mouseLocation = [0 0];
+                    else
+                        mouseLocation = (mouseLocation .* 2 - 1);
+                        mouseLocation(isnan(mouseLocation)) = 0;
+                    end
+                    totalForce = mouseLocation .* 2.25*10^6
                 %case(controlMethod == 2)
                     %TODO do haptic here.
                 otherwise
