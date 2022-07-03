@@ -9,7 +9,7 @@ function timerCallback(app)
         %Use this one for control with the entire screen
         %mousePosition = (MouseXY) ./ (WindowLocation(3:4) - WindowLocation(1:2)))
 
-        currentMagforce = app.particleFunctions.calculateMagneticForce([app.X1MAGauge.Value app.Y1MAGauge.Value],app.joyStick, app.HorizontalJoyStickAxisEditField.Value, app.VerticalJoyStickAxisEditField.Value, app.controlMethod, mousePosition);
+        currentMagforce = app.particleFunctions.calculateMagneticForce([app.X1MAGauge.Value app.Y1MAGauge.Value],app.joyStick, 1, 3, app.controlMethod, mousePosition);
         vFlow = app.particleFunctions.calculateFlow(real(app.particleArrayLocation), app.fd.FlowValues, app.polygon, app.UIAxes);
         vFlow = vFlow .* app.FluidFlowmsEditField.Value;
 
