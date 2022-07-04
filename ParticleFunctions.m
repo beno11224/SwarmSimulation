@@ -36,17 +36,17 @@ classdef ParticleFunctions
         %public functions
         function force = calculateMagneticForce(obj, aCoils,joyStick, h, v, controlMethod, mouseLocation)
             switch(controlMethod)      
-                case(controlMethod == 1)
+                case("Keyboard")
                     totalForce = aCoils.* 10^6;
-                case(controlMethod == 2)
-                    if(any(mouseLocation < 0) || any(mouseLocation > 1))
-                        mouseLocation = [0 0];
-                    else
-                        mouseLocation = (mouseLocation .* 2 - 1);
-                        mouseLocation(isnan(mouseLocation)) = 0;
-                    end
+                case("Mouse")
+                   % if(any(mouseLocation < 0) || any(mouseLocation > 1))
+                   %     mouseLocation = [0 0];
+                   % else
+                   %     mouseLocation = (mouseLocation .* 2 - 1);
+                   %     mouseLocation(isnan(mouseLocation)) = 0;
+                   % end
                     totalForce = mouseLocation .* 2.25*10^6;
-                case(controlMethod == 3)
+                case("Controller")
                     horizontalJoyStick = axis(joyStick, h);
                     verticalJoyStick = axis(joyStick, v);
                     totalForce = ones(size(aCoils)) .* [2.25 2.25] .* 10^6;

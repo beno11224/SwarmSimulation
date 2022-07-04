@@ -2,14 +2,13 @@ function timerCallback(app)
   %  if(~app.currentlyDoingWorkSemaphore)
   %      app.currentlyDoingWorkSemaphore = true; %let the earlier tasks complete first, try and force other to leave things alone        
         
-        WindowLocation = app.UIFigure.Position;
-        MouseXY = get(0, 'PointerLocation');
+        
         %Use this one for just  within the window. NE is (1,1)
-        mousePosition = ((MouseXY) - WindowLocation(1:2)) ./ WindowLocation(3:4);
+        %mousePosition = ((MouseXY) - WindowLocation(1:2)) ./ WindowLocation(3:4);
         %Use this one for control with the entire screen
         %mousePosition = (MouseXY) ./ (WindowLocation(3:4) - WindowLocation(1:2)))
 
-        currentMagforce = app.particleFunctions.calculateMagneticForce([app.X1MAGauge.Value app.Y1MAGauge.Value],app.joyStick, 1, 3, app.controlMethod, mousePosition);
+        currentMagforce = app.particleFunctions.calculateMagneticForce([app.X1MAGauge.Value app.Y1MAGauge.Value],app.joyStick, 1, 3, app.controlMethod, app.mousePosition);
         vFlow = app.particleFunctions.calculateFlow(real(app.particleArrayLocation), app.fd.FlowValues, app.polygon, app.UIAxes);
         vFlow = vFlow .* app.FluidFlowmsEditField.Value;
 
