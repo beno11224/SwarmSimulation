@@ -8,7 +8,12 @@ function timerCallback(app)
         %Use this one for control with the entire screen
         %mousePosition = (MouseXY) ./ (WindowLocation(3:4) - WindowLocation(1:2)))
 
+        newHapticValues = HapticSpoofTest();
+        app.X1MAGauge.Value = newHapticValues(1);
+        app.Y1MAGauge.Value = newHapticValues(2);
+
         currentMagforce = app.particleFunctions.calculateMagneticForce([app.X1MAGauge.Value app.Y1MAGauge.Value],app.joyStick, 1, 3, app.controlMethod, app.mousePosition);
+        %currentMagforce = app.particleFunctions.calculateMagneticForce(newHapticValues,app.joyStick, 1, 3, app.controlMethod, app.mousePosition);
         vFlow = app.particleFunctions.calculateFlow(real(app.particleArrayLocation), app.fd.FlowValues, app.polygon, app.UIAxes);
         vFlow = vFlow .* app.FluidFlowmsEditField.Value;
 
