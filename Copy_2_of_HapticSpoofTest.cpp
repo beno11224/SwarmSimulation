@@ -37,14 +37,14 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     //*sum = a + b;
 
     // open the first available device
- if (drdOpen () < 0) {
+/* if (drdOpen () < 0) {
     printf ("error: cannot open device (%s)\n", dhdErrorGetLastStr ());
     dhdSleep (2.0);
     //return -1;
   }
 
   // print out device identifier
-/*  if (!drdIsSupported ()) {
+  if (!drdIsSupported ()) {
     printf ("unsupported device\n");
     printf ("exiting...\n");
     dhdSleep (2.0);
@@ -63,26 +63,17 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     printf ("error: regulation thread failed to start (%s)\n", dhdErrorGetLastStr ());
     dhdSleep (2.0);
     //return -1;
-  }*/
+  }
 
-        // apply zero force
-    if (dhdSetForceAndTorqueAndGripperForce (0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0) < DHD_NO_ERROR) {
-      printf ("error: cannot set force (%s)\n", dhdErrorGetLastStr());
-    }
 
-    double mx0, my0, mz0;
-    dhdGetPosition (&mx0, &my0, &mz0, 0); 
-    dhdClose();
-    
+      dhdGetPosition (&mx0, &my0, &mz0, 0); */
     double * data;
     int numVals = 2;
     plhs[0] = mxCreateDoubleMatrix(1,numVals,mxREAL);
     data = (double *) malloc(numVals * sizeof(data));
-    //for (int idx = 0; idx < numVals; ++idx) {
-    //    (data)[idx] = idx * 0.1 + ((double) rand() / (RAND_MAX));
-    //}
-    (data)[0] = mx0;
-    (data)[1] = my0;
+    for (int idx = 0; idx < numVals; ++idx) {
+        (data)[idx] = idx * 0.1 + ((double) rand() / (RAND_MAX));
+    }
     memcpy(mxGetPr(plhs[0]), data, numVals * sizeof(double));
     free(data);
     //TODO get mx0, my0, mz0 into the array above, to return those. Then this should work.

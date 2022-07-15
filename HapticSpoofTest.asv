@@ -1,5 +1,6 @@
 #include "mex.h"
 #include <stdlib.h>
+#include <string.h>
 #define _USE_MATH_DEFINES
 #include <math.h>
 
@@ -10,15 +11,16 @@
 
 void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 {
+
+    if(nrhs != 0)
+    {
+        mexErrMsgIdAndTxt("bitmarker:my_sum", "No inputs required.");
+    }
+
     //double a,b;
     //double *sum;
-
-   /* if(nrhs != 2)
-    {
-        mexErrMsgIdAndTxt("bitmarker:my_sum", "Two inputs required.");
-    }
     
-    if(!mxIsDouble(prhs[0]) || mxGetNumberOfElements(prhs[0]) != 1)
+ /*   if(!mxIsDouble(prhs[0]) || mxGetNumberOfElements(prhs[0]) != 1)
     {
         mexErrMsgIdAndTxt("bitmarker:my_sum", "First argument must be number.");
     }
@@ -26,20 +28,16 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     if(!mxIsDouble(prhs[1]) || mxGetNumberOfElements(prhs[1]) != 1)
     {
         mexErrMsgIdAndTxt("bitmarker:my_sum", "Second argument must be number.");
-    }*/
-
+    }
+*/
     //a = mxGetScalar(prhs[0]);
     //b = mxGetScalar(prhs[1]);
     //plhs[0] = mxCreateDoubleMatrix(1,1,mxREAL);
     //sum = mxGetPr(plhs[0]);
     //*sum = a + b;
-    
-    double *mx0;
-    double *my0;
-    double *mz0;
 
     // open the first available device
-/* if (drdOpen () < 0) {
+ if (drdOpen () < 0) {
     printf ("error: cannot open device (%s)\n", dhdErrorGetLastStr ());
     dhdSleep (2.0);
     //return -1;
@@ -67,11 +65,18 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     //return -1;
   }
 
-
-      dhdGetPosition (&mx0, &my0, &mz0, 0); */
-
-    mx0 = 1;
-    my0 = 1.1;
-    mz0 = 1.2;
-
+    double mx0, my0, mz0;
+      dhdGetPosition (&mx0, &my0, &mz0, 0); 
+    double * data;
+    int numVals = 2;
+    plhs[0] = mxCreateDoubleMatrix(1,numVals,mxREAL);
+    data = (double *) malloc(numVals * sizeof(data));
+    //for (int idx = 0; idx < numVals; ++idx) {
+    //    (data)[idx] = idx * 0.1 + ((double) rand() / (RAND_MAX));
+    //}
+    (data)[idx] = mx0;
+    (data)[idx] = my0;
+    memcpy(mxGetPr(plhs[0]), data, numVals * sizeof(double));
+    free(data);
+    //TODO get mx0, my0, mz0 into the array above, to return those. Then this should work.
 }
