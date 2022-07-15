@@ -1,0 +1,333 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<MF0 version="1.1" packageUris="http://schema.mathworks.com/mf0/cxxfe_ast/R2022a http://schema.mathworks.com/mf0/cxxfe_ast_annotations/20180710">
+  <cxxfe.ast.Project type="cxxfe.ast.Project" uuid="20249b23-2cd4-402a-911d-ebd424c99eab">
+    <Compilations type="cxxfe.ast.source.CompilationUnit" uuid="9c4aa079-05a3-4832-82fc-dbbc644fecf4">
+      <Files type="cxxfe.ast.source.SourceFile" uuid="00e9de34-0cbb-4c32-bc69-00eba028dbf3"/>
+      <Language>CXX</Language>
+      <Annotations type="mwAnnotation.AbsolutePathBuildInfo" uuid="d45034c1-055a-4725-bf25-b50e42302038">
+        <additionalCompilerFlags></additionalCompilerFlags>
+        <additionalLinkerFlags></additionalLinkerFlags>
+        <headers>C:\Program Files\MATLAB\R2022a\extern\examples\cpp_interface\autocenter.h</headers>
+        <location>D:\Uni\Simulations\SwarmSimulation</location>
+        <sourceFiles>C:\Program Files\MATLAB\R2022a\extern\examples\cpp_interface\autocenter.cpp</sourceFiles>
+        <libData type="mwAnnotation.LibraryAnnotation" uuid="c1b4da8a-368c-43f2-82ba-46acb4a015cb">
+          <architecture>win64</architecture>
+          <matlabVersion>R2022a</matlabVersion>
+          <packageName>autocenter</packageName>
+        </libData>
+      </Annotations>
+      <Constants type="cxxfe.ast.constants.TemplateParamConstant" uuid="c3aea24a-28ac-45e3-9022-dd78bfd16dba">
+        <Name>N</Name>
+        <Type type="cxxfe.ast.types.TemplateParamType" uuid="ad35850e-1e5d-4694-995e-e8f96af12e00"/>
+      </Constants>
+      <Constants type="cxxfe.ast.constants.TemplateParamConstant" uuid="1c13d547-1ea1-404b-9b7d-df60afb11616">
+        <Name>N</Name>
+        <Type type="cxxfe.ast.types.TemplateParamType" uuid="9079bea8-980c-4f26-a3df-a3f59541195f"/>
+      </Constants>
+      <Namespaces type="cxxfe.ast.Namespace" uuid="a9cfa544-c4c1-4174-9613-e220d10f77bb">
+        <IsStd>true</IsStd>
+        <Name>std</Name>
+        <Symbols type="cxxfe.ast.types.TypedefType" uuid="75b773b7-502d-452e-8c3f-6126bd388d27">
+          <Type type="cxxfe.ast.types.NullPtrType" uuid="5a12fd5c-4ab2-4cfb-9fff-e221afebd836"/>
+          <Name>nullptr_t</Name>
+        </Symbols>
+      </Namespaces>
+      <Namespaces type="cxxfe.ast.Namespace" uuid="3e3dd667-a07c-4256-9305-8456bc93044d">
+        <Name>__cxxabiv1</Name>
+        <Annotations type="mwAnnotation.ScopeAnnotation" uuid="3fecc28a-31d6-46e1-8cf3-92653e2aa09f">
+          <integrationStatus type="mwAnnotation.IntegrationStatus" uuid="dd35f72c-e225-4e45-af02-d3c7dc5cbfe2">
+            <definitionStatus>Unsupported</definitionStatus>
+          </integrationStatus>
+        </Annotations>
+      </Namespaces>
+      <Symbols type="cxxfe.ast.types.NullPtrType" uuid="5a12fd5c-4ab2-4cfb-9fff-e221afebd836">
+        <Name>nullptr</Name>
+      </Symbols>
+      <Symbols type="cxxfe.ast.types.ClassType" uuid="64dea767-21a6-4d88-a202-8cafe880a5ce">
+        <Linkage>ExternalCXX</Linkage>
+        <NeedsImplicitConstructor>true</NeedsImplicitConstructor>
+        <NeedsImplicitCopyConstructor>true</NeedsImplicitCopyConstructor>
+        <IsIncomplete>true</IsIncomplete>
+        <Name>type_info</Name>
+        <Annotations type="mwAnnotation.ClassAnnotation" uuid="dacedb55-fa6e-4399-8ca8-f1e043dad0e4">
+          <integrationStatus type="mwAnnotation.IntegrationStatus" uuid="3cce6c46-d1a4-43ff-afd7-75bdac47e183">
+            <definitionStatus>Inaccessible</definitionStatus>
+          </integrationStatus>
+        </Annotations>
+      </Symbols>
+      <Symbols type="cxxfe.ast.types.StructType" uuid="f9eb0960-3f51-4629-ac97-4530ce1935f7">
+        <Linkage>ExternalCXX</Linkage>
+        <NeedsImplicitConstructor>true</NeedsImplicitConstructor>
+        <NeedsImplicitCopyConstructor>true</NeedsImplicitCopyConstructor>
+        <IsIncomplete>true</IsIncomplete>
+        <Name>_GUID</Name>
+        <Annotations type="mwAnnotation.ClassAnnotation" uuid="06055b5a-a6a3-4cb1-b756-93bcbea9d2a0">
+          <integrationStatus type="mwAnnotation.IntegrationStatus" uuid="bad7ff7f-e6ee-4911-8aa7-8868de0926a1">
+            <definitionStatus>Inaccessible</definitionStatus>
+          </integrationStatus>
+        </Annotations>
+      </Symbols>
+      <Symbols type="cxxfe.ast.types.FloatType" uuid="34d9ae4f-916e-4088-824c-5e8fd8572fa3">
+        <Kind>LongDouble</Kind>
+        <NumBits>64</NumBits>
+        <Name>long double</Name>
+      </Symbols>
+      <Symbols type="cxxfe.ast.types.TypedefType" uuid="4547703f-cc83-4161-b63a-0722f84000e5">
+        <Type type="cxxfe.ast.types.FloatType" uuid="34d9ae4f-916e-4088-824c-5e8fd8572fa3"/>
+        <Name>__float80</Name>
+      </Symbols>
+      <Symbols type="cxxfe.ast.types.FloatType" uuid="d9e957bf-62c7-47f4-96c7-da785d0d29b1">
+        <Kind>Float128</Kind>
+        <NumBits>128</NumBits>
+        <Name>__float128</Name>
+      </Symbols>
+      <Symbols type="cxxfe.ast.types.TypedefType" uuid="2cbad045-0a7f-4985-a7d9-d5a37b5fbb33">
+        <Type type="cxxfe.ast.types.FloatType" uuid="d9e957bf-62c7-47f4-96c7-da785d0d29b1"/>
+        <Name>__float128</Name>
+      </Symbols>
+      <Symbols type="cxxfe.ast.Template" uuid="76f67692-574e-42c4-a844-266488ee7174">
+        <Kind>Class</Kind>
+        <ProtoTypeInstantiation type="cxxfe.ast.types.StructType" uuid="ee8b1b1a-bd29-4f24-81d4-e09b6f3cead2"/>
+        <Name>__make_integer_seq</Name>
+        <Scope type="cxxfe.ast.Scope" uuid="cac2d5e8-87ad-4b38-a412-65a0d31ac231">
+          <Symbols type="cxxfe.ast.types.TemplateParamType" uuid="ad35850e-1e5d-4694-995e-e8f96af12e00">
+            <Name>T</Name>
+          </Symbols>
+        </Scope>
+      </Symbols>
+      <Symbols type="cxxfe.ast.types.StructType" uuid="ee8b1b1a-bd29-4f24-81d4-e09b6f3cead2">
+        <Linkage>ExternalCXX</Linkage>
+        <NeedsImplicitConstructor>true</NeedsImplicitConstructor>
+        <NeedsImplicitCopyConstructor>true</NeedsImplicitCopyConstructor>
+        <AssocTemplate type="cxxfe.ast.Template" uuid="76f67692-574e-42c4-a844-266488ee7174"/>
+        <IsIncomplete>true</IsIncomplete>
+        <IsTemplatePrototype>true</IsTemplatePrototype>
+        <TemplateArgs type="cxxfe.ast.TemplateArg" uuid="ea53bae3-6f9b-4bc8-9218-25655f7a885c">
+          <Kind>TemplateTemplate</Kind>
+          <Name>templateTemplateParam</Name>
+        </TemplateArgs>
+        <TemplateArgs type="cxxfe.ast.TemplateArg" uuid="3ad23a6b-6e27-4647-acfd-028877068786">
+          <Kind>Type</Kind>
+          <Type type="cxxfe.ast.types.TemplateParamType" uuid="ad35850e-1e5d-4694-995e-e8f96af12e00"/>
+        </TemplateArgs>
+        <TemplateArgs type="cxxfe.ast.TemplateArg" uuid="b1584443-e4b1-4ba6-8399-5eae510c1338">
+          <Kind>NonType</Kind>
+          <Val type="cxxfe.ast.constants.TemplateParamConstant" uuid="c3aea24a-28ac-45e3-9022-dd78bfd16dba"/>
+        </TemplateArgs>
+        <Name>__make_integer_seq</Name>
+        <Annotations type="mwAnnotation.ClassAnnotation" uuid="1002147e-f813-4d74-a248-9a9f824f4c05">
+          <integrationStatus type="mwAnnotation.IntegrationStatus" uuid="bdbcb275-501d-46b0-88d7-76b013377412">
+            <definitionStatus>Inaccessible</definitionStatus>
+          </integrationStatus>
+        </Annotations>
+      </Symbols>
+      <Symbols type="cxxfe.ast.Template" uuid="380d86d8-8869-4ac9-9f1a-b816b336270c">
+        <Kind>Class</Kind>
+        <ProtoTypeInstantiation type="cxxfe.ast.types.TypedefType" uuid="fc67f058-63d6-4a51-8a97-e2adae8b60a1"/>
+        <Name>__make_integer_seq_alias</Name>
+        <Scope type="cxxfe.ast.Scope" uuid="3c67427e-015a-492f-be05-c3e4b9c756eb">
+          <Symbols type="cxxfe.ast.types.TemplateParamType" uuid="9079bea8-980c-4f26-a3df-a3f59541195f">
+            <Name>T</Name>
+          </Symbols>
+        </Scope>
+      </Symbols>
+      <Symbols type="cxxfe.ast.types.TypedefType" uuid="fc67f058-63d6-4a51-8a97-e2adae8b60a1">
+        <AssocTemplate type="cxxfe.ast.Template" uuid="380d86d8-8869-4ac9-9f1a-b816b336270c"/>
+        <IsAlias>true</IsAlias>
+        <IsDependent>true</IsDependent>
+        <IsPrototypeInstantiation>true</IsPrototypeInstantiation>
+        <IsTemplateAlias>true</IsTemplateAlias>
+        <TemplateArgs type="cxxfe.ast.TemplateArg" uuid="676678e3-598b-4b6e-8c0b-faa0c0475990">
+          <Kind>TemplateTemplate</Kind>
+          <Name>templateTemplateParam</Name>
+        </TemplateArgs>
+        <TemplateArgs type="cxxfe.ast.TemplateArg" uuid="5e9e8251-94b4-40ef-aab6-9b51c0b508da">
+          <Kind>Type</Kind>
+          <Type type="cxxfe.ast.types.TemplateParamType" uuid="9079bea8-980c-4f26-a3df-a3f59541195f"/>
+        </TemplateArgs>
+        <TemplateArgs type="cxxfe.ast.TemplateArg" uuid="94f8243b-1749-46c7-9a53-72bf0244b3f4">
+          <Kind>NonType</Kind>
+          <Val type="cxxfe.ast.constants.TemplateParamConstant" uuid="1c13d547-1ea1-404b-9b7d-df60afb11616"/>
+        </TemplateArgs>
+        <Type type="cxxfe.ast.types.TemplateParamType" uuid="9079bea8-980c-4f26-a3df-a3f59541195f"/>
+        <Name>__make_integer_seq_alias</Name>
+      </Symbols>
+      <Symbols type="cxxfe.ast.types.IntegerType" uuid="8739000d-f103-43be-a15d-b784ea4ec8c2">
+        <IsSigned>false</IsSigned>
+        <Kind>UnsignedLongLong</Kind>
+        <NumBits>64</NumBits>
+        <Name>unsigned long long</Name>
+      </Symbols>
+      <Symbols type="cxxfe.ast.types.TypedefType" uuid="17617f9c-1791-4419-84cf-abd9b031c938">
+        <Type type="cxxfe.ast.types.IntegerType" uuid="8739000d-f103-43be-a15d-b784ea4ec8c2"/>
+        <Name>size_t</Name>
+      </Symbols>
+      <Symbols type="cxxfe.ast.types.VoidType" uuid="0cd10f09-9ec6-4fb5-b823-f0ef8d692c09">
+        <Name>void</Name>
+      </Symbols>
+      <Symbols type="cxxfe.ast.types.PointerType" uuid="7f10f59c-1b41-4b61-b1bf-55f1e2e22fcf">
+        <Type type="cxxfe.ast.types.VoidType" uuid="0cd10f09-9ec6-4fb5-b823-f0ef8d692c09"/>
+      </Symbols>
+      <Symbols type="cxxfe.ast.types.FunctionType" uuid="eed63b4f-1104-4727-8899-c5fa88083602">
+        <ParamTypes type="cxxfe.ast.types.IntegerType" uuid="8739000d-f103-43be-a15d-b784ea4ec8c2"/>
+        <RetType type="cxxfe.ast.types.PointerType" uuid="7f10f59c-1b41-4b61-b1bf-55f1e2e22fcf"/>
+      </Symbols>
+      <Symbols type="cxxfe.ast.Function" uuid="0e95da1b-dee9-4a5a-8236-21466ed01884">
+        <IsCompilerGenerated>true</IsCompilerGenerated>
+        <Params type="cxxfe.ast.Variable" uuid="0e2b6e09-4041-4205-b631-8cc321e89120">
+          <Type type="cxxfe.ast.types.IntegerType" uuid="8739000d-f103-43be-a15d-b784ea4ec8c2"/>
+        </Params>
+        <SpecialKind>Operator</SpecialKind>
+        <StorageClass>Extern</StorageClass>
+        <Type type="cxxfe.ast.types.FunctionType" uuid="eed63b4f-1104-4727-8899-c5fa88083602"/>
+        <Name>operator new</Name>
+        <Annotations type="mwAnnotation.FunctionAnnotation" uuid="3ca0b6d1-9072-4a34-9f6c-3127bd5f3f35">
+          <integrationStatus type="mwAnnotation.IntegrationStatus" uuid="d2f068ec-342a-41b5-9880-141d26ba290d">
+            <definitionStatus>Inaccessible</definitionStatus>
+          </integrationStatus>
+        </Annotations>
+        <DefPos type="cxxfe.ast.source.SourcePosition" uuid="33b854a3-4b17-4f66-a71f-bf7a17419f2c"/>
+      </Symbols>
+      <Symbols type="cxxfe.ast.types.FunctionType" uuid="093287f9-a10a-4165-994c-d2bbdb127d0c">
+        <ParamTypes type="cxxfe.ast.types.PointerType" uuid="7f10f59c-1b41-4b61-b1bf-55f1e2e22fcf"/>
+        <RetType type="cxxfe.ast.types.VoidType" uuid="0cd10f09-9ec6-4fb5-b823-f0ef8d692c09"/>
+      </Symbols>
+      <Symbols type="cxxfe.ast.Function" uuid="bccfe2fd-0daa-49df-9800-de5f356ffa52">
+        <IsCompilerGenerated>true</IsCompilerGenerated>
+        <Params type="cxxfe.ast.Variable" uuid="41f15ad0-a2ee-4609-9301-a82fb6059cd0">
+          <Type type="cxxfe.ast.types.PointerType" uuid="7f10f59c-1b41-4b61-b1bf-55f1e2e22fcf"/>
+        </Params>
+        <SpecialKind>Operator</SpecialKind>
+        <StorageClass>Extern</StorageClass>
+        <Type type="cxxfe.ast.types.FunctionType" uuid="093287f9-a10a-4165-994c-d2bbdb127d0c"/>
+        <Name>operator delete</Name>
+        <Annotations type="mwAnnotation.FunctionAnnotation" uuid="e32b3a7d-74c0-4914-a080-ef940010cdf4">
+          <integrationStatus type="mwAnnotation.IntegrationStatus" uuid="d83e6c1e-55ff-42e3-bd54-e3d50d16db33">
+            <definitionStatus>Inaccessible</definitionStatus>
+          </integrationStatus>
+        </Annotations>
+        <DefPos type="cxxfe.ast.source.SourcePosition" uuid="34483a80-7509-4804-a05f-a9926ca4ccc7"/>
+      </Symbols>
+      <Symbols type="cxxfe.ast.types.FunctionType" uuid="4f490f64-09bc-4b73-a3e2-af5848b0f655">
+        <ParamTypes type="cxxfe.ast.types.PointerType" uuid="7f10f59c-1b41-4b61-b1bf-55f1e2e22fcf"/>
+        <ParamTypes type="cxxfe.ast.types.IntegerType" uuid="8739000d-f103-43be-a15d-b784ea4ec8c2"/>
+        <RetType type="cxxfe.ast.types.VoidType" uuid="0cd10f09-9ec6-4fb5-b823-f0ef8d692c09"/>
+      </Symbols>
+      <Symbols type="cxxfe.ast.Function" uuid="54b6bb41-de31-46fb-91f1-88c7cecea5da">
+        <IsCompilerGenerated>true</IsCompilerGenerated>
+        <Params type="cxxfe.ast.Variable" uuid="e8bd55f6-36c3-4aa3-9fd1-5887b3254494">
+          <Type type="cxxfe.ast.types.PointerType" uuid="7f10f59c-1b41-4b61-b1bf-55f1e2e22fcf"/>
+        </Params>
+        <Params type="cxxfe.ast.Variable" uuid="50a79aba-ef17-422a-9a00-e8820bd03e77">
+          <Type type="cxxfe.ast.types.IntegerType" uuid="8739000d-f103-43be-a15d-b784ea4ec8c2"/>
+        </Params>
+        <SpecialKind>Operator</SpecialKind>
+        <StorageClass>Extern</StorageClass>
+        <Type type="cxxfe.ast.types.FunctionType" uuid="4f490f64-09bc-4b73-a3e2-af5848b0f655"/>
+        <Name>operator delete</Name>
+        <Annotations type="mwAnnotation.FunctionAnnotation" uuid="345208d3-3492-4b11-947c-4f059298f8cc">
+          <integrationStatus type="mwAnnotation.IntegrationStatus" uuid="56299406-05a1-4719-9177-729fa0fa7bb9">
+            <definitionStatus>Inaccessible</definitionStatus>
+          </integrationStatus>
+        </Annotations>
+        <DefPos type="cxxfe.ast.source.SourcePosition" uuid="4dcb6469-b331-46fb-84ee-3885966bd010"/>
+      </Symbols>
+      <Symbols type="cxxfe.ast.types.IntegerType" uuid="e9828db7-f9ab-4a9b-b3ef-9324ac95d6b7">
+        <NumBits>32</NumBits>
+        <Name>int</Name>
+      </Symbols>
+      <Symbols type="cxxfe.ast.types.IntegerType" uuid="9ee922bf-b66d-4f8d-b273-652205ad7ea1">
+        <Kind>Char</Kind>
+        <NumBits>8</NumBits>
+        <Name>char</Name>
+      </Symbols>
+      <Symbols type="cxxfe.ast.types.PointerType" uuid="2967cd91-f664-4c1f-8fe2-f931d7243f52">
+        <Type type="cxxfe.ast.types.IntegerType" uuid="9ee922bf-b66d-4f8d-b273-652205ad7ea1"/>
+      </Symbols>
+      <Symbols type="cxxfe.ast.types.PointerType" uuid="56600c42-690f-41da-94fb-6157642231d8">
+        <Type type="cxxfe.ast.types.PointerType" uuid="2967cd91-f664-4c1f-8fe2-f931d7243f52"/>
+      </Symbols>
+      <Symbols type="cxxfe.ast.types.FunctionType" uuid="ed2a253c-b7f3-4dfa-b510-b1199d963533">
+        <ParamTypes type="cxxfe.ast.types.IntegerType" uuid="e9828db7-f9ab-4a9b-b3ef-9324ac95d6b7"/>
+        <ParamTypes type="cxxfe.ast.types.PointerType" uuid="56600c42-690f-41da-94fb-6157642231d8"/>
+        <RetType type="cxxfe.ast.types.IntegerType" uuid="e9828db7-f9ab-4a9b-b3ef-9324ac95d6b7"/>
+      </Symbols>
+      <Symbols type="cxxfe.ast.Function" uuid="eb9044f7-b9dc-4aa6-b64e-565774336e8d">
+        <Params type="cxxfe.ast.Variable" uuid="fb209cf5-d461-4db0-b79b-3f7f12c3b94f">
+          <Type type="cxxfe.ast.types.IntegerType" uuid="e9828db7-f9ab-4a9b-b3ef-9324ac95d6b7"/>
+          <Name>argc</Name>
+        </Params>
+        <Params type="cxxfe.ast.Variable" uuid="77d344bb-4b99-4d7a-80a3-8697d28649a7">
+          <Type type="cxxfe.ast.types.PointerType" uuid="56600c42-690f-41da-94fb-6157642231d8"/>
+          <Name>argv</Name>
+        </Params>
+        <StorageClass>Extern</StorageClass>
+        <Type type="cxxfe.ast.types.FunctionType" uuid="ed2a253c-b7f3-4dfa-b510-b1199d963533"/>
+        <Name>main</Name>
+        <Annotations type="mwAnnotation.FunctionAnnotation" uuid="da8fa134-9839-48e8-891e-f1b2a85189eb">
+          <cppSignature>int main(int argc,char * * argv)</cppSignature>
+          <cppSignatureFcnType>int(*)(int, char * *)</cppSignatureFcnType>
+          <cppType>[int]</cppType>
+          <description>clib.autocenter.main Representation of C++ function main.</description>
+          <inputs type="mwAnnotation.Argument" uuid="11f1873f-b8b2-45c4-902d-efe95a27521e">
+            <cppPosition>1</cppPosition>
+            <cppType>[int]</cppType>
+            <mwType>int32</mwType>
+            <name>argc</name>
+            <storage>Value</storage>
+            <validTypes>int32</validTypes>
+          </inputs>
+          <inputs type="mwAnnotation.Argument" uuid="4ad5d34a-0ab8-4230-a9ab-99a045b2664c">
+            <cppPosition>2</cppPosition>
+            <cppType>[char]PtrPtr</cppType>
+            <mwType>string</mwType>
+            <name>argv</name>
+            <outerConstness>false</outerConstness>
+            <outerStorage>Pointer</outerStorage>
+            <shape>Undefined</shape>
+            <storage>Pointer</storage>
+            <validTypes>string</validTypes>
+          </inputs>
+          <name>clib.autocenter.main</name>
+          <outputs type="mwAnnotation.Argument" uuid="9cb19f74-2028-4b67-9b82-5e0443d72d55">
+            <cppType>[int]</cppType>
+            <direction>Out</direction>
+            <isOwned>true</isOwned>
+            <mwType>int32</mwType>
+            <name>RetVal</name>
+            <storage>Value</storage>
+            <validTypes>int32</validTypes>
+          </outputs>
+          <ptKey>F/main@[int],[char]PtrPtr#[int]</ptKey>
+          <integrationStatus type="mwAnnotation.IntegrationStatus" uuid="06819e65-6e05-4b39-a68a-848e30637a5b">
+            <definitionStatus>PartiallySpecified</definitionStatus>
+          </integrationStatus>
+        </Annotations>
+        <DeclPos type="cxxfe.ast.source.SourcePosition" uuid="c7c8630f-380e-463a-ab25-8d7f9394597d">
+          <Col>6</Col>
+          <File type="cxxfe.ast.source.SourceFile" uuid="00e9de34-0cbb-4c32-bc69-00eba028dbf3"/>
+          <Line>2</Line>
+        </DeclPos>
+        <DeclPos type="cxxfe.ast.source.SourcePosition" uuid="2978df70-59be-43fc-be2f-45e5e99afe81">
+          <Col>6</Col>
+          <File type="cxxfe.ast.source.SourceFile" uuid="00e9de34-0cbb-4c32-bc69-00eba028dbf3"/>
+          <Line>2</Line>
+        </DeclPos>
+        <DefPos type="cxxfe.ast.source.SourcePosition" uuid="a61b6d1b-2804-478d-933e-3591d11e1ad3">
+          <Col>6</Col>
+          <File type="cxxfe.ast.source.SourceFile" uuid="00e9de34-0cbb-4c32-bc69-00eba028dbf3"/>
+          <Line>2</Line>
+        </DefPos>
+      </Symbols>
+    </Compilations>
+    <Files type="cxxfe.ast.source.SourceFile" uuid="00e9de34-0cbb-4c32-bc69-00eba028dbf3">
+      <IsTopLevelFile>true</IsTopLevelFile>
+      <Path>C:\Program Files\MATLAB\R2022a\extern\examples\cpp_interface\autocenter.h</Path>
+      <WrittenName>C:\Program Files\MATLAB\R2022a\extern\examples\cpp_interface\autocenter.h</WrittenName>
+    </Files>
+    <LongDoubleNumBits>64</LongDoubleNumBits>
+    <PointerNumBits>64</PointerNumBits>
+    <PtrDiffTypeKind>SignedLongLong</PtrDiffTypeKind>
+    <SizeTypeKind>UnsignedLongLong</SizeTypeKind>
+  </cxxfe.ast.Project>
+</MF0>
