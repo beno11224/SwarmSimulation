@@ -39,20 +39,13 @@ classdef ParticleFunctions
                 case("Keyboard")
                     totalForce = aCoils.* 10^6;
                 case("Mouse")
-                   % if(any(mouseLocation < 0) || any(mouseLocation > 1))
-                   %     mouseLocation = [0 0];
-                   % else
-                   %     mouseLocation = (mouseLocation .* 2 - 1);
-                   %     mouseLocation(isnan(mouseLocation)) = 0;
-                   % end
                     totalForce = mouseLocation .* 2.25*10^6;
                 case("Controller")
-                    horizontalJoyStick = axis(joyStick, h);
-                    verticalJoyStick = axis(joyStick, v);
-                    totalForce = ones(size(aCoils)) .* [2.25 2.25] .* 10^6;
-                    totalForce(1,:) = totalForce(1,:) .* horizontalJoyStick;
-                    totalForce(2,:) = totalForce(2,:) .* verticalJoyStick;
-                    
+
+                    newHapticValues = HapticSpoofTest() .* 1; %TODO make this sensible values.
+                    app.X1MAGauge.Value = newHapticValues(1);
+                    app.Y1MAGauge.Value = newHapticValues(2);
+                    totalForce = [app.X1MAGauge.Value, app.Y1MAGauge.Value];                    
                 otherwise
                     totalForce = [0 0];
             end
@@ -202,7 +195,6 @@ classdef ParticleFunctions
         
         function [velocity,acceleration] = calculateCurrentVelocityCD(obj, orthogonalWallContact, wallContact, previousVelocity, previousAcceleration, particleForce, particleMass, timeSinceLastUpdate)            
             currentAcceleration = obj.calculateAcceleration(particleForce, particleMass);
-            %v = u + at - just the at bit here.
             hypotheticalDeltaVelocity = 0.5.*(currentAcceleration + previousAcceleration).* timeSinceLastUpdate; %timeSinceLastUpdate must be fairly constant for this to work - maybe avg time?
             
             wallContactVelocity = 0 .* hypotheticalDeltaVelocity;
@@ -212,25 +204,14 @@ classdef ParticleFunctions
                     %Use vector rejection to project force along the wall.
                     velocityOrthogonalToWallContact = obj.vectorProjection(hypotheticalDeltaVelocity(i,:),orthogonalWallContact(i,:));
                     testForSign = velocityOrthogonalToWallContact .* orthogonalWallContact(i,:);
-                    velocityOrthogonalToWallContact(testForSign < 0) = 0;  %TODO this needs to have the sign match - it can't be going the wrong way.
-                    %vectorprokected = obj.vectorProjection(hypotheticalDeltaVelocity(i,:),wallContact(i,:));
-                    wallContactVelocity(i,:) = obj.vectorProjection(hypotheticalDeltaVelocity(i,:),wallContact(i,:)) + velocityOrthogonalToWallContact; %TODO now missing the part orthogonal to wall contact. how???
-                    %perpendicularWallVelocity = hypotheticalDeltaVelocity - obj.vectorProjection(hypotheticalDeltaVelocity(i,:),wallContact(i,:));
-                  %  if(inpolygon(location(i,1),location(i,2),polygon(??,1),polygon(??,2))) %TODO this needs to work better
-                  %      wallContactVelocity(i,:) = wallContactVelocity(i,:) + TODO;
-                  %  end
+                    velocityOrthogonalToWallContact(testForSign < 0) = 0;
+                    wallContactVelocity(i,:) = obj.vectorProjection(hypotheticalDeltaVelocity(i,:),wallContact(i,:)) + velocityOrthogonalToWallContact;
                 end
             end
-            %wallContactVelocity = vectorProjection( (hypotheticalDeltaVelocity .* ~isnan(wallContact)) , wallContact );
-            hypotheticalDeltaVelocity = hypotheticalDeltaVelocity .* isnan(wallContact) + wallContactVelocity; %Try this?
+            hypotheticalDeltaVelocity = hypotheticalDeltaVelocity .* isnan(wallContact) + wallContactVelocity;
 
             
             rateOfChange = (hypotheticalDeltaVelocity - previousVelocity) ./ previousVelocity; 
-            %capRateofChangeAt = 5;%3;%1.1;
-            %TODO can't use average or max for these particles, must do it
-            %matrix wise. check it works then change it to matrix wise
-            %capRateofChangeAt = (log(abs(previousVelocity)+0.000000000000000001)/log(0.00005)) - 0.5;
-            %capRateofChangeAt = (log(abs(previousVelocity)+0.000001)/log(0.005)) - 1.8;
             capRateofChangeAt = (1*10e3 .* abs(previousVelocity./10) + 0.1).^-2;
             capRateofChangeAt(capRateofChangeAt < 0.1) = 0.1; %limit the lower end.
             rateOfChange(isinf(rateOfChange)) = intmax;
@@ -246,21 +227,11 @@ classdef ParticleFunctions
             else
                 acceleration = currentAcceleration;
             end
-
-            
-
-           % acceleration = currentAcceleration;
-            %set the velocity based on capped or not capped deltaVelocity
             velocity = (previousVelocity + hypotheticalDeltaVelocity);% .* ~haltTheseParticles;
         end
         
         function location = calculateCurrentLocationCD(obj,previousLocation, previousVelocity, previousAcceleration, timeSinceLastUpdate)
-            %a = previousVelocity .* timeSinceLastUpdate;
-            %b = 0.5.*previousAcceleration.*timeSinceLastUpdate^2;
-            %finalDeltaVelocity = a + b
-            %s = ut + 0.5at^2
-            %is the previous acceleration wrong to use?
-            location = previousLocation + previousVelocity .* timeSinceLastUpdate + 0.5.*previousAcceleration.*timeSinceLastUpdate^2; %as above for time
+            location = previousLocation + previousVelocity .* timeSinceLastUpdate + 0.5.*previousAcceleration.*timeSinceLastUpdate^2;
         end
         
         function [newLocations, newVelocity] = calculateCollisionsAfter(obj, oldParticleLocation, newParticleLocation, particleVelocity, timeModifier)
@@ -276,8 +247,9 @@ classdef ParticleFunctions
             newVelocity = particleVelocity;
         end
         function [location, newVelocity] = moveParticle(obj, particleLocation, particleVelocity, timeModifier)
-            %unCheckedLocation = particleLocation + obj.realNum(particleVelocity .* timeModifier);
-            %[location,newVelocity] = calculateCollisionsAfter(obj, particleLocation, unCheckedLocation, particleVelocity, timeModifier);
+            %TODO THIS DOESN'T WORK!
+          %  unCheckedLocation = particleLocation + obj.realNum(particleVelocity .* timeModifier);
+          %  [location,newVelocity] = calculateCollisionsAfter(obj, particleLocation, unCheckedLocation, particleVelocity, timeModifier);
             %Comment above and Uncomment below to prevent particleCollisions
             location = particleLocation + obj.realNum(particleVelocity);
             newVelocity = particleVelocity;
@@ -299,9 +271,6 @@ classdef ParticleFunctions
         end
         
         function inGoalZone = isParticleInEndZone(obj, goalZones, particleLocations)
-          % inGoalZone = zeros(length(particleLocations),length(goalZones));
-          % [in,on] = inpolygon(particleLocations(:,1), particleLocations(:,2), goalZones(1,:,1), goalZones(1,:,2));
-          % inGoalZone = in | on;
             inGoalZone = zeros(size(particleLocations,1),size(goalZones,1));
             for goalZoneIndex = 1:size(goalZones,1);
                 [in,on] = inpolygon(particleLocations(:,1), particleLocations(:,2), goalZones(goalZoneIndex,:,1), goalZones(goalZoneIndex,:,2));
