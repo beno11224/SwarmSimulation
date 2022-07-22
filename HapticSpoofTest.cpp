@@ -65,10 +65,11 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     //return -1;
   }*/
 
+    dhdSetBrakes(); //also apply zero force
         // apply zero force
-    if (dhdSetForceAndTorqueAndGripperForce (0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0) < DHD_NO_ERROR) {
-      printf ("error: cannot set force (%s)\n", dhdErrorGetLastStr());
-    }
+   // if (dhdSetForceAndTorqueAndGripperForce (0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0) < DHD_NO_ERROR) {
+   //   printf ("error: cannot set force (%s)\n", dhdErrorGetLastStr());
+   // }
 
     double mx0, my0, mz0;
     dhdGetPosition (&mx0, &my0, &mz0, 0); 
@@ -81,8 +82,9 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     //for (int idx = 0; idx < numVals; ++idx) {
     //    (data)[idx] = idx * 0.1 + ((double) rand() / (RAND_MAX));
     //}
-    (data)[0] = mx0;
-    (data)[1] = my0;
+    //(data)[0] = mx0;
+    (data)[0] = my0;
+    (data)[1] = mz0;
     memcpy(mxGetPr(plhs[0]), data, numVals * sizeof(double));
     free(data);
     //TODO get mx0, my0, mz0 into the array above, to return those. Then this should work.

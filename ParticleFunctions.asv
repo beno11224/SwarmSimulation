@@ -41,10 +41,12 @@ classdef ParticleFunctions
                 case("Mouse")
                     totalForce = mouseLocation .* 2.25*10^6;
                 case("Controller")
-                    %newHapticValues = (HapticSpoofTest() + 0.05) .* 25;
-                    a = ReadHaptic();
-                    newHapticValues = a .* 30
-                    totalForce = [newHapticValues(1)*10^6, newHapticValues(2)*10^6];
+
+                    a = HapticSpoofTest()
+                    newHapticValues = HapticSpoofTest() .* 1 %TODO make this sensible values.
+                    app.X1MAGauge.Value = newHapticValues(1);
+                    app.Y1MAGauge.Value = newHapticValues(2);
+                    totalForce = [app.X1MAGauge.Value, app.Y1MAGauge.Value];                    
                 otherwise
                     totalForce = [0 0];
             end
