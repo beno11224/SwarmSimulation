@@ -42,8 +42,7 @@ classdef ParticleFunctions
                     totalForce = mouseLocation .* 2.25*10^6;
                 case("Controller")
                     %newHapticValues = (HapticSpoofTest() + 0.05) .* 25;
-                    a = ReadHaptic();
-                    newHapticValues = a .* 30
+                    newHapticValues = ReadHaptic() .* 30;
                     totalForce = [newHapticValues(1)*10^6, newHapticValues(2)*10^6];
                 otherwise
                     totalForce = [0 0];

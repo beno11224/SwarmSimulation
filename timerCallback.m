@@ -4,6 +4,11 @@ function timerCallback(app)
         
     currentMagforce = app.particleFunctions.calculateMagneticForce([app.X1MAGauge.Value app.Y1MAGauge.Value],app.joyStick, 1, 3, app.controlMethod, app.mousePosition);
   
+    if(app.controlMethod == "Controller")
+        app.X1MAGauge.Value = currentMagforce(1) ./10^6 ./ app.particleFunctions.magneticForceConstant;
+        app.Y1MAGauge.Value = currentMagforce(2) ./10^6 ./ app.particleFunctions.magneticForceConstant;
+    end
+
     %TODO ADD THIS BACK IN
     %  vFlow = app.particleFunctions.calculateFlow(real(app.particleArrayLocation), app.fd.FlowValues, app.polygon, app.UIAxes);
     %  vFlow = vFlow .* app.FluidFlowmsEditField.Value;
