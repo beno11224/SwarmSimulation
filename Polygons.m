@@ -168,12 +168,27 @@ classdef Polygons
            
            obj.currentStartZone = squeeze(obj.allStartZones(1,:,:));
            
-           obj.allEndZones(1,1,:,:) = [len*0.75, -len;
-                len, -len;
-                len, -len*0.75;
-                len*0.75, -len*0.75;
-                len*0.75, -len];
-            
+           obj.allEndZones(1,1,:,:) = [0.00941 -0.00269
+               0.00870 -0.0034;
+               0.00799 -0.00269;
+               0.00870 -0.00198;
+               0.00941 -0.00269];
+           obj.allEndZones(1,2,:,:) = [-0.00096 -0.00754;%1st lower
+               -0.00025 -0.00683;
+               -0.0005 -0.006;%Values don't line up perfectly, but oh well - they are only used to stop particles
+               -0.0018 -0.0068;
+               -0.00096 -0.00754];
+           obj.allEndZones(1,3,:,:) = [-0.00096 -0.00754;%1st lower
+               -0.00025 -0.00683;
+               -0.0005 -0.006;%Values don't line up perfectly, but oh well - they are only used to stop particles
+               -0.0018 -0.0068;
+               -0.00096 -0.00754];
+           obj.allEndZones(1,4,:,:) = [-0.00096 -0.00754;%1st lower
+               -0.00025 -0.00683;
+               -0.0005 -0.006;%Values don't line up perfectly, but oh well - they are only used to stop particles
+               -0.0018 -0.0068;
+               -0.00096 -0.00754];
+
            obj.allEndZones(2,1,:,:) = [0.00941 -0.00269
                0.00870 -0.0034;
                0.00799 -0.00269;
@@ -231,7 +246,7 @@ classdef Polygons
            %    -len -len*0.35;
            %    -len -len*0.38]; 
             
-           obj.currentEndZone = squeeze(obj.allEndZones(1,1,:,:));
+           obj.currentEndZone = squeeze(obj.allEndZones(1,:,:,:));
            %{
            [-0.0095 -0.004; %Ex1
                -0.0045 -0.004;
