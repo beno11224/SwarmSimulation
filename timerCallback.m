@@ -10,9 +10,9 @@ function timerCallback(app)
     end
 
     %TODO ADD THIS BACK IN
-    %  vFlow = app.particleFunctions.calculateFlow(real(app.particleArrayLocation), app.fd.FlowValues, app.polygon, app.UIAxes);
-    %  vFlow = vFlow .* app.FluidFlowmsEditField.Value;
-    vFlow = [0 0];
+    vFlow = app.particleFunctions.calculateFlow(real(app.particleArrayLocation), app.fd.FlowValues, app.polygon, app.UIAxes);
+    vFlow = vFlow .* app.FluidFlowmsEditField.Value;
+    %vFlow = [0 0];
 
     magForceAlpha = 0.05;
     magForce = app.previousMagforce;
@@ -62,6 +62,15 @@ function timerCallback(app)
             app.timePassed = app.timePassed + app.timestep / smallerTMaxTotalSteps;
         end
         fprintf(app.fileID, app.timePassed + "," + app.timeLag + "," + mat2str(magForce) + "," + mat2str(dragForce)+ "," + goalPercentage + "," + mat2str(app.particleArrayVelocity)+ "," + mat2str(app.particleArrayLocation) + "\r\n");
+        if(app.timeLimit > 0 && app.timePassed > app.timeLimit)
+            if(app.PlayPauseButton.Value == true)
+                app.PlayPauseButton.Value = false;
+                set(app.PlayPauseButton,'BackgroundColor',[1,0.7,0.7]);
+                stop(app.simulationTimerProperty);
+                stop(app.drawTimerProperty);
+                msgbox("Time Up!");
+            end
+        end
     end
     app.previousMagforce = magForce;
     app.currentlyDoingWorkSemaphore = false;
