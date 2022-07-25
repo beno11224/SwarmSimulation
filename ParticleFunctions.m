@@ -102,35 +102,29 @@ classdef ParticleFunctions
             end
         end
         
-        function velocity = calculateFlow(obj, particleLocation, flowMatrix, polygon, axes) 
-            %Remove this once values are loaded in from file
-            tr = triangulation(polyshape(polygon.currentPoly(:,1),polygon.currentPoly(:,2)));
-            model = createpde(1);
-            tnodes = tr.Points';
-            telements = tr.ConnectivityList';
-            model.geometryFromMesh(tnodes, telements);
-            mesh = generateMesh(model, 'Hmax', 0.001);%was 0.000073 for old one.
-            
-       %{    
-            plot(axes, mesh.Nodes(1,:), mesh.Nodes(2,:), '.','markerSize', 5 , 'color', 'red'); %visualise nodes
-            
-            flowMatrix = flowMatrix .* 3000;
-
-            for i = 1:size(mesh.Nodes,2)
-                ab = plot(axes, mesh.Nodes(1,i), mesh.Nodes(2,i), '.', 'markerSize', 23, 'color', 'yellow');
-                abz = plot(axes,[mesh.Nodes(1,i); mesh.Nodes(1,i) + flowMatrix(i,1)], [mesh.Nodes(2,i); mesh.Nodes(2,i) + flowMatrix(i,2)], 'color', 'red');
-                flowVel = flowMatrix(i,:)
-                abc(1,:) = [i i+11];
-                abc(2,:) = flowMatrix(i,:);
-                delete(ab);
-                delete(abz);
+        function velocity = calculateFlow(obj, particleLocation, flowMatrix, mesh)%, axes) 
+            %{    
+                plot(axes, mesh.Nodes(1,:), mesh.Nodes(2,:), '.','markerSize', 5 , 'color', 'red'); %visualise nodes
+                
+                flowMatrix = flowMatrix .* 3000;
+    
+                for i = 1:size(mesh.Nodes,2)
+                    ab = plot(axes, mesh.Nodes(1,i), mesh.Nodes(2,i), '.', 'markerSize', 23, 'color', 'yellow');
+                    abz = plot(axes,[mesh.Nodes(1,i); mesh.Nodes(1,i) + flowMatrix(i,1)], [mesh.Nodes(2,i); mesh.Nodes(2,i) + flowMatrix(i,2)], 'color', 'red');
+                    flowVel = flowMatrix(i,:)
+                    abc(1,:) = [i i+11];
+                    abc(2,:) = flowMatrix(i,:);
+                    delete(ab);
+                    delete(abz);
+                end
+            %}
+            if(size(mesh.Nodes,2) == size(flowMatrix,1))
+                closestNode = findNodes(mesh, 'nearest', particleLocation');
+                velocity(:,1) = flowMatrix(closestNode,1);
+                velocity(:,2) = flowMatrix(closestNode,2);
+            else
+                velocity = [0 0];
             end
-       %}
-
-            closestNode = findNodes(mesh, 'nearest', particleLocation');
-            velocity(:,1) = flowMatrix(closestNode,1);
-            velocity(:,2) = flowMatrix(closestNode,2);
-           %velocity = particleLocation .* 0;
         end
        
         function writeMeshToFile(obj,polygon)
