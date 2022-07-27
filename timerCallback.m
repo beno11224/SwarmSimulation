@@ -61,15 +61,15 @@ function timerCallback(app)
         else                
             app.timePassed = app.timePassed + app.timestep / smallerTMaxTotalSteps;
         end
-        fprintf(app.fileID, app.timePassed + "," + app.timeLag + "," + mat2str(magForce) + "," + mat2str(dragForce)+ "," + goalPercentage + "," + mat2str(app.particleArrayVelocity)+ "," + mat2str(app.particleArrayLocation) + "\r\n");
-        if(app.timeLimit > 0 && app.timePassed > app.timeLimit)
-            if(app.PlayPauseButton.Value == 1)
-                app.PlayPauseButton.Value = 0;
-                set(app.PlayPauseButton,'BackgroundColor',[1,0.7,0.7]);
-                stop(app.simulationTimerProperty);
-                stop(app.drawTimerProperty);
-                msgbox("Time Up!");
-            end
+    end
+    fprintf(app.fileID, app.timePassed + "," + app.timeLag + "," + mat2str(magForce) + "," + mat2str(dragForce)+ "," + goalPercentage + "," + mat2str(app.particleArrayVelocity)+ "," + mat2str(app.particleArrayLocation) + "\r\n");
+    if(app.timeLimit > 0 && app.timePassed > app.timeLimit)
+        if(app.PlayPauseButton.Value == 1)
+            app.PlayPauseButton.Value = 0;
+            set(app.PlayPauseButton,'BackgroundColor',[1,0.7,0.7]);
+            stop(app.simulationTimerProperty);
+            stop(app.drawTimerProperty);
+            fprintf("Time Up!");
         end
     end
     app.previousMagforce = magForce;
