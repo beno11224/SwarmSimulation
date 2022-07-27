@@ -34,15 +34,18 @@ classdef ParticleFunctions
         end
         
         %public functions
-        function force = calculateMagneticForce(obj, aCoils,joyStick, h, v, controlMethod, mouseLocation)
+        function force = calculateMagneticForce(obj, aCoils,joyStick, h, v, controlMethod, mouseLocation, magForceRestrict)
             switch(controlMethod)      
                 case("Keyboard")
                     totalForce = aCoils.* 10^6;
                 case("Mouse")
                     totalForce = mouseLocation .* 2.25*10^6; %Mouse Force is a bit lower than the others
-                case("Controller")
+                case("Controller")                    
                     %newHapticValues = (HapticSpoofTest() + 0.05) .* 25;
                     newHapticValues = ReadHaptic() .* 30;
+                    if magForceRestrict ~= 0
+                        newHapticValues = newHapticValues .* (magForceRestrict/2.25);
+                    end
                     totalForce = [newHapticValues(1)*10^6, newHapticValues(2)*10^6];
                 otherwise
                     totalForce = [0 0];
