@@ -57,7 +57,8 @@ function timerCallback(app)
         if(app.timestep == 0)
             app.timePassed = app.timePassed + smallerTMaxStepReduced;
         else                
-            app.timePassed = app.timePassed + app.timestep / smallerTMaxTotalSteps;        end
+            app.timePassed = app.timePassed + app.timestep / smallerTMaxTotalSteps;        
+        end
     end
     %fprintf(app.fileID, app.timePassed + "," + app.timeLag + "," + mat2str(magForce) + "," + mat2str(dragForce)+ "," + goalPercentage + "," + mat2str(app.particleArrayVelocity)+ "," + mat2str(app.particleArrayLocation) + "\r\n");
     fprintf(app.fileID, app.timePassed + "," + mat2str([app.X1MAGauge.Value app.Y1MAGauge.Value]) + "," + goalPercentage + "," + mat2str(app.particleArrayVelocity)+ "," + mat2str(app.particleArrayLocation) + "\r\n");
