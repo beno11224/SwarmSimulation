@@ -71,6 +71,7 @@ function timerCallback(app)
         end
     else
         app.TimeremainingsEditField.Value = round(app.timeLimit - app.timePassed);
+        app.PercentageinGoalEditField.Value = round(goalPercentage .* 100);
     end
     app.previousMagforce = magForce;
     app.currentlyDoingWorkSemaphore = false;
