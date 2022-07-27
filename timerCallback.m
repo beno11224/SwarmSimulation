@@ -57,17 +57,17 @@ function timerCallback(app)
         if(app.timestep == 0)
             app.timePassed = app.timePassed + smallerTMaxStepReduced;
         else                
-            app.timePassed = app.timePassed + app.timestep / smallerTMaxTotalSteps;
-        end
+            app.timePassed = app.timePassed + app.timestep / smallerTMaxTotalSteps;        end
     end
-    fprintf(app.fileID, app.timePassed + "," + app.timeLag + "," + mat2str(magForce) + "," + mat2str(dragForce)+ "," + goalPercentage + "," + mat2str(app.particleArrayVelocity)+ "," + mat2str(app.particleArrayLocation) + "\r\n");
+    %fprintf(app.fileID, app.timePassed + "," + app.timeLag + "," + mat2str(magForce) + "," + mat2str(dragForce)+ "," + goalPercentage + "," + mat2str(app.particleArrayVelocity)+ "," + mat2str(app.particleArrayLocation) + "\r\n");
+    fprintf(app.fileID, app.timePassed + "," + mat2str([app.X1MAGauge.Value app.Y1MAGauge.Value]) + "," + goalPercentage + "," + mat2str(app.particleArrayVelocity)+ "," + mat2str(app.particleArrayLocation) + "\r\n");
     if(app.timeLimit > 0 && app.timePassed > app.timeLimit)
         if(app.PlayPauseButton.Value == 1)
             app.PlayPauseButton.Value = 0;
             set(app.PlayPauseButton,'BackgroundColor',[1,0.7,0.7]);
             stop(app.simulationTimerProperty);
             stop(app.drawTimerProperty);
-            fprintf("Time Up! You got: " + goalPercentage .* 100 + "% of the particles in the goal outlet");
+            fprintf("Time Up! You got: " + goalPercentage .* 100 + "/%% of the particles in the goal outlet");
         end
     else
         app.TimeremainingsEditField.Value = round(app.timeLimit - app.timePassed);
