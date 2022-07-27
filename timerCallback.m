@@ -53,8 +53,6 @@ function timerCallback(app)
         app.haltParticlesInEndZone = any(particlesInEndZone,2);
         goalPercentage = sum(particlesInEndZone,1) ./ app.numParticles;
         goalPercentage = goalPercentage(1);
-
-        %goalPercentage = 0;
         
         if(app.timestep == 0)
             app.timePassed = app.timePassed + smallerTMaxStepReduced;
@@ -69,8 +67,10 @@ function timerCallback(app)
             set(app.PlayPauseButton,'BackgroundColor',[1,0.7,0.7]);
             stop(app.simulationTimerProperty);
             stop(app.drawTimerProperty);
-            fprintf("Time Up!");
+            fprintf("Time Up! You got: " + goalPercentage .* 100 + "% of the particles in the goal outlet");
         end
+    else
+        app.TimeremainingsEditField.Value = round(app.timeLimit - app.timePassed);
     end
     app.previousMagforce = magForce;
     app.currentlyDoingWorkSemaphore = false;

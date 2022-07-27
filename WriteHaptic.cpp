@@ -18,9 +18,9 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 
     dhdSetBrakes(DHD_ON); //also apply zero force
     double mx0, my0, mz0 = 0.1;
-    while( mx0 > 0){
+    while( true){
         dhdGetPosition (&mx0, &my0, &mz0, 0);
-        dhdSetForce(-1,-1,-1);
+        dhdSetForce(-5,-5,-1);
     };
    // dhdSetBrakes(); //also apply zero force
 }

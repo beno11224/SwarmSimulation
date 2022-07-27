@@ -16,7 +16,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
         mexErrMsgIdAndTxt("bitmarker:my_sum", "No inputs required.");
     }
     double mx0, my0, mz0;
-    dhdGetPosition (&mx0, &my0, &mz0, 0);    
+    dhdGetPosition (&mx0, &my0, &mz0, 0);
     double * data;
     int numVals = 2;
     plhs[0] = mxCreateDoubleMatrix(1,numVals,mxREAL);
