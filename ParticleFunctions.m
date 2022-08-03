@@ -39,7 +39,7 @@ classdef ParticleFunctions
                 case("Keyboard")
                     totalForce = aCoils.* 10^6;
                 case("Mouse")
-                    totalForce = mouseLocation .* 2.25*10^6; %Mouse Force is a bit lower than the others
+                    totalForce = mouseLocation .* 2.25*10^8; %Mouse Force is a bit lower than the others
                 case("Controller")                    
                     %newHapticValues = (HapticSpoofTest() + 0.05) .* 25;
                     newHapticValues = ReadHaptic() .* 30;

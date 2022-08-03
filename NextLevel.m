@@ -11,55 +11,55 @@ function NextLevel(app)
              app.polygon = app.polygon.change(2);
              app.NumberofParticlesEditField.Value = 40;
              app.FluidFlowmsEditField.Value = 0.005;
-             app.TimeRemainingsEditField.Value = 30;
+             app.TimeRemainingsEditField.Value = 15;
              app.MagForceRestrictMAM2EditField.Value = 0;
          case(2)
              app.polygon = app.polygon.change(2);
              app.NumberofParticlesEditField.Value = 80;
              app.FluidFlowmsEditField.Value = 0.005;
-             app.TimeRemainingsEditField.Value = 25;
+             app.TimeRemainingsEditField.Value = 15;
              app.MagForceRestrictMAM2EditField.Value = 0;
          case(3)
              app.polygon = app.polygon.change(2);
              app.NumberofParticlesEditField.Value = 80;
              app.FluidFlowmsEditField.Value = 0.005;
-             app.TimeRemainingsEditField.Value = 25;
+             app.TimeRemainingsEditField.Value = 15;
              app.MagForceRestrictMAM2EditField.Value = 0;
         case(4) %0.01, add restrict
              app.polygon = app.polygon.change(2);
              app.NumberofParticlesEditField.Value = 80;
              app.FluidFlowmsEditField.Value = 0.01;
-             app.TimeRemainingsEditField.Value = 20;
+             app.TimeRemainingsEditField.Value = 12;
              app.MagForceRestrictMAM2EditField.Value = 0;
          case(5)
              app.polygon = app.polygon.change(2);
              app.NumberofParticlesEditField.Value = 80;
              app.FluidFlowmsEditField.Value = 0.01;
-             app.TimeRemainingsEditField.Value = 20;
+             app.TimeRemainingsEditField.Value = 12;
              app.MagForceRestrictMAM2EditField.Value = 0;
          case(6)
              app.polygon = app.polygon.change(2);
              app.NumberofParticlesEditField.Value = 80;
              app.FluidFlowmsEditField.Value = 0.01;
-             app.TimeRemainingsEditField.Value = 20;
+             app.TimeRemainingsEditField.Value = 12;
              app.MagForceRestrictMAM2EditField.Value = 1.5;
          case(7)
              app.polygon = app.polygon.change(2);
              app.NumberofParticlesEditField.Value = 80;
              app.FluidFlowmsEditField.Value = 0.01;
-             app.TimeRemainingsEditField.Value = 20;
+             app.TimeRemainingsEditField.Value = 12;
              app.MagForceRestrictMAM2EditField.Value = 1.5;
          case(8)
              app.polygon = app.polygon.change(2);
              app.NumberofParticlesEditField.Value = 80;
              app.FluidFlowmsEditField.Value = 0.01;
-             app.TimeRemainingsEditField.Value = 20;
+             app.TimeRemainingsEditField.Value = 12;
              app.MagForceRestrictMAM2EditField.Value = 1;
          case(9)
              app.polygon = app.polygon.change(2);
              app.NumberofParticlesEditField.Value = 80;
              app.FluidFlowmsEditField.Value = 0.01;
-             app.TimeRemainingsEditField.Value = 20;
+             app.TimeRemainingsEditField.Value = 12;
              app.MagForceRestrictMAM2EditField.Value = 1;
          case(10) %0.015, add restrict
              app.polygon = app.polygon.change(2);
@@ -207,6 +207,8 @@ function NextLevel(app)
     app.timeLag = 0;
     app.mousePosition = [0 0];
     app.magLine = plot(app.UIAxes,0,0);
+    app.X1MAGauge.Value = 0;
+    app.Y1MAGauge.Value = 0;
     
     tr = triangulation(polyshape(app.polygon.currentPoly(:,1),app.polygon.currentPoly(:,2)));
     model = createpde(1);
