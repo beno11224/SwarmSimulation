@@ -62,17 +62,23 @@ function timerCallback(app)
     end
     %fprintf(app.fileID, app.timePassed + "," + app.timeLag + "," + mat2str(magForce) + "," + mat2str(dragForce)+ "," + goalPercentage + "," + mat2str(app.particleArrayVelocity)+ "," + mat2str(app.particleArrayLocation) + "\r\n");
     fprintf(app.fileID, app.timePassed + "," + mat2str([app.X1MAGauge.Value app.Y1MAGauge.Value]) + "," + goalPercentage + "," + mat2str(app.particleArrayVelocity)+ "," + mat2str(app.particleArrayLocation) + "\r\n");
-    if(app.timeLimit > 0 && app.timePassed > app.timeLimit)
-        if(app.PlayPauseButton.Value == 1)
-            app.PlayPauseButton.Value = 0;
-            set(app.PlayPauseButton,'BackgroundColor',[1,0.7,0.7]);
+    if(app.timeLimit > 0 && app.timePassed <= app.timeLimit)
+        app.TimeRemainingsEditField.Value = round(app.timeLimit - app.timePassed);
+        app.PercentageinGoalEditField.Value = round(goalPercentage .* 100);
+    else
+        if(app.timeLimit > 0)
             stop(app.simulationTimerProperty);
             stop(app.drawTimerProperty);
-            fprintf("Time Up! You got: " + goalPercentage .* 100 + "/%% of the particles in the goal outlet");
+            app.StartTrainingButton.Enable = true;
+            set(app.StartTrainingButton,'Text',"Start Next Level");
+            set(app.StartTrainingButton,'BackgroundColor',[1,0.7,0.7]);
+            fprintf("Time Up! You got: " + goalPercentage .* 100 + "/%% of the particles in the goal outlet\r\n");
+            delete(app.magLine);
+            app.testNumber = app.testNumber + 1;
+            NextLevel(app);
+        else
+            app.timeLimit = 1;
         end
-    else
-        app.TimeremainingsEditField.Value = round(app.timeLimit - app.timePassed);
-        app.PercentageinGoalEditField.Value = round(goalPercentage .* 100);
     end
     app.previousMagforce = magForce;
     app.currentlyDoingWorkSemaphore = false;
