@@ -46,9 +46,12 @@ classdef ParticleFunctions
                     if magForceRestrict ~= 0
                         newHapticValues = newHapticValues .* (magForceRestrict/2.25);
                     end
-                    totalForce = [newHapticValues(1)*10^6, newHapticValues(2)*10^6];
+                    totalForce = [newHapticValues(1)*10^6, newHapticValues(2)*10^6];                    
                 otherwise
                     totalForce = [0 0];
+            end
+            if(norm(totalForce) > 2.25*10^6)
+                totalForce = totalForce ./ norm(totalForce) .* 2.25*10^6;
             end
             force = obj.magneticForceConstant .* totalForce;
         end
