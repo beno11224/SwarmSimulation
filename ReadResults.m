@@ -28,7 +28,7 @@ function ReadResults()
             tidiedPositions = [];
             times = [];
             while ischar(tline)
-               %lines{end+1,1} = tline; %don't store the data probs.
+                %TODO port this into Python - this is the reading bit
                datas = split(tline,',');
                time = datas(1);
                magForce = datas(2);
