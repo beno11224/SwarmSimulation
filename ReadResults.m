@@ -2,17 +2,20 @@ function ReadResults()
     folderPath = uigetdir();
     allFiles = dir(fullfile(folderPath, '*.csv'));
     polygon = Polygons(0.0096);
-    polygon = polygon.change(2);
-
+    polygon = polygon.change(2);    
     plot1 = figure;
-    ax1 = axes('Parent',plot1);
-    hold on;
 
     for fileIndex = 1:length(allFiles)
+        
         allFiles(fileIndex).name
         useFile = input("Read This File?","s")
         if(useFile == "y" || useFile == "Y" || useFile == "yes" || useFile == "Yes")
             %Now Do Stuff!
+
+            close(plot1);
+            plot1 = figure;
+            ax1 = axes('Parent',plot1);
+            hold on;
             fid = fopen(folderPath + "\" + allFiles(fileIndex).name);
             lines = {}; %remove this?
             tline = fgetl(fid);
@@ -48,13 +51,17 @@ function ReadResults()
             end
 
             for(lineCount = 1: size(tidiedPositions,1))
-                particlePoints = plot(ax1, squeeze(tidiedPositions(lineCount,1,:)), squeeze(tidiedPositions(lineCount,2,:)),'r-', 'markerSize', 1);
-                pause(0.3);
-                delete(particlePoints);
+              %  scatter(ax1, squeeze(tidiedPositions(lineCount,1,:)), squeeze(tidiedPositions(lineCount,2,:)),1:100,[],1:4);
+                %particlePoints = 
+                plot(ax1, squeeze(tidiedPositions(lineCount,1,:)), squeeze(tidiedPositions(lineCount,2,:)),'-', 'markerSize', 1);
+              %  pause(0.3);
+              %  delete(particlePoints);
             end
+            pause(0.1);
             fclose(fid);
 
         end
     end
+    useFile = input("Press any key to exit","s")
     close all;
 end
