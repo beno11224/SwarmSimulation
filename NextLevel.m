@@ -8,19 +8,19 @@ function NextLevel(app)
     app.ScenarioEditField.Value = "Test " + app.testNumber;
     switch(app.testNumber)
         case(1) %low flow, no restrict
-             app.polygon = app.polygon.change(3);
+             app.polygon = app.polygon.change(2); %TODO make a 1 bifurcation set of tests. Switch bifurcations around when needed.
              app.NumberofParticlesEditField.Value = 40;
              app.FluidFlowmsEditField.Value = 0.005;
              app.TimeRemainingsEditField.Value = 15;
              app.MagForceRestrictMAM2EditField.Value = 0;
          case(2)
-             app.polygon = app.polygon.change(2);
+             app.polygon = app.polygon.change(3);
              app.NumberofParticlesEditField.Value = 80;
              app.FluidFlowmsEditField.Value = 0.005;
              app.TimeRemainingsEditField.Value = 15;
              app.MagForceRestrictMAM2EditField.Value = 0;
          case(3)
-             app.polygon = app.polygon.change(2);
+             app.polygon = app.polygon.change(4);
              app.NumberofParticlesEditField.Value = 80;
              app.FluidFlowmsEditField.Value = 0.005;
              app.TimeRemainingsEditField.Value = 15;
@@ -197,10 +197,12 @@ function NextLevel(app)
     hold (app.UIAxes, 'on');
     delete(app.polyLine);
     delete(app.endLine);
-    delete(app.wrongEndLine);
+    delete(app.wrongEndLine); 
     app.polyLine = plot(app.UIAxes,app.polygon.currentPoly(:,1),app.polygon.currentPoly(:,2), 'Color','b');
+    for(lineCount = 1:length(app.polygon.currentEndZone)-1)
+        app.wrongEndLine(lineCount) = plot(app.UIAxes,app.polygon.currentEndZone(lineCount,:,1),app.polygon.currentEndZone(lineCount,:,2), 'Color','r');
+    end 
     app.endLine = plot(app.UIAxes,app.polygon.currentEndZone(1,:,1),app.polygon.currentEndZone(1,:,2), 'Color','g');
-    app.wrongEndLine = plot(app.UIAxes,app.polygon.currentEndZone(2,:,1),app.polygon.currentEndZone(2,:,2), 'Color','c');
     app.fd = FlowData();
     app.haltParticlesInEndZone = zeros(app.numParticles,1);
     app.currentlyDoingWorkSemaphore = false;
