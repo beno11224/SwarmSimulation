@@ -52,7 +52,7 @@ function timerCallback(app)
         particlesInEndZone = app.particleFunctions.isParticleInEndZone(app.polygon.currentEndZone,app.particleArrayLocation);
         app.haltParticlesInEndZone = any(particlesInEndZone,2);
         goalPercentage = sum(particlesInEndZone,1) ./ app.numParticles;
-        goalPercentage = goalPercentage(1);
+        goalPercentage = goalPercentage(app.goalIndex);
         
         if(app.timestep == 0)
             app.timePassed = app.timePassed + smallerTMaxStepReduced;
