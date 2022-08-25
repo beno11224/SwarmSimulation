@@ -5,6 +5,21 @@ function ReadResults()
     polygon = polygon.change(2);    
     plot1 = figure;
 
+    tr = triangulation(polyshape(polygon.currentPoly(:,1),polygon.currentPoly(:,2)));
+    model = createpde(1);
+    tnodes = tr.Points';
+    telements = tr.ConnectivityList';
+    model.geometryFromMesh(tnodes, telements);
+    mesh = generateMesh(model, 'Hmax', 0.001);%was 0.000073 for old one.
+              %  closestNode = findNodes(mesh, 'nearest', particleLocation');
+              %  velocity(:,1) = flowMatrix(closestNode,1);
+              %  velocity(:,2) = flowMatrix(closestNode,2);
+    meshValues = zeros(length(mesh));
+    plotMesh = figure;
+    axMesh = axes('Parent',plotMesh);
+    meshPolyLine = plot(axMesh,polygon.currentPoly(:,1),polygon.currentPoly(:,2), 'Color','b');
+
+
     for fileIndex = 1:length(allFiles)
         
         allFiles(fileIndex).name
@@ -48,20 +63,22 @@ function ReadResults()
                end
                tidiedPositions = cat(3,tidiedPositions, pagePositions);
                tline = fgetl(fid);
+
+               closestNode = findNodes(mesh, 'nearest', particleLocation');
+               meshValues(closestNode) = meshValues(closestNode) + 1;
             end
 
             for(lineCount = 1: size(tidiedPositions,1))
-              %  scatter(ax1, squeeze(tidiedPositions(lineCount,1,:)), squeeze(tidiedPositions(lineCount,2,:)),1:100,[],1:4);
-                %particlePoints = 
                 plot(ax1, squeeze(tidiedPositions(lineCount,1,:)), squeeze(tidiedPositions(lineCount,2,:)),'-', 'markerSize', 1);
-              %  pause(0.3);
-              %  delete(particlePoints);
             end
             pause(0.1);
             fclose(fid);
 
         end
     end
+  %  for(meshPointIdex = 1: length(meshValues))
+        scatter(axMesh,mesh.Nodes(:,1), mesh.Nodes(:,2),meshValues)
+   % end
     useFile = input("Press any key to exit","s")
     close all;
 end
