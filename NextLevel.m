@@ -7,7 +7,7 @@ function NextLevel(app)
     fclose(app.fileID);
     app.ScenarioEditField.Value = "Test " + app.testNumber;
     app.goalIndex = 1;
-    app.polygon = app.polygon.change(3);
+    app.polygon = app.polygon.change(4);
     switch(app.testNumber)
         case(1) %low flow, no restrict
           %   app.polygon = app.polygon.change(3); %TODO make a 1 bifurcation set of tests. Switch bifurcations around when needed.
@@ -52,7 +52,7 @@ function NextLevel(app)
            %  app.polygon = app.polygon.change(3);
              app.NumberofParticlesEditField.Value = 50;
              app.FluidFlowmsEditField.Value = 0.01;
-             app.TimeRemainingsEditField.Value = 12;
+             app.TimeRemainingsEditField.Value = 7;
              app.MagForceRestrictMAM2EditField.Value = 1.5;
          case(8)
              app.goalIndex = 2;
@@ -166,8 +166,8 @@ function NextLevel(app)
              app.TimeRemainingsEditField.Value = 3;
              app.MagForceRestrictMAM2EditField.Value = 1.5;
          case(25)
-             app.polygon = app.polygon.change(3);
-          %   app.NumberofParticlesEditField.Value = 50;
+           %  app.polygon = app.polygon.change(3);
+             app.NumberofParticlesEditField.Value = 50;
              app.FluidFlowmsEditField.Value = 0.025;
              app.TimeRemainingsEditField.Value = 3;
              app.MagForceRestrictMAM2EditField.Value = 1.5;
@@ -211,6 +211,8 @@ function NextLevel(app)
     for(lineCount = 1:length(app.polygon.currentEndZone)-1)
         app.wrongEndLine(lineCount) = plot(app.UIAxes,app.polygon.currentEndZone(lineCount,:,1),app.polygon.currentEndZone(lineCount,:,2), 'Color','r');
     end 
+    app.X1MAGauge.Value = 0;
+    app.Y1MAGauge.Value = 0;
     app.endLine = plot(app.UIAxes,app.polygon.currentEndZone(app.goalIndex,:,1),app.polygon.currentEndZone(app.goalIndex,:,2), 'Color','g');
     app.fd = FlowData();
     app.haltParticlesInEndZone = zeros(app.numParticles,1);
@@ -220,8 +222,6 @@ function NextLevel(app)
     app.timeLag = 0;
     app.mousePosition = [0 0];
     app.magLine = plot(app.UIAxes,0,0);
-    app.X1MAGauge.Value = 0;
-    app.Y1MAGauge.Value = 0;
     
     tr = triangulation(polyshape(app.polygon.currentPoly(:,1),app.polygon.currentPoly(:,2)));
     model = createpde(1);
