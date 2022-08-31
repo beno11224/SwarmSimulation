@@ -2,6 +2,7 @@ from tensorflow import keras
 import tkinter as tk
 import tkinter.filedialog as fd
 import csv
+import os
 
 # Load in data
 root = tk.Tk()
@@ -10,13 +11,16 @@ filez = fd.askopenfilenames(parent=root, title='Choose all data files')
     #print(filez)
 datax = []
 datay = []
+goalLocations = [[]]
+goalLocations.append([1,2])
+goalLocations.append([-1,2])
+goalLocations.append([1,-2])
+goalLocations.append([-1,-2])# set the 4 end states here.
 for fileName in filez:
     with open(fileName) as csv_file:
         csv_reader = csv.reader(csv_file, delimiter=',')
         lineCount = 0
         for row in csv_reader:
-
-            #TODO need to clean up the tuples.
             
             #Make data easier to use
             time = row[0]
@@ -24,7 +28,18 @@ for fileName in filez:
             goalPercentage = row[2]
             velocities = row[3]
             positions = row[4]
-
+            testNumber = (os.path.basename(fileName))[4:6]
+            testNumber = ''.join(filter(str.isdigit, testNumber))
+            print(testNumber)
+            #error in below line
+            testNumber = int((testNumber % 2) *-1 + 2) #set which test we're running. use offset to set between various outputs.
+            print(fileName + " _ _ " + testNumber)
+            goalLocation = goalLocations[testNumber]
+            #Raw data is in, clean individual records here, or do them all together outside this loop.
+            #Remember good practice
+                #- all values should be the same scale (-1 > 0 > -1 is a good start)
+                #inputs should be of same magnitude - goal location should take similar number of inputs to particle location.
+            
             splitPositions = []
             splitMagForce = []
             positions = positions.strip('[')
