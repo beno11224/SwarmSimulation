@@ -7,7 +7,7 @@ function NextLevel(app)
     fclose(app.fileID);
     app.ScenarioEditField.Value = "Test " + app.testNumber;
     app.goalIndex = 1;
-    app.polygon = app.polygon.change(4);
+    app.polygon = app.polygon.change(3);
     switch(app.testNumber)
         case(1) %low flow, no restrict
           %   app.polygon = app.polygon.change(3); %TODO make a 1 bifurcation set of tests. Switch bifurcations around when needed.

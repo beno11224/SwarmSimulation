@@ -8,14 +8,14 @@ import os
 root = tk.Tk()
 root.withdraw()
 filez = fd.askopenfilenames(parent=root, title='Choose all data files')
-    #print(filez)
+
 datax = []
 datay = []
 goalLocations = [[]]
 goalLocations.append([1,2])
 goalLocations.append([-1,2])
 goalLocations.append([1,-2])
-goalLocations.append([-1,-2])# set the 4 end states here.
+goalLocations.append([-1,-2])# TODO set the 4 end states here.
 for fileName in filez:
     with open(fileName) as csv_file:
         csv_reader = csv.reader(csv_file, delimiter=',')
@@ -30,16 +30,13 @@ for fileName in filez:
             positions = row[4]
             testNumber = (os.path.basename(fileName))[4:6]
             testNumber = ''.join(filter(str.isdigit, testNumber))
-            print(testNumber)
-            #error in below line
-            testNumber = int((testNumber % 2) *-1 + 2) #set which test we're running. use offset to set between various outputs.
-            print(fileName + " _ _ " + testNumber)
-            goalLocation = goalLocations[testNumber]
+            testNumber = (int(testNumber) % 2) *-1 + 2 #set which test we're running. use offset to set between various outputs.
+            goalLocation = goalLocations[int(testNumber)]
             #Raw data is in, clean individual records here, or do them all together outside this loop.
             #Remember good practice
                 #- all values should be the same scale (-1 > 0 > -1 is a good start)
                 #inputs should be of same magnitude - goal location should take similar number of inputs to particle location.
-            
+                # think about what data is useable - throw data until user input detected? ignore once no more particles reach the goal?
             splitPositions = []
             splitMagForce = []
             positions = positions.strip('[')
@@ -51,6 +48,7 @@ for fileName in filez:
                 splitPositions.append(float(a[1]))
                
             datax.append(splitPositions)
+
             
             #only add the magforce for the next line
             if lineCount == 0:

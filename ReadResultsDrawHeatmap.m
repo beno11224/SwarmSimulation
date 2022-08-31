@@ -98,7 +98,12 @@ function ReadResultsDrawHeatmap()
     meshValues(meshValues > 1) = 1; %limit extremes
     alpha = meshValues;
     %alpha(alpha < 0.5) = 0.5; %lower bound the alpha
-    scatter(axMesh,mesh.Nodes(1,:), mesh.Nodes(2,:),50, meshValues','filled', 'AlphaData', alpha, MarkerFaceAlpha='flat')
+    scatter(axMesh,mesh.Nodes(1,:), mesh.Nodes(2,:),50, meshValues','filled');%, 'AlphaData', alpha, MarkerFaceAlpha='flat')
+    m = mesh(mesh.Nodes(1,:), mesh.Nodes(2,:)', meshValues)
+    %TODO use mesh(or equivalent) - need to make meshValues into a square,
+    %same with X and Y
+    m.FaceColor = 'flat';
+    %m = mesh(mesh.Nodes(1,:), mesh.Nodes(2,:), meshValues)
     colorbar (axMesh);
     useFile = input("Press any key to exit","s")
     close all;
