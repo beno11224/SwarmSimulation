@@ -259,7 +259,6 @@ classdef ParticleFunctions
             particleLocations = zeros(length(particleLocationsLength), 2);
             %init return value
             while(particleLocationIndex <= particleLocationsLength)
-                %particleLocations(particleLocationIndex,:) = real([xlim(1), ylim(1)] + [xlim(2)-xlim(1),ylim(2)-xlim(1)] .* rand(1, 2));
                 particleLocations(particleLocationIndex,:) = real([xlim(1), ylim(1)] + [xlim(2)-xlim(1),ylim(2)-ylim(1)] .* rand(1, 2));
                 particleLocationXValue = particleLocations(particleLocationIndex,1);
                 particleLocationYValue = particleLocations(particleLocationIndex,2);

@@ -268,11 +268,6 @@ classdef FlowData
                 0.7 -0.7;
                 0.005 -0.005];
         end
-
-        function obj = rotate(obj, rotDeg)
-            rotMatrix = [cosd(rotDeg), sind(rotDeg); -sind(rotDeg), cos(rotDeg)];
-            obj.FlowValues = (rotMatrix * obj.FlowValues')';
-        end
     end
 end
 

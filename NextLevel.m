@@ -8,16 +8,16 @@ function NextLevel(app)
     app.ScenarioEditField.Value = "Test " + app.testNumber;
     app.goalIndex = 1;
     rotation = 0;
-    app.polygon = app.polygon.change(3, 0);%NEED to reset mesh if using rotations%rotation);
+    app.polygon = app.polygon.change(3);%NEED to reset mesh if using rotations%rotation);
     %don't redo the mesh, just rotate.
-    tr = triangulation(polyshape(app.polygon.currentPoly(:,1),app.polygon.currentPoly(:,2)));
-    model = createpde(1);
-    tnodes = tr.Points';
-    telements = tr.ConnectivityList';
-    g = model.geometryFromMesh(tnodes, telements);
-    app.mesh = generateMesh(model, 'Hmax', 0.001);%was 0.000073 for old one.
-    rotate(g,rotation);    
-    app.fd.rotate(rotation);
+  %  tr = triangulation(polyshape(app.polygon.currentPoly(:,1),app.polygon.currentPoly(:,2)));
+  %  model = createpde(1);
+  %  tnodes = tr.Points';
+  %  telements = tr.ConnectivityList';
+  %  g = model.geometryFromMesh(tnodes, telements);
+  %  app.mesh = generateMesh(model, 'Hmax', 0.001);%was 0.000073 for old one.
+  %  rotate(g,rotation);    
+  %  app.fd.rotate(rotation);
 
     app.goalIndex = 2;
     app.NumberofParticlesEditField.Value = 50;
@@ -33,14 +33,14 @@ function NextLevel(app)
              app.MagForceRestrictMAM2EditField.Value = 0;
          case(2)
              app.goalIndex = 2;
-             app.polygon = app.polygon.change(2,90);
+             app.polygon = app.polygon.change(2);
              app.NumberofParticlesEditField.Value = 50;
              app.FluidFlowmsEditField.Value = 0.005;
              app.TimeRemainingsEditField.Value = 8;
              app.MagForceRestrictMAM2EditField.Value = 0;
          case(3)
            %  app.polygon = app.polygon.change(3);
-             app.polygon = app.polygon.change(3,180);
+             app.polygon = app.polygon.change(3);
              app.NumberofParticlesEditField.Value = 50;
              app.FluidFlowmsEditField.Value = 0.005;
              app.TimeRemainingsEditField.Value = 8;
