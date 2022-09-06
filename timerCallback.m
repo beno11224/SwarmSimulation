@@ -2,7 +2,7 @@ function timerCallback(app)
     %if(~app.currentlyDoingWorkSemaphore)
     %   app.currentlyDoingWorkSemaphore = true; %let the earlier tasks complete first, try and force other to leave things alone        
         
-    currentMagforce = app.particleFunctions.calculateMagneticForce([app.X1MAGauge.Value app.Y1MAGauge.Value],app.joyStick, 1, 3, app.controlMethod, app.mousePosition,app.MagForceRestrictMAM2EditField.Value);
+    currentMagforce = app.particleFunctions.calculateMagneticForce([app.X1MAGauge.Value app.Y1MAGauge.Value],app.joyStick, 1, 3, app.controlMethod, app.mousePosition, app.MagForceRestrictMAM2EditField.Value, app.rotation);
   
     if(app.controlMethod == "Controller")
         app.X1MAGauge.Value = currentMagforce(1) ./10^6 ./ app.particleFunctions.magneticForceConstant;

@@ -40,6 +40,7 @@ function NextLevel(app)
              app.TimeRemainingsEditField.Value = 8;
              app.MagForceRestrictMAM2EditField.Value = 0;
          case(3)
+             app.rotation = 45;
            %  app.polygon = app.polygon.change(3);
              app.polygon = app.polygon.change(3);
              app.NumberofParticlesEditField.Value = 50;

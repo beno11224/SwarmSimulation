@@ -34,7 +34,7 @@ classdef ParticleFunctions
         end
         
         %public functions
-        function force = calculateMagneticForce(obj, aCoils,joyStick, h, v, controlMethod, mouseLocation, magForceRestrict)
+        function force = calculateMagneticForce(obj, aCoils,joyStick, h, v, controlMethod, mouseLocation, magForceRestrict, rotation)
             switch(controlMethod)      
                 case("Keyboard")
                     totalForce = aCoils.* 10^6;
@@ -53,7 +53,7 @@ classdef ParticleFunctions
             if(norm(totalForce) > 2.25*10^6)
                 totalForce = totalForce ./ norm(totalForce) .* 2.25*10^6;
             end
-            force = obj.magneticForceConstant .* totalForce;
+            force = ([cosd(-rotation), sind(-rotation); -sind(-rotation), cos(-rotation)] * (obj.magneticForceConstant .* totalForce)')' ;
         end
         function force = calculateDipoleForce(obj, particleLocation, particleTorque)
             xYdistanceBetweenAllParticles = particleLocation - permute(particleLocation,[3,2,1]);
