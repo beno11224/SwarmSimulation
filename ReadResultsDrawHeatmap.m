@@ -97,14 +97,21 @@ function ReadResultsDrawHeatmap()
     meshValues = meshValues ./ quantile(meshValues,0.9); %between 0 and 1
     meshValues(meshValues > 1) = 1; %limit extremes
     alpha = meshValues;
+  %  MESHVALUES = repmat(meshValues,1,length(mesh.Nodes(1,:))) ;
     %alpha(alpha < 0.5) = 0.5; %lower bound the alpha
-    scatter(axMesh,mesh.Nodes(1,:), mesh.Nodes(2,:),50, meshValues','filled');%, 'AlphaData', alpha, MarkerFaceAlpha='flat')
-    m = mesh(mesh.Nodes(1,:), mesh.Nodes(2,:)', meshValues)
+  %  scatter(axMesh,mesh.Nodes(1,:), mesh.Nodes(2,:),50, meshValues','filled');%, 'AlphaData', alpha, MarkerFaceAlpha='flat')
+   % m = surf(mesh.Nodes(1,:), mesh.Nodes(2,:)', meshValues)
+   % m = surf(mesh.Nodes(1,:), mesh.Nodes(2,:), MESHVALUES);
+   % m = patch(mesh.Nodes, meshValues, 'FaceColor', 'interp');
+  % m = patch('XData',mesh.Nodes(1,:), 'YData', mesh.Nodes(2,:), 'ZData', meshValues', 'FaceColor', 'interp');
+  m = pdeplot(model, "XYData",meshValues, 'ColorMap', 'jet');
+  %  shading interp 
+  % view(2);
     %TODO use mesh(or equivalent) - need to make meshValues into a square,
     %same with X and Y
-    m.FaceColor = 'flat';
+ %   m.FaceColor = 'flat';
     %m = mesh(mesh.Nodes(1,:), mesh.Nodes(2,:), meshValues)
-    colorbar (axMesh);
+  %  colorbar (axMesh);
     useFile = input("Press any key to exit","s")
     close all;
 end

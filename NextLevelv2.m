@@ -16,14 +16,17 @@ function NextLevel(app)
     telements = tr.ConnectivityList';
     g = model.geometryFromMesh(tnodes, telements);
     app.mesh = generateMesh(model, 'Hmax', 0.001);%was 0.000073 for old one.
-    rotate(g,rotation);    
-    app.fd.rotate(rotation);
+    rotate(g,rotation);
+  %  oldNodes = model.Mesh.Nodes;
+  %  elements = model.Mesh.Elements;
+ %   for l = 1:length(oldNodes)
+ %       a = oldNodes(:,l)
+ %       oldNodes(:,l) = [cosd(rotation), sind(rotation); -sind(rotation), cos(rotation)] * app.mesh.Nodes(:,l);
+ %   end
+ %   app.mesh.Nodes = oldNodes;
+  %  app.mesh = geometryFromMesh(model,oldNodes, elements);
 
-    app.goalIndex = 2;
-    app.NumberofParticlesEditField.Value = 50;
-    app.FluidFlowmsEditField.Value = 0.005;
-    app.TimeRemainingsEditField.Value = 8;
-    app.MagForceRestrictMAM2EditField.Value = 0;
+    app.fd.rotate(rotation);
     switch(app.testNumber)
         case(1) %low flow, no restrict
           %   app.polygon = app.polygon.change(3); %TODO make a 1 bifurcation set of tests. Switch bifurcations around when needed.

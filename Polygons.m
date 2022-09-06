@@ -398,14 +398,25 @@ classdef Polygons
             end
         end
         
-        function obj = change(obj,num)
-            obj.currentPoly = squeeze(obj.allPolys(num,:,:));
+        function obj = change(obj,num, rotDeg) %TODO does rotDeg need to be supplied?
+            if(~exist('rotDeg','var'))
+                rotDeg = 0;
+            end
+            rotMatrix = [cosd(rotDeg), sind(rotDeg); -sind(rotDeg), cos(rotDeg)];
+            obj.currentPoly = (rotMatrix * (squeeze(obj.allPolys(num,:,:))'))';
             for i = 1:length(obj.currentPoly)-1 
                 obj.currentPolyVector(i,:) = obj.currentPoly(i,:) - obj.currentPoly(i+1,:);
             end
-            obj.currentStartZone = squeeze(obj.allStartZones(num,:,:));
-            obj.currentEndZone = squeeze(obj.allEndZones(num,:,:,:));
+            obj.currentStartZone = (rotMatrix * (squeeze(obj.allStartZones(num,:,:))'))';
+            for j = 1:size(squeeze(obj.allEndZones(num,:,:,:)),1)
+                obj.currentEndZone(j,:,:) = (rotMatrix * (squeeze(obj.allEndZones(num,j,:,:))'))';
+            end
+            for k = 1:size(obj.outOfBoundsPolys,1)
+                obj.outOfBoundsPolys(k,:,:) = (rotMatrix * (squeeze(obj.outOfBoundsPolys(k,:,:))'))';
+            end
+            obj.hardCodedOrthogonalWallContacts = (rotMatrix * obj.hardCodedOrthogonalWallContacts')';
         end
+
     end
 end
 
