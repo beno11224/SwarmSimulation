@@ -7,7 +7,7 @@ function NextLevel(app)
     fclose(app.fileID);
     app.ScenarioEditField.Value = "Test " + app.testNumber;
     app.goalIndex = 1;
-    rotation = 0;
+    app.rotation = 0;
     app.polygon = app.polygon.change(3);%NEED to reset mesh if using rotations%rotation);
     %don't redo the mesh, just rotate.
   %  tr = triangulation(polyshape(app.polygon.currentPoly(:,1),app.polygon.currentPoly(:,2)));
@@ -33,6 +33,7 @@ function NextLevel(app)
              app.MagForceRestrictMAM2EditField.Value = 0;
          case(2)
              app.goalIndex = 2;
+             app.rotation = 90;
              app.polygon = app.polygon.change(2);
              app.NumberofParticlesEditField.Value = 50;
              app.FluidFlowmsEditField.Value = 0.005;
@@ -224,13 +225,20 @@ function NextLevel(app)
     delete(app.polyLine);
     delete(app.endLine);
     delete(app.wrongEndLine); 
-    app.polyLine = plot(app.UIAxes,app.polygon.currentPoly(:,1),app.polygon.currentPoly(:,2), 'Color','b');
+    
+    rotateMatrix = [cosd(app.rotation), sind(app.rotation); -sind(app.rotation), cos(app.rotation)];
+
+    rotatedOutline = (rotateMatrix * app.polygon.currentPoly')';
+    app.polyLine = plot(app.UIAxes, rotatedOutline(:,1), rotatedOutline(:,2), 'Color','b');
     for(lineCount = 1:length(app.polygon.currentEndZone)-1)
-        app.wrongEndLine(lineCount) = plot(app.UIAxes,app.polygon.currentEndZone(lineCount,:,1),app.polygon.currentEndZone(lineCount,:,2), 'Color','r');
+        rotatedEndZone = (rotateMatrix * squeeze(app.polygon.currentEndZone(lineCount,:,:))')';
+        app.wrongEndLine(lineCount) = plot(app.UIAxes, rotatedEndZone(:,1), rotatedEndZone(:,2), 'Color','r');
+        if(lineCount == app.goalIndex)
+            app.endLine = plot(app.UIAxes, rotatedEndZone(:,1), rotatedEndZone(:,2), 'Color','g');
+        end
     end 
     app.X1MAGauge.Value = 0;
     app.Y1MAGauge.Value = 0;
-    app.endLine = plot(app.UIAxes,app.polygon.currentEndZone(app.goalIndex,:,1),app.polygon.currentEndZone(app.goalIndex,:,2), 'Color','g');
     app.fd = FlowData();
     app.haltParticlesInEndZone = zeros(app.numParticles,1);
     app.currentlyDoingWorkSemaphore = false;

@@ -22,6 +22,15 @@ function ReadResultsDrawHeatmap()
     polyLineMesh = plot(axMesh,polygon.currentPoly(:,1),polygon.currentPoly(:,2), 'Color','b');
     endLineMesh = plot(axMesh,polygon.currentEndZone(1,:,1),polygon.currentEndZone(1,:,2), 'Color','g');
 
+
+        %if statement for printing centre mass of particles - TODO must modify
+    %  if(app.CentreMassViewCheckBox.Value)
+    %      avgLocation = sum(app.particleArrayLocation) ./ size(app.particleArrayLocation,1);
+    %      absoluteDeviation = abs(app.particleArrayLocation - avgLocation);
+    %      MAD = sum(absoluteDeviation) ./ size(app.particleArrayLocation,1);
+    %      app.particlePoints = errorbar(app.UIAxes, avgLocation(1), avgLocation(2), MAD(1), MAD(1), MAD(2), MAD(2) ,'r.', 'markerSize', 18);
+    %  else
+
     for fileIndex = 1:length(allFiles)
         
         useFile = 'y';
