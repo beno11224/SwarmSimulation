@@ -61,7 +61,12 @@ function timerCallback(app)
         end
     end
     %fprintf(app.fileID, app.timePassed + "," + app.timeLag + "," + mat2str(magForce) + "," + mat2str(dragForce)+ "," + goalPercentage + "," + mat2str(app.particleArrayVelocity)+ "," + mat2str(app.particleArrayLocation) + "\r\n");
-    fprintf(app.fileID, app.timePassed + "," + mat2str([app.X1MAGauge.Value app.Y1MAGauge.Value]) + "," + goalPercentage + "," + mat2str(app.particleArrayVelocity)+ "," + mat2str(app.particleArrayLocation) + "\r\n");
+    %Now rotate location values:
+    rotMat = [cosd(app.rotation), sind(app.rotation); -sind(app.rotation), cos(app.rotation)];
+    rotForce = (rotMat * [app.X1MAGauge.Value ; app.Y1MAGauge.Value])';
+    rotVel = (rotMat * app.particleArrayVelocity')';
+    rotLoc = (rotMat * app.particleArrayLocation')';
+    fprintf(app.fileID, app.timePassed + "," + mat2str(rotForce) + "," + goalPercentage + "," + mat2str(rotVel)+ "," + mat2str(rotLoc) + "\r\n");
     if(app.timeLimit > 0 && app.timePassed <= app.timeLimit)
         app.TimeRemainingsEditField.Value = round(app.timeLimit - app.timePassed);
         app.PercentageinGoalEditField.Value = round(goalPercentage .* 100);
