@@ -21,9 +21,8 @@ function NextLevel(app)
     app.rotation = 0;
     app.NumberofParticlesEditField.Value = 50;
     app.FluidFlowmsEditField.Value = 0.005;
-    app.TimeRemainingsEditField.Value = 8;
     app.MagForceRestrictMAM2EditField.Value = 0;
-    switch(floor(app.testNumber/10)) %Do n of each
+    switch(floor(app.testNumber/2)) %Do n of each
         %0.005 m/s
         case(0) %low flow, no restrict
             app.polygon.change(3);
@@ -200,6 +199,9 @@ function NextLevel(app)
              app.TimeRemainingsEditField.Value = 1200;
              app.MagForceRestrictMAM2EditField.Value = 0;
     end    
+
+    minTimeToTravel = 3 * (0.005 ./ app.FluidFlowmsEditField.Value);
+    app.TimeRemainingsEditField.Value = minTimeToTravel .* 3.5;
     app.timeLimit = app.TimeRemainingsEditField.Value;
     app.numParticles = app.NumberofParticlesEditField.Value;
     app.previousMagforce = 0;
