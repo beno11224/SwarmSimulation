@@ -1,9 +1,5 @@
 function NextLevel(app)
     delete(app.particlePoints);
-    app.MagForceRestrictMAM2EditField.Value = 0;
-    app.NumberofParticlesEditField.Value = 10;
-    app.FluidFlowmsEditField.Value = 0;
-    app.MagForceRestrictMAM2EditField.Value = 0;
     fclose(app.fileID);
     app.ScenarioEditField.Value = "Test " + app.testNumber;
     app.polygon = app.polygon.change(2);%NEED to reset mesh if using rotations%rotation);
@@ -22,7 +18,7 @@ function NextLevel(app)
     app.NumberofParticlesEditField.Value = 50;
     app.FluidFlowmsEditField.Value = 0.005;
     app.MagForceRestrictMAM2EditField.Value = 0;
-    switch(floor(app.testNumber/2)) %Do n of each
+    switch(floor(app.testNumber/10)) %Do n of each
         %0.005 m/s
         case(0) %low flow, no restrict
             app.polygon.change(3);
@@ -200,8 +196,8 @@ function NextLevel(app)
              app.MagForceRestrictMAM2EditField.Value = 0;
     end    
 
-    minTimeToTravel = 3 * (0.005 ./ app.FluidFlowmsEditField.Value);
-    app.TimeRemainingsEditField.Value = minTimeToTravel .* 3.5;
+    minTimeToTravel = 4 * (0.005 ./ app.FluidFlowmsEditField.Value); %4 paths, length, velocity
+    app.TimeRemainingsEditField.Value = minTimeToTravel .* 2.5;
     app.timeLimit = app.TimeRemainingsEditField.Value;
     app.numParticles = app.NumberofParticlesEditField.Value;
     app.previousMagforce = 0;
@@ -225,7 +221,6 @@ function NextLevel(app)
     delete(app.wrongEndLine); 
     
     rotateMatrix = [cosd(app.rotation), sind(app.rotation); -sind(app.rotation), cos(app.rotation)];
-
     rotatedOutline = (rotateMatrix * app.polygon.currentPoly')';
     app.polyLine = plot(app.UIAxes, rotatedOutline(:,1), rotatedOutline(:,2), 'Color','b');
     for(lineCount = 1:length(app.polygon.currentEndZone)-1)
@@ -235,9 +230,10 @@ function NextLevel(app)
             app.endLine = plot(app.UIAxes, rotatedEndZone(:,1), rotatedEndZone(:,2), 'Color','g');
         end
     end 
+    app.previousMagforce = 0;
     app.X1MAGauge.Value = 0;
     app.Y1MAGauge.Value = 0;
-    app.fd = FlowData();
+    %app.fd = FlowData();
     app.haltParticlesInEndZone = zeros(app.numParticles,1);
     app.currentlyDoingWorkSemaphore = false;
     app.timePassed = 0;
