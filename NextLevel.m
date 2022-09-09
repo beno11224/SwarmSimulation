@@ -2,21 +2,11 @@ function NextLevel(app)
     delete(app.particlePoints);
     fclose(app.fileID);
     app.ScenarioEditField.Value = "Test " + app.testNumber;
-    app.polygon = app.polygon.change(2);%NEED to reset mesh if using rotations%rotation);
-    %don't redo the mesh, just rotate.
-  %  tr = triangulation(polyshape(app.polygon.currentPoly(:,1),app.polygon.currentPoly(:,2)));
-  %  model = createpde(1);
-  %  tnodes = tr.Points';
-  %  telements = tr.ConnectivityList';
-  %  g = model.geometryFromMesh(tnodes, telements);
-  %  app.mesh = generateMesh(model, 'Hmax', 0.001);%was 0.000073 for old one.
-  %  rotate(g,rotation);    
-  %  app.fd.rotate(rotation);
-
+    app.polygon = app.polygon.change(2);
     app.goalIndex = 1;
     app.rotation = 0;
     app.NumberofParticlesEditField.Value = 50;
-    app.FluidFlowmsEditField.Value = 0.005;
+    app.FluidFlowmsEditField.Value = 0.025;
     app.MagForceRestrictMAM2EditField.Value = 0;
     switch(floor(app.testNumber/10)) %Do n of each
         %0.005 m/s
@@ -241,5 +231,12 @@ function NextLevel(app)
     app.timeLag = 0;
     app.mousePosition = [0 0];
     app.magLine = plot(app.UIAxes,0,0);    
+
+    tr = triangulation(polyshape(app.polygon.currentPoly(:,1),app.polygon.currentPoly(:,2)));
+    model = createpde(1);
+    tnodes = tr.Points';
+    telements = tr.ConnectivityList';
+    g = model.geometryFromMesh(tnodes, telements);
+    app.mesh = generateMesh(model, 'Hmax', 0.001);%was 0.000073 for old one.
 end
 
