@@ -26,7 +26,7 @@ epsilon_max = 1.0  # Maximum epsilon greedy parameter
 epsilon_interval = (
     epsilon_max - epsilon_min
 )  # Rate at which to reduce chance of random action being taken
-batch_size = 9  # Size of batch taken from replay buffer
+batch_size = 7  # Size of batch taken from replay buffer
 max_steps_per_episode = 10000
 
 ########-----Borrowed from:https://www.youtube.com/watch?v=cO5g5qLrLSo - Deep Reinforcement Learning Tutorial for Python in 20 Minutes -  Nicholas Renotte
@@ -111,7 +111,7 @@ update_target_network = 10000
 loss_function = Huber()
 
 while True:  # Run until solved
-    state = np.array(env.reset())
+    state = np.array(env.reset(), dtype=object)
     episode_reward = 0
 
     for timestep in range(1, max_steps_per_episode):
@@ -161,8 +161,20 @@ while True:  # Run until solved
             indices = np.random.choice(range(len(done_history)), size=batch_size)
 
             # Using list comprehension to sample from replay buffer
-            state_sample = np.array([state_history[i] for i in indices], dtype=np.float)
-            state_next_sample = np.array([state_next_history[i] for i in indices])
+            #state_sample = np.array([state_history[i] for i in indices])
+            #state_next_sample = np.array([state_next_history[i] for i in indices])
+            i_n = 0
+            state_sample = np.zeros(shape=(len(indices),states))
+            state_next_sample = np.zeros(shape=(len(indices),states))
+            for i in indices:
+                print("ss")
+                print(state_sample[i_n])
+                print(state_history[i])
+                state_sample[i_n] = state_history[i]
+                state_next_sample[i_n] = state_next_history[i]
+                i_n+=1
+
+            print("end of for")
             rewards_sample = [rewards_history[i] for i in indices]
             action_sample = [action_history[i] for i in indices]
             done_sample = tf.convert_to_tensor(
@@ -178,10 +190,10 @@ while True:  # Run until solved
             future_rewards = model_target.predict(s_n_s).squeeze()
             # Q value = reward + discount factor * expected future reward
             updated_q_values = rewards_sample + gamma * tf.reduce_max(future_rewards, axis=1)
-            print(updated_q_values.shape)
-
+            print(updated_q_values)
             # If final frame set the last value to -1
             updated_q_values = updated_q_values * (1 - done_sample) - done_sample
+            print(updated_q_values)
 
             # Create a mask so we only calculate loss on the updated Q-values
             masks = tf.one_hot(action_sample, actions)
@@ -196,8 +208,8 @@ while True:  # Run until solved
                 # Apply the masks to the Q-values to get the Q-value for action taken
                 q_action = tf.reduce_sum(tf.multiply(q_values, masks), axis=1)
                 # Calculate loss between new Q-value and old Q-value
-                print(updated_q_values.shape)
-                print(q_action.shape)
+                print(updated_q_values)
+                print(q_action)
                 loss = loss_function(updated_q_values, q_action)
 
             # Backpropagation
@@ -221,7 +233,7 @@ while True:  # Run until solved
 
         if done:
             break
-
+    print("near end of loop")
     # Update running reward to check condition for solving
     episode_reward_history.append(episode_reward)
     if len(episode_reward_history) > 100:
