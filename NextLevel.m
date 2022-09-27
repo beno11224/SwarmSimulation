@@ -6,7 +6,7 @@ function NextLevel(app)
     app.goalIndex = 1;
     app.rotation = 0;
     app.NumberofParticlesEditField.Value = 50;
-    app.FluidFlowmsEditField.Value = 0.025;
+    app.FluidFlowmsEditField.Value = 0.005;
     app.MagForceRestrictMAM2EditField.Value = 0;
     switch(floor(app.testNumber/10)) %Do n of each
         %0.005 m/s
