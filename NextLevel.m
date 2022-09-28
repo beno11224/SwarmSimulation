@@ -9,20 +9,17 @@ function NextLevel(app)
     app.FluidFlowmsEditField.Value = 0.005;
     app.MagForceRestrictMAM2EditField.Value = 0;
     generateNewParticles = true;
-    switch(floor(app.testNumber/2)) %Do n of each
+    switch(floor((app.testNumber-1)/2)) %Do n of each
         %0.005 m/s
         case(0) %low flow, no restrict
             app.polygon.change(3);
         case(1)
             app.polygon.change(3);
             generateNewParticles = false;
-            polys(1,:,:) = app.polygon.currentStartZone;
-            polys(2,:,:) = app.polygon.allStartZones(2,3,:,:);
-            app.particleArrayLocation = app.particleFunctions.generateParticleLocations(polys, app.numParticles/2);
-           % ab = app.particleFunctions.generateParticleLocations(app.polygon.currentStartZone, app.numParticles/2);
-           % ac = app.particleArrayLocation((app.numParticles/2+1):app.numParticles,:)
-           % app.particleArrayLocation(1:app.numParticles/2,:) = app.particleFunctions.generateParticleLocations(app.polygon.currentStartZone, app.numParticles/2);
-           % app.particleArrayLocation((app.numParticles/2+1):app.numParticles,:) = app.particleFunctions.generateParticleLocations(app.polygon.allStartZones(2,3,:,:), app.numParticles/2);
+            ab = app.particleFunctions.generateParticleLocations(squeeze(app.polygon.allStartZones(2,3,:,:)), app.numParticles/2);
+            ac = app.particleArrayLocation((app.numParticles/2+1):app.numParticles,:)
+            app.particleArrayLocation(1:app.numParticles/2,:) = app.particleFunctions.generateParticleLocations(app.polygon.currentStartZone, app.numParticles/2);
+            app.particleArrayLocation((app.numParticles/2+1):app.numParticles,:) = app.particleFunctions.generateParticleLocations(squeeze(app.polygon.allStartZones(2,3,:,:)), app.numParticles/2);
             app.goalIndex = 2;
         case(2)
             app.rotation = 90;

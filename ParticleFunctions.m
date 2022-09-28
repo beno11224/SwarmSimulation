@@ -254,23 +254,16 @@ classdef ParticleFunctions
         end
         
         function particleLocations = generateParticleLocations(obj, poly, particleLocationsLength)
-            if(ndims(poly) == 2)
-                allPolys(1,:,:) = poly;
-            else
-                allPolys = poly;
-            end
-            for(polyIndex = 1:size(allPolys,1))
-                [xlim ylim] = boundingbox(polyshape(squeeze(allPolys(polyIndex,:,:))));
-                particleLocationIndex = 1;
-                particleLocations = zeros(length(particleLocationsLength), 2);
-                %init return value
-                while(particleLocationIndex <= particleLocationsLength)
-                    particleLocations(particleLocationIndex,:) = real([xlim(1), ylim(1)] + [xlim(2)-xlim(1),ylim(2)-ylim(1)] .* rand(1, 2));
-                    particleLocationXValue = particleLocations(particleLocationIndex,1);
-                    particleLocationYValue = particleLocations(particleLocationIndex,2);
-                    if(inpolygon(particleLocationXValue,particleLocationYValue,allPolys(polyIndex,:,1), allPolys(polyIndex,:,2)))
-                        particleLocationIndex = particleLocationIndex + 1;
-                    end
+            [xlim ylim] = boundingbox(polyshape(poly));
+            particleLocationIndex = 1;
+            particleLocations = zeros(length(particleLocationsLength), 2);
+            %init return value
+            while(particleLocationIndex <= particleLocationsLength)
+                particleLocations(particleLocationIndex,:) = real([xlim(1), ylim(1)] + [xlim(2)-xlim(1),ylim(2)-ylim(1)] .* rand(1, 2));
+                particleLocationXValue = particleLocations(particleLocationIndex,1);
+                particleLocationYValue = particleLocations(particleLocationIndex,2);
+                if(inpolygon(particleLocationXValue,particleLocationYValue,poly(:,1), poly(:,2)))
+                    particleLocationIndex = particleLocationIndex + 1;
                 end
             end
         end
