@@ -128,25 +128,35 @@ classdef Polygons
            
             obj.currentPoly = squeeze(obj.allPolys(1,:,:));
             
-            obj.allStartZones(1,:,:) = [len*0.25, len*0.25;
+            obj.allStartZones(1,1,:,:) = [len*0.25, len*0.25;
                 -len*0.25, len*0.25;
                 -len*0.25, -len*0.25;
                 len*0.25, -len*0.25;
                 len*0.25, len*0.25];
             
-            obj.allStartZones(2,:,:) = [-0.0095 -0.004;
+            obj.allStartZones(2,1,:,:) = [-0.0095 -0.004;
                -0.0085 -0.004;
                -0.0085 -0.003;
                -0.0095 -0.003;
                -0.0095 -0.004];
+            obj.allStartZones(2,2,:,:) = [-0.0095 -0.0037;
+               -0.007 -0.0036;
+               -0.007 -0.0034;
+               -0.0095 -0.0032;
+               -0.0095 -0.0037];
+            obj.allStartZones(2,3,:,:) = [-0.00363 -0.0035;%1st upper
+               -0.0045 -0.003;
+               -0.0037 -0.0025;%%
+               -0.0035 -0.0027;%%
+               -0.00363 -0.0035];
                
-           obj.allStartZones(3,:,:) = [-0.0095 -0.004;
+           obj.allStartZones(3,1,:,:) = [-0.0095 -0.004;
                -0.0094 -0.004;
                -0.0094 -0.003;
                -0.0095 -0.003;
                -0.0095 -0.004];  
            
-           obj.allStartZones(4,:,:) = [-0.0095 -0.004;
+           obj.allStartZones(4,1,:,:) = [-0.0095 -0.004;
                -0.0094 -0.004;
                -0.0094 -0.003;
                -0.0095 -0.003;
@@ -166,7 +176,7 @@ classdef Polygons
            %    -len -len*0.43;
            %    -len -len*0.45];  
            
-           obj.currentStartZone = squeeze(obj.allStartZones(1,:,:));
+           obj.currentStartZone = squeeze(obj.allStartZones(1,1,:,:));
            
            obj.allEndZones(1,1,:,:) = [0.00941 -0.00269 %Test?(same as 3 bifurcations)
                0.00870 -0.0034;
@@ -403,7 +413,7 @@ classdef Polygons
             for i = 1:length(obj.currentPoly)-1 
                 obj.currentPolyVector(i,:) = obj.currentPoly(i,:) - obj.currentPoly(i+1,:);
             end
-            obj.currentStartZone = squeeze(obj.allStartZones(num,:,:));
+            obj.currentStartZone = squeeze(obj.allStartZones(num,1,:,:));
             obj.currentEndZone = squeeze(obj.allEndZones(num,:,:,:));
             obj.hardCodedOrthogonalWallContacts = obj.hardCodedOrthogonalWallContacts;
         end
