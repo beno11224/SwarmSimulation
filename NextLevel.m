@@ -8,16 +8,18 @@ function NextLevel(app)
     app.NumberofParticlesEditField.Value = 50;
     app.FluidFlowmsEditField.Value = 0.005;
     app.MagForceRestrictMAM2EditField.Value = 0;
+    app.TimeRemainingsEditField.Value = 1;
     generateNewParticles = true;
+    newTime = true;
     switch(floor((app.testNumber-1)/2)) %Do n of each
         %0.005 m/s
-        case(0) %low flow, no restrict
+        %For Demos!!!
+        case(0)
+            newTime = false;
             app.polygon.change(3);
         case(1)
             app.polygon.change(3);
             generateNewParticles = false;
-            ab = app.particleFunctions.generateParticleLocations(squeeze(app.polygon.allStartZones(2,3,:,:)), app.numParticles/2);
-            ac = app.particleArrayLocation((app.numParticles/2+1):app.numParticles,:)
             app.particleArrayLocation(1:app.numParticles/2,:) = app.particleFunctions.generateParticleLocations(app.polygon.currentStartZone, app.numParticles/2);
             app.particleArrayLocation((app.numParticles/2+1):app.numParticles,:) = app.particleFunctions.generateParticleLocations(squeeze(app.polygon.allStartZones(2,3,:,:)), app.numParticles/2);
             app.goalIndex = 2;
@@ -193,7 +195,9 @@ function NextLevel(app)
     end    
 
     minTimeToTravel = 4 * (0.005 ./ app.FluidFlowmsEditField.Value); %4 paths, length, velocity
-    app.TimeRemainingsEditField.Value = minTimeToTravel .* 2.5;
+    if(newTime)
+        app.TimeRemainingsEditField.Value = minTimeToTravel .* 2.5;
+    end
     app.timeLimit = app.TimeRemainingsEditField.Value;
     app.numParticles = app.NumberofParticlesEditField.Value;
     app.previousMagforce = 0;
