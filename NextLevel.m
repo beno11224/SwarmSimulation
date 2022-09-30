@@ -8,69 +8,98 @@ function NextLevel(app)
     app.NumberofParticlesEditField.Value = 50;
     app.FluidFlowmsEditField.Value = 0.01;
     app.MagForceRestrictMAM2EditField.Value = 0;
+    app.ParticleMasskgEditField.Value = 2.069*10^-13;
+    app.ParticleDiametermEditField.Value = 0.0000056;
     generateNewParticles = true;
-    switch(floor((app.testNumber-1)/2)) %Do n of each
-        %0.005 m/s
-        %For Demos!!!
-        case(0)
+    switch(floor((app.testNumber-1)/5)) %Do 5 of each
+        %parametric study
+        %Fluid Flow
+        case(0) %low flow, no restrict
             app.polygon.change(3);
+            app.FluidFlowmsEditField.Value = 0.005;
         case(1)
             app.polygon.change(3);
-            app.goalIndex = 2;
-            generateNewParticles = false;
-            app.particleArrayLocation = app.particleFunctions.generateParticleLocations(squeeze(app.polygon.allStartZones(2,2,:,:)), app.numParticles);
+            app.FluidFlowmsEditField.Value = 0.01;
         case(2)
             app.polygon.change(3);
-            generateNewParticles = false;
-            app.particleArrayLocation(1:app.numParticles/2,:) = app.particleFunctions.generateParticleLocations(app.polygon.currentStartZone, app.numParticles/2);
-            app.particleArrayLocation((app.numParticles/2+1):app.numParticles,:) = app.particleFunctions.generateParticleLocations(squeeze(app.polygon.allStartZones(2,3,:,:)), app.numParticles/2);
+            app.FluidFlowmsEditField.Value = 0.015;
         case(3)
-            app.rotation = 180;
             app.polygon.change(3);
+            app.FluidFlowmsEditField.Value = 0.02;
         case(4)
-            app.rotation = 180;
             app.polygon.change(3);
-            generateNewParticles = false;
-            app.particleArrayLocation = app.particleFunctions.generateParticleLocations(squeeze(app.polygon.allStartZones(2,2,:,:)), app.numParticles);
+            app.FluidFlowmsEditField.Value = 0.025;
+        %magForceCap, Flow 0.01
         case(5)
-            app.rotation = 180;
             app.polygon.change(3);
-            app.goalIndex = 2;
-            generateNewParticles = false;
-            app.particleArrayLocation(1:app.numParticles/2,:) = app.particleFunctions.generateParticleLocations(app.polygon.currentStartZone, app.numParticles/2);
-            app.particleArrayLocation((app.numParticles/2+1):app.numParticles,:) = app.particleFunctions.generateParticleLocations(squeeze(app.polygon.allStartZones(2,3,:,:)), app.numParticles/2);
+            app.FluidFlowmsEditField.Value = 0.01;
+            app.MagForceRestrictMAM2EditField.Value = 0.5;
         case(6)
             app.polygon.change(3);
-            app.FluidFlowmsEditField.Value = 0.02;
+            app.FluidFlowmsEditField.Value = 0.01;
+            app.MagForceRestrictMAM2EditField.Value = 1;
         case(7)
             app.polygon.change(3);
-            app.FluidFlowmsEditField.Value = 0.02;
-            generateNewParticles = false;
-            app.particleArrayLocation = app.particleFunctions.generateParticleLocations(squeeze(app.polygon.allStartZones(2,2,:,:)), app.numParticles);
+            app.FluidFlowmsEditField.Value = 0.01;
+            app.MagForceRestrictMAM2EditField.Value = 1.5;
         case(8)
             app.polygon.change(3);
-            app.FluidFlowmsEditField.Value = 0.02;
-            generateNewParticles = false;
-            app.particleArrayLocation(1:app.numParticles/2,:) = app.particleFunctions.generateParticleLocations(app.polygon.currentStartZone, app.numParticles/2);
-            app.particleArrayLocation((app.numParticles/2+1):app.numParticles,:) = app.particleFunctions.generateParticleLocations(squeeze(app.polygon.allStartZones(2,3,:,:)), app.numParticles/2);
+            app.FluidFlowmsEditField.Value = 0.01;
+            app.MagForceRestrictMAM2EditField.Value = 2;
         case(9)
-            app.rotation = 180;
             app.polygon.change(3);
-            app.FluidFlowmsEditField.Value = 0.02;
-        case(10)
-            app.rotation = 180;
+            app.FluidFlowmsEditField.Value = 0.01;
+            app.MagForceRestrictMAM2EditField.Value = 2.25;
+        %chainLength, flow 0.01 - find correct sizes!! 
+        case(10)%50
             app.polygon.change(3);
-            app.FluidFlowmsEditField.Value = 0.02;
+            app.FluidFlowmsEditField.Value = 0.01;
+            app.ParticleMasskgEditField.Value = 9.0478*10^-14;
+            app.ParticleDiametermEditField.Value = 0.0000042506;
+        case(11)%75
+            app.polygon.change(3);
+            app.FluidFlowmsEditField.Value = 0.01;
+            app.ParticleMasskgEditField.Value = 1.3572*10^-13;
+            app.ParticleDiametermEditField.Value = 0.0000048658;
+        case(12)%100
+            app.polygon.change(3);
+            app.FluidFlowmsEditField.Value = 0.01;
+            app.ParticleMasskgEditField.Value = 1.8096*10^-13;
+            app.ParticleDiametermEditField.Value = 0.0000053555;
+        case(13)%125
+            app.polygon.change(3);
+            app.FluidFlowmsEditField.Value = 0.01;
+            app.ParticleMasskgEditField.Value = 2.2619*10^-13;
+            app.ParticleDiametermEditField.Value = 0.000005769;
+        case(14)%150
+            app.polygon.change(3);
+            app.FluidFlowmsEditField.Value = 0.01;
+            app.ParticleMasskgEditField.Value = 2.7143*10^-13;
+            app.ParticleDiametermEditField.Value = 0.0000061305;
+        case(15)%175
+            app.polygon.change(3);
+            app.FluidFlowmsEditField.Value = 0.01;
+            app.ParticleMasskgEditField.Value = 3.1667*10^-13;
+            app.ParticleDiametermEditField.Value = 0.0000064537;        
+        case(16)%200
+            app.polygon.change(3);
+            app.FluidFlowmsEditField.Value = 0.01;
+            app.ParticleMasskgEditField.Value = 3.6191*10^-13;
+            app.ParticleDiametermEditField.Value = 0.0000067475;
+        %Shapes - use 0.01 for shape 1
+        %Pointy(2)
+        case(17)
+            app.polygon.change(3);
+            app.FluidFlowmsEditField.Value = 0.01;
             generateNewParticles = false;
-            app.particleArrayLocation = app.particleFunctions.generateParticleLocations(squeeze(app.polygon.allStartZones(2,2,:,:)), app.numParticles);
-        case(11)
-            app.rotation = 180;
+            app.particleArrayLocation(1:app.numParticles,:) = app.particleFunctions.generateParticleLocations(squeeze(app.polygon.allStartZones(2,2,:,:)), app.numParticles);
+        %Split(1&3)
+        case(18)
             app.polygon.change(3);
-            app.FluidFlowmsEditField.Value = 0.02;
+            app.FluidFlowmsEditField.Value = 0.01;
             generateNewParticles = false;
             app.particleArrayLocation(1:app.numParticles/2,:) = app.particleFunctions.generateParticleLocations(app.polygon.currentStartZone, app.numParticles/2);
             app.particleArrayLocation((app.numParticles/2+1):app.numParticles,:) = app.particleFunctions.generateParticleLocations(squeeze(app.polygon.allStartZones(2,3,:,:)), app.numParticles/2);
-        
         
         otherwise
              fprintf("The experiment has now ended, thank you for your participation. Please close this window.\r\n");
@@ -82,7 +111,7 @@ function NextLevel(app)
     end    
 
     minTimeToTravel = 4 * (0.005 ./ app.FluidFlowmsEditField.Value); %4 paths, length, velocity
-    app.TimeRemainingsEditField.Value = minTimeToTravel .* 3.5;%2.5;
+    app.TimeRemainingsEditField.Value = minTimeToTravel .* 2.5;
     app.timeLimit = app.TimeRemainingsEditField.Value;
     app.numParticles = app.NumberofParticlesEditField.Value;
     app.previousMagforce = 0;
