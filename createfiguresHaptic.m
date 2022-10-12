@@ -10,18 +10,25 @@ close all;
 xParticleSize = [50, 75, 100, 125, 150, 175, 200];
 xForceCap = [0.5, 1, 1.5, 2, 2.25];
 xFlow = [0.001, 0.0025, 0.005, 0.01, 0.015, 0.02, 0.025];
-xStartDist = categorical({'Clump', 'Spread', 'Two'});
+%xStartDist = categorical({'Clump', 'Spread', 'Two'});
+xStartDist = [1,2,3];
 yParticleSize = [95.2, 98.4, 97.2, 96.4, 98.4, 98.6, 94.8];
 yForceCap = [52.6, 61, 94.6, 94.2, 97.2];
-yFlow = [0,0,98, 97.2, 96.4, 85, 86.8];
-yStartDist = [97.2, 89.2, 81.8];
+yFlow = [97.6,97.6,98, 97.2, 96.4, 85, 86.8];
+yStartDist05 = [98.8, 100, 92.2];
+yStartDist1 = [97.2, 89.2, 81.8];
+yStartDist15 = [91.4, 94.4, 89];
+yStartDist2 = [95, 91.6, 82.4];
 yOLDParticleSize = [63,81.2,80.2,69.6,66.6,71.6,78.8];
 yOLDForceCap = [84.4,85.2,88,95.2,96.4];
 yOLDFlow = [99.77777778,98.4,98.4,79.4,59.2,39,29.4];
 SEParticleSize = [2.235073949, 0.777460253, 0.952190457, 1.783878421, 0.653197265, 0.426874949, 3.923717059];
 SEForceCap = [6.593262554, 10.56303828, 2.04504822, 2.851120637, 1.339983416];
-SEFlow = [0,0,0.843274043, 0.742368582, 0.653197265, 2.816617357, 2.048305533];
-SEStartDist = [0.742368582, 5.225578118, 5.019517462];
+SEFlow = [1.627540749, 1.423610434, 0.843274043, 0.742368582, 0.653197265, 2.816617357, 2.048305533];
+SEStartDist05 = [0.8, 0, 2.640706976];
+SEStartDist1 = [0.742368582, 5.225578118, 5.019517462];
+SEStartDist15 = [2.733333333, 1.107549848, 3.058685266];
+SEStartDist2 = [1.406334874, 3.109841011, 3.474350459];
 SEOLDParticleSize = [4.592264026,2.274496281,3.903844259,3.550273855,3.967086812,3.396730454,3.043389923];
 SEOLDForceCap = [4.73,2.274496281,3.438345856,2.653299832,1.066666667];
 SEOLDFlow = [0.25,1,0.777460253,4.110150038,5.40945674,4.394440933,4.310710176];
@@ -50,7 +57,10 @@ plot7 = errorbar(axes3, xFlow, yOLDFlow, SEOLDFlow,'diamond-','MarkerSize',4,'Ma
 plot1 = errorbar(axes1, xParticleSize, yParticleSize, SEParticleSize,'o--','MarkerSize',4,'MarkerEdgeColor','black','MarkerFaceColor','blue');
 plot2 = errorbar(axes2, xForceCap, yForceCap, SEForceCap, 'o--','MarkerSize',4,'MarkerEdgeColor','black','MarkerFaceColor','magenta');
 plot3 = errorbar(axes3, xFlow, yFlow, SEFlow,'o--','MarkerSize',4,'MarkerEdgeColor','black','MarkerFaceColor','red');
-plot4 = errorbar(axes4, xStartDist, yStartDist, SEStartDist,'o','MarkerSize',4,'MarkerEdgeColor','black','MarkerFaceColor','#b49900');
+plot05 = errorbar(axes4, xStartDist-0.05, yStartDist05, SEStartDist05,'o','MarkerSize',4,'MarkerEdgeColor','black','MarkerFaceColor','red');
+plot10 = errorbar(axes4, xStartDist, yStartDist1, SEStartDist1,'square','MarkerSize',4,'MarkerEdgeColor','black','MarkerFaceColor','blue');
+plot15 = errorbar(axes4, xStartDist+0.05, yStartDist15, SEStartDist15,'<','MarkerSize',4,'MarkerEdgeColor','black','MarkerFaceColor','magenta');
+plot20 = errorbar(axes4, xStartDist+0.1, yStartDist2, SEStartDist2,'>','MarkerSize',4,'MarkerEdgeColor','black','MarkerFaceColor','cyan');
 %plot1 = plot(axes1,xParticleSize , yParticleSize,'o--','MarkerSize',4,'MarkerEdgeColor','black','MarkerFaceColor','blue');
 %plot2 = plot(axes2,xForceCap,yForceCap,'o--','MarkerSize',4,'MarkerEdgeColor','black','MarkerFaceColor','magenta');
 %plot3 = plot(axes3,xFlow,yFlow,'o--','MarkerSize',4,'MarkerEdgeColor','black','MarkerFaceColor','red');
@@ -58,14 +68,21 @@ plot4 = errorbar(axes4, xStartDist, yStartDist, SEStartDist,'o','MarkerSize',4,'
 plot1.Color = 'black';
 plot2.Color = 'black';
 plot3.Color = 'black';
-plot4.Color = 'black';
+plot05.Color = 'red';
+plot10.Color = 'blue';
+plot15.Color = 'magenta';
+plot20.Color = 'cyan';
 plot5.Color = '#808080';
 plot6.Color = '#808080';
 plot7.Color = '#808080';
 set(plot1,'DisplayName','Novint Falcon haptic device based control');%Effect of particle chain length on particle control
 set(plot2,'DisplayName','Novint Falcon haptic device based control');
 set(plot3,'DisplayName','Novint Falcon haptic device based control');
-set(plot4,'DisplayName','Novint Falcon haptic device based control');
+
+set(plot05,'DisplayName','Fluid Flow of 0.5 m/s');
+set(plot10,'DisplayName','Fluid Flow of 1 m/s');
+set(plot15,'DisplayName','Fluid Flow of 1.5 m/s');
+set(plot20,'DisplayName','Fluid Flow of 2 m/s');
 
 set(plot5,'DisplayName','Keyboard based control');
 set(plot6,'DisplayName','Keyboard based control');
@@ -103,6 +120,11 @@ box(axes3,'on');
 grid(axes3,'on');
 % Create legend
 legend(axes3,'show','Location','southwest');
+
+legend(axes4,'show','Location','southeast');
+axes4.XAxis.TickLabels = categorical(["Clump","Line","Split"]);
+%axes4.XAxis.TickValues = categorical["Clump","Line","Split"];
+axes4.XAxis.TickValues = [1,2,3];
 box(axes4,'on');
 grid(axes4,'on');
 
