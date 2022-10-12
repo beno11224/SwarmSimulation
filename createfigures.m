@@ -1,4 +1,4 @@
-function createfigures()
+function createfiguresHaptic()
 %CREATEFIGURE(X1, YMatrix1)
 %  X1:  vector of plot x data
 %  YMATRIX1:  matrix of plot y data
