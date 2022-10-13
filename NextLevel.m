@@ -27,15 +27,15 @@ function NextLevel(app)
             app.particleArrayLocation((app.numParticles/2+1):app.numParticles,:) = app.particleFunctions.generateParticleLocations(squeeze(app.polygon.allStartZones(2,3,:,:)), app.numParticles/2);
         case(3)
             app.polygon.change(3);
-            app.FluidFlowmsEditField.Value = 0.015;
+            app.FluidFlowmsEditField.Value = 0.01;
         case(4)
             app.polygon.change(3);
-            app.FluidFlowmsEditField.Value = 0.015;
+            app.FluidFlowmsEditField.Value = 0.01;
             generateNewParticles = false;
             app.particleArrayLocation = app.particleFunctions.generateParticleLocations(squeeze(app.polygon.allStartZones(2,2,:,:)), app.numParticles);
         case(5)
             app.polygon.change(3);
-            app.FluidFlowmsEditField.Value = 0.015;
+            app.FluidFlowmsEditField.Value = 0.01;
             generateNewParticles = false;
             app.particleArrayLocation(1:app.numParticles/2,:) = app.particleFunctions.generateParticleLocations(app.polygon.currentStartZone, app.numParticles/2);
             app.particleArrayLocation((app.numParticles/2+1):app.numParticles,:) = app.particleFunctions.generateParticleLocations(squeeze(app.polygon.allStartZones(2,3,:,:)), app.numParticles/2);
@@ -64,7 +64,7 @@ function NextLevel(app)
     end    
 
  %   minTimeToTravel = 4 * (0.005 ./ app.FluidFlowmsEditField.Value); %4 paths, length, velocity
-    minTimeToTravel = 2.5;
+    minTimeToTravel = 1.7;
     app.TimeRemainingsEditField.Value = minTimeToTravel .* 5;%2.5;TODO RESET ME
     app.timeLimit = app.TimeRemainingsEditField.Value;
     app.numParticles = app.NumberofParticlesEditField.Value;
