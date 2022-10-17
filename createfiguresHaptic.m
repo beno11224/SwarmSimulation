@@ -61,23 +61,23 @@ plot7 = errorbar(axes3, xFlow, yOLDFlow, SEOLDFlow,'diamond-','MarkerSize',4,'Ma
 plot1 = errorbar(axes1, xParticleSize, yParticleSize, SEParticleSize,'o--','MarkerSize',4,'MarkerEdgeColor','black','MarkerFaceColor','blue');
 plot2 = errorbar(axes2, xForceCap, yForceCap, SEForceCap, 'o--','MarkerSize',4,'MarkerEdgeColor','black','MarkerFaceColor','magenta');
 plot3 = errorbar(axes3, xFlow, yFlow, SEFlow,'o--','MarkerSize',4,'MarkerEdgeColor','black','MarkerFaceColor','red');
-plot05 = errorbar(axes4, xStartDist-0.05, yStartDist05, SEStartDist05,'o','MarkerSize',4,'MarkerEdgeColor','black','MarkerFaceColor','red');
-plot10 = errorbar(axes4, xStartDist, yStartDist1, SEStartDist1,'square','MarkerSize',4,'MarkerEdgeColor','black','MarkerFaceColor','blue');
-plot15 = errorbar(axes4, xStartDist+0.05, yStartDist15, SEStartDist15,'<','MarkerSize',4,'MarkerEdgeColor','black','MarkerFaceColor','magenta');
-plot20 = errorbar(axes4, xStartDist+0.1, yStartDist2,SEStartDist2,'>','MarkerSize',4,'MarkerEdgeColor','black','MarkerFaceColor','cyan');
-%plot05 = errorbar(axes4, [0.5,1,1.5,2], yStartDist(:,1), SEStartDist(:,1),'o-','MarkerSize',4,'MarkerEdgeColor','black','MarkerFaceColor','red');
-%plot10 = errorbar(axes4, [0.5,1,1.5,2], yStartDist(:,2), SEStartDist(:,2),'square-','MarkerSize',4,'MarkerEdgeColor','black','MarkerFaceColor','blue');
-%plot15 = errorbar(axes4, [0.5,1,1.5,2], yStartDist(:,3), SEStartDist(:,3),'<-','MarkerSize',4,'MarkerEdgeColor','black','MarkerFaceColor','magenta');
+%plot05 = errorbar(axes4, xStartDist-0.05, yStartDist05, SEStartDist05,'o','MarkerSize',4,'MarkerEdgeColor','black','MarkerFaceColor','red');
+%plot10 = errorbar(axes4, xStartDist, yStartDist1, SEStartDist1,'square','MarkerSize',4,'MarkerEdgeColor','black','MarkerFaceColor','blue');
+%plot15 = errorbar(axes4, xStartDist+0.05, yStartDist15, SEStartDist15,'<','MarkerSize',4,'MarkerEdgeColor','black','MarkerFaceColor','magenta');
+%plot20 = errorbar(axes4, xStartDist+0.1, yStartDist2,SEStartDist2,'>','MarkerSize',4,'MarkerEdgeColor','black','MarkerFaceColor','cyan');
+plot05 = errorbar(axes4, [0.5,1,1.5,2], yStartDist(:,1), SEStartDist(:,1),'o--','MarkerSize',4,'MarkerEdgeColor','black','MarkerFaceColor','red');
+plot10 = errorbar(axes4, [0.5,1,1.5,2], yStartDist(:,2), SEStartDist(:,2),'square-','MarkerSize',4,'MarkerEdgeColor','black','MarkerFaceColor','blue');
+plot15 = errorbar(axes4, [0.5,1,1.5,2], yStartDist(:,3), SEStartDist(:,3),'<-.','MarkerSize',4,'MarkerEdgeColor','black','MarkerFaceColor','magenta');
 plot1.Color = 'black';
 plot2.Color = 'black';
 plot3.Color = 'black';
-%plot05.Color = 'black';
-%plot10.Color = 'black';
-%plot15.Color = 'black';
 plot05.Color = 'red';
 plot10.Color = 'blue';
 plot15.Color = 'magenta';
-plot20.Color = 'cyan';
+%plot05.Color = 'red';
+%plot10.Color = 'blue';
+%plot15.Color = 'magenta';
+%plot20.Color = 'cyan';
 plot5.Color = '#808080';
 plot6.Color = '#808080';
 plot7.Color = '#808080';
@@ -85,13 +85,13 @@ set(plot1,'DisplayName','Novint Falcon haptic device based control');%Effect of 
 set(plot2,'DisplayName','Novint Falcon haptic device based control');
 set(plot3,'DisplayName','Novint Falcon haptic device based control');
 
-%set(plot05,'DisplayName','Particles start in a "clump" formation');
-%set(plot10,'DisplayName','Particles start in a "spread" formation');
-%set(plot15,'DisplayName','Particles start in a "split" formation');
-set(plot05,'DisplayName','Fluid Flow of 0.5 m/s');
-set(plot10,'DisplayName','Fluid Flow of 1 m/s');
-set(plot15,'DisplayName','Fluid Flow of 1.5 m/s');
-set(plot20,'DisplayName','Fluid Flow of 2 m/s');
+set(plot05,'DisplayName','Particles start in a "Clump" formation');
+set(plot10,'DisplayName','Particles start in a "Spread" formation');
+set(plot15,'DisplayName','Particles start in a "Split" formation');
+%set(plot05,'DisplayName','Fluid Flow of 0.5 m/s');
+%set(plot10,'DisplayName','Fluid Flow of 1 m/s');
+%set(plot15,'DisplayName','Fluid Flow of 1.5 m/s');
+%set(plot20,'DisplayName','Fluid Flow of 2 m/s');
 
 set(plot5,'DisplayName','Keyboard based control');
 set(plot6,'DisplayName','Keyboard based control');
@@ -107,14 +107,14 @@ ylim(axes2,[0,100]);
 xlabel(axes3,"Rate of simulated blood-flow (m/s)");
 ylabel(axes3, 'Percentage of particles reaching goal state');
 ylim(axes3,[0,100]);
-xlabel(axes4,"Starting distribution");
+xlabel(axes4,"Fluid Flow (m/s)");
 ylabel(axes4, 'Percentage of particles reaching goal state');
 ylim(axes4,[0,100]);
 % Create title
 title(axes1,'Effect of particle chain length on particle control');
 title(axes2,'Effect of capping the magnetic force on particle control');
-title(axes3,'Effect of flow rate on percentage of particles reaching the goal state');
-title(axes4,'Effect of starting distribution on percentage of particles reaching the goal state');
+title(axes3,'Effect of flow rate on percentage on particle control');
+title(axes4,'Effect of starting distribution on particle control');
 
 
 box(axes1,'on');
@@ -131,8 +131,8 @@ grid(axes3,'on');
 legend(axes3,'show','Location','southwest');
 
 legend(axes4,'show','Location','southeast');
-axes4.XAxis.TickLabels = categorical(["Clump","Line","Split"]);
-axes4.XAxis.TickValues = [1,2,3];
+%axes4.XAxis.TickLabels = categorical(["Clump","Line","Split"]);
+%axes4.XAxis.TickValues = [1,2,3];
 box(axes4,'on');
 grid(axes4,'on');
 
