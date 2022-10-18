@@ -5,8 +5,10 @@ function drawTimerCallback(app)
     %    ab = plot(app.UIAxes, app.polygon.outOfBoundsPolys(i,:,1), app.polygon.outOfBoundsPolys(i,:,2),'r-');
     %    delete(ab);
     %end
-    %ab = plot(app.UIAxes, app.polygon.currentStartZone(:,1), app.polygon.currentStartZone(:,2),'m-');
-    %delete(ab)
+ %   aa = plot(app.UIAxes, squeeze(app.polygon.allStartZones(2,2,:,1)), squeeze(app.polygon.allStartZones(2,2,:,2)),'m-');
+ %   ab = plot(app.UIAxes, squeeze(app.polygon.allStartZones(2,4,:,1)), squeeze(app.polygon.allStartZones(2,4,:,2)),'m-');
+ %   delete(ab)
+ %   delete(aa)
     rotatedMagLine = ([cosd(app.rotation), sind(app.rotation); -sind(app.rotation), cos(app.rotation)] * [0,app.X1MAGauge.Value./250 ; 0,app.Y1MAGauge.Value./250])';
     app.magLine = plot(app.UIAxes,rotatedMagLine(:,1),rotatedMagLine(:,2),'magenta');
 
