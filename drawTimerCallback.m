@@ -6,7 +6,9 @@ function drawTimerCallback(app)
     %    delete(ab);
     %end
     %ab = plot(app.UIAxes, app.polygon.currentStartZone(:,1), app.polygon.currentStartZone(:,2),'m-');
-    %delete(ab)
+    
+    ab = plot(app.UIAxes, squeeze(app.polygon.allStartZones(2,2,:,1)), squeeze(app.polygon.allStartZones(2,2,:,2)),'m-');
+    delete(ab)
     rotatedMagLine = ([cosd(app.rotation), sind(app.rotation); -sind(app.rotation), cos(app.rotation)] * [0,app.X1MAGauge.Value./250 ; 0,app.Y1MAGauge.Value./250])';
     app.magLine = plot(app.UIAxes,rotatedMagLine(:,1),rotatedMagLine(:,2),'magenta');
 
