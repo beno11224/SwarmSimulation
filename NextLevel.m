@@ -14,53 +14,124 @@ function NextLevel(app)
         case(0)
             app.polygon.change(3);
             app.FluidFlowmsEditField.Value = 0.005;
+        case(1)
+            app.polygon.change(3);
+            app.FluidFlowmsEditField.Value = 0.005;
+            generateNewParticles = false;
+            app.particleArrayLocation = app.particleFunctions.generateParticleLocations(squeeze(app.polygon.allStartZones(2,2,:,:)), app.numParticles);
+        case(2)
+            app.polygon.change(3);
+            app.FluidFlowmsEditField.Value = 0.005;
+            generateNewParticles = false;
+            app.particleArrayLocation(1:app.numParticles/2,:) = app.particleFunctions.generateParticleLocations(squeeze(app.polygon.allStartZones(2,1,:,:)), app.numParticles/2);
+            app.particleArrayLocation((app.numParticles/2+1):app.numParticles,:) = app.particleFunctions.generateParticleLocations(squeeze(app.polygon.allStartZones(2,3,:,:)), app.numParticles/2);
+        case(3)
+            app.polygon.change(3);
+            app.FluidFlowmsEditField.Value = 0.005;
             generateNewParticles = false;
             app.particleArrayLocation(1:app.numParticles/2,:) = app.particleFunctions.generateParticleLocations(squeeze(app.polygon.allStartZones(2,2,:,:)), app.numParticles/2);
             app.particleArrayLocation((app.numParticles/2+1):app.numParticles,:) = app.particleFunctions.generateParticleLocations(squeeze(app.polygon.allStartZones(2,4,:,:)), app.numParticles/2);
-        case(1)
+        case(4)
+            app.polygon.change(3);
+            app.FluidFlowmsEditField.Value = 0.01;
+        case(5)
+            app.polygon.change(3);
+            app.FluidFlowmsEditField.Value = 0.01;
+            generateNewParticles = false;
+            app.particleArrayLocation = app.particleFunctions.generateParticleLocations(squeeze(app.polygon.allStartZones(2,2,:,:)), app.numParticles);
+        case(6)
+            app.polygon.change(3);
+            app.FluidFlowmsEditField.Value = 0.01;
+            generateNewParticles = false;
+            app.particleArrayLocation(1:app.numParticles/2,:) = app.particleFunctions.generateParticleLocations(squeeze(app.polygon.allStartZones(2,1,:,:)), app.numParticles/2);
+            app.particleArrayLocation((app.numParticles/2+1):app.numParticles,:) = app.particleFunctions.generateParticleLocations(squeeze(app.polygon.allStartZones(2,3,:,:)), app.numParticles/2);
+        case(7)
             app.polygon.change(3);
             app.FluidFlowmsEditField.Value = 0.01;
             generateNewParticles = false;
             app.particleArrayLocation(1:app.numParticles/2,:) = app.particleFunctions.generateParticleLocations(squeeze(app.polygon.allStartZones(2,2,:,:)), app.numParticles/2);
             app.particleArrayLocation((app.numParticles/2+1):app.numParticles,:) = app.particleFunctions.generateParticleLocations(squeeze(app.polygon.allStartZones(2,4,:,:)), app.numParticles/2);
-        case(2)
+        case(8)
+            app.polygon.change(3);
+            app.FluidFlowmsEditField.Value = 0.015;
+        case(9)
+            app.polygon.change(3);
+            app.FluidFlowmsEditField.Value = 0.015;
+            generateNewParticles = false;
+            app.particleArrayLocation = app.particleFunctions.generateParticleLocations(squeeze(app.polygon.allStartZones(2,2,:,:)), app.numParticles);
+        case(10)
+            app.polygon.change(3);
+            app.FluidFlowmsEditField.Value = 0.015;
+            generateNewParticles = false;
+            app.particleArrayLocation(1:app.numParticles/2,:) = app.particleFunctions.generateParticleLocations(squeeze(app.polygon.allStartZones(2,1,:,:)), app.numParticles/2);
+            app.particleArrayLocation((app.numParticles/2+1):app.numParticles,:) = app.particleFunctions.generateParticleLocations(squeeze(app.polygon.allStartZones(2,3,:,:)), app.numParticles/2);
+        case(11)
             app.polygon.change(3);
             app.FluidFlowmsEditField.Value = 0.015;
             generateNewParticles = false;
             app.particleArrayLocation(1:app.numParticles/2,:) = app.particleFunctions.generateParticleLocations(squeeze(app.polygon.allStartZones(2,2,:,:)), app.numParticles/2);
             app.particleArrayLocation((app.numParticles/2+1):app.numParticles,:) = app.particleFunctions.generateParticleLocations(squeeze(app.polygon.allStartZones(2,4,:,:)), app.numParticles/2);
-        case(3)
+        case(12)
+            app.polygon.change(3);
+            app.FluidFlowmsEditField.Value = 0.02;
+        case(13)
+            app.polygon.change(3);
+            app.FluidFlowmsEditField.Value = 0.02;
+            generateNewParticles = false;
+            app.particleArrayLocation = app.particleFunctions.generateParticleLocations(squeeze(app.polygon.allStartZones(2,2,:,:)), app.numParticles);
+        case(14)
+            app.polygon.change(3);
+            app.FluidFlowmsEditField.Value = 0.02;
+            generateNewParticles = false;
+            app.particleArrayLocation(1:app.numParticles/2,:) = app.particleFunctions.generateParticleLocations(squeeze(app.polygon.allStartZones(2,1,:,:)), app.numParticles/2);
+            app.particleArrayLocation((app.numParticles/2+1):app.numParticles,:) = app.particleFunctions.generateParticleLocations(squeeze(app.polygon.allStartZones(2,3,:,:)), app.numParticles/2);
+        case(15)
             app.polygon.change(3);
             app.FluidFlowmsEditField.Value = 0.02;
             generateNewParticles = false;
             app.particleArrayLocation(1:app.numParticles/2,:) = app.particleFunctions.generateParticleLocations(squeeze(app.polygon.allStartZones(2,2,:,:)), app.numParticles/2);
             app.particleArrayLocation((app.numParticles/2+1):app.numParticles,:) = app.particleFunctions.generateParticleLocations(squeeze(app.polygon.allStartZones(2,4,:,:)), app.numParticles/2);
-       case(4)
+        case(16)
+            app.polygon.change(3);
+            app.FluidFlowmsEditField.Value = 0.025;
+        case(17)
+            app.polygon.change(3);
+            app.FluidFlowmsEditField.Value = 0.025;
+            generateNewParticles = false;
+            app.particleArrayLocation = app.particleFunctions.generateParticleLocations(squeeze(app.polygon.allStartZones(2,2,:,:)), app.numParticles);
+        case(18)
+            app.polygon.change(3);
+            app.FluidFlowmsEditField.Value = 0.025;
+            generateNewParticles = false;
+            app.particleArrayLocation(1:app.numParticles/2,:) = app.particleFunctions.generateParticleLocations(squeeze(app.polygon.allStartZones(2,1,:,:)), app.numParticles/2);
+            app.particleArrayLocation((app.numParticles/2+1):app.numParticles,:) = app.particleFunctions.generateParticleLocations(squeeze(app.polygon.allStartZones(2,3,:,:)), app.numParticles/2);
+        case(19)
             app.polygon.change(3);
             app.FluidFlowmsEditField.Value = 0.025;
             generateNewParticles = false;
             app.particleArrayLocation(1:app.numParticles/2,:) = app.particleFunctions.generateParticleLocations(squeeze(app.polygon.allStartZones(2,2,:,:)), app.numParticles/2);
             app.particleArrayLocation((app.numParticles/2+1):app.numParticles,:) = app.particleFunctions.generateParticleLocations(squeeze(app.polygon.allStartZones(2,4,:,:)), app.numParticles/2);
-        case(5)
+        case(20)
+            app.polygon.change(3);
+            app.FluidFlowmsEditField.Value = 0.03;
+        case(21)
+            app.polygon.change(3);
+            app.FluidFlowmsEditField.Value = 0.03;
+            generateNewParticles = false;
+            app.particleArrayLocation = app.particleFunctions.generateParticleLocations(squeeze(app.polygon.allStartZones(2,2,:,:)), app.numParticles);
+        case(22)
+            app.polygon.change(3);
+            app.FluidFlowmsEditField.Value = 0.03;
+            generateNewParticles = false;
+            app.particleArrayLocation(1:app.numParticles/2,:) = app.particleFunctions.generateParticleLocations(squeeze(app.polygon.allStartZones(2,1,:,:)), app.numParticles/2);
+            app.particleArrayLocation((app.numParticles/2+1):app.numParticles,:) = app.particleFunctions.generateParticleLocations(squeeze(app.polygon.allStartZones(2,3,:,:)), app.numParticles/2);
+        case(23)
             app.polygon.change(3);
             app.FluidFlowmsEditField.Value = 0.03;
             generateNewParticles = false;
             app.particleArrayLocation(1:app.numParticles/2,:) = app.particleFunctions.generateParticleLocations(squeeze(app.polygon.allStartZones(2,2,:,:)), app.numParticles/2);
             app.particleArrayLocation((app.numParticles/2+1):app.numParticles,:) = app.particleFunctions.generateParticleLocations(squeeze(app.polygon.allStartZones(2,4,:,:)), app.numParticles/2);
-        case(6)
-            app.polygon.change(3);
-            app.FluidFlowmsEditField.Value = 0.02;
-        case(7)
-            app.polygon.change(3);
-            app.FluidFlowmsEditField.Value = 0.02;
-            generateNewParticles = false;
-            app.particleArrayLocation = app.particleFunctions.generateParticleLocations(squeeze(app.polygon.allStartZones(2,2,:,:)), app.numParticles);
-        case(8)
-            app.polygon.change(3);
-            app.FluidFlowmsEditField.Value = 0.02;
-            generateNewParticles = false;
-            app.particleArrayLocation(1:app.numParticles/2,:) = app.particleFunctions.generateParticleLocations(app.polygon.currentStartZone, app.numParticles/2);
-            app.particleArrayLocation((app.numParticles/2+1):app.numParticles,:) = app.particleFunctions.generateParticleLocations(squeeze(app.polygon.allStartZones(2,3,:,:)), app.numParticles/2);
+        
         
         otherwise
              fprintf("The experiment has now ended, thank you for your participation. Please close this window.\r\n");

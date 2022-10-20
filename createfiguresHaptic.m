@@ -105,7 +105,7 @@ set(plot3,'DisplayName','Novint Falcon haptic device based control');
 
 set(plot05,'DisplayName','Particles start in a "Clump" formation');
 set(plot10,'DisplayName','Particles start in a "Spread" formation');
-set(plot15,'DisplayName','Particles start in a "Split" formation');
+set(plot15,'DisplayName','Particles start in a "Split Clump" formation');
 set(plot20,'DisplayName','Particles start in a "Split Spread" formation');
 %set(plot05,'DisplayName','Fluid Flow of 0.5 m/s');
 %set(plot10,'DisplayName','Fluid Flow of 1 m/s');
