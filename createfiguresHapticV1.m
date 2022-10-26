@@ -17,12 +17,7 @@ yParticleSize = [95.2, 98.4, 97.2, 96.4, 98.4, 98.6, 94.8];
 yForceCap = [52.6, 61, 94.6, 94.2, 97.2];
 yFlow = [97.6,97.6,98, 97.2, 96.4, 85, 86.8];
 %yStartDist1OLD = [97.2, 89.2, 81.8];
-yStartDist = [97.6, 95.2, 94.2, 89.6; 
-    98.4, 97.6, 96.2, 93.2; 
-    94.6, 95.4, 88, 86; 
-    90, 97.8, 83.2, 83.8; 
-    94.4, 94, 81, 80; 
-    92, 87.4, 73.8, 83.2];
+yStartDist = [98.8, 100, 92.2, 92; 94.4, 98.8, 92.6, 89; 91.4, 94.4, 89, 89; 95, 91.6, 82.4, 85; 86.2, 92.8, 84.2, 83.6; 74.365, 98, 77.2, 68.4];
 yStartDist05 = [98.8, 100, 92.2];
 yStartDist1 = [94.4, 98.8, 92.6];
 yStartDist15 = [91.4, 94.4, 89];
@@ -34,12 +29,7 @@ SEParticleSize = [2.235073949, 0.777460253, 0.952190457, 1.783878421, 0.65319726
 SEForceCap = [6.593262554, 10.56303828, 2.04504822, 2.851120637, 1.339983416];
 SEFlow = [1.627540749, 1.423610434, 0.843274043, 0.742368582, 0.653197265, 2.816617357, 2.048305533];
 %SEStartDist1OLD = [0.742368582, 5.225578118, 5.019517462];
-SEStartDist = [1.1384199576606147, 0.25298221281346944, 0.06324555320336848, 1.7708754896942906;
-    0.12649110640673697, 0.12649110640673697, 0.06324555320336848, 1.0119288512538822;
-    1.0751744044572507, 0.18973665961010097, 1.2649110640673518, 1.8973665961010275;
-    0.6324555320336759, 0.06324555320336848, 2.782804340948173, 4.4904342774391;
-    1.7708754896942906, 1.8973665961010275, 5.375872022286245, 1.2649110640673518;
-    1.8973665961010275, 2.7195587877448046, 0.6957010852370443, 0.8854377448471453];
+SEStartDist = [0.8, 0, 2.640706976, 3.252349578; 1.146976702, 0.611010093, 2.441311123, 4.363994093; 2.733333333, 1.107549848, 3.058685266, 3.014778415; 1.406334874, 3.109841011, 3.474350459, 3.428637565; 3.705251528, 2.73577127, 1.617954813, 3.964284999; 8.346915764, 0.843274043, 2.719477074, 4.933333333];
 SEStartDist05 = [0.8, 0, 2.640706976];
 SEStartDist1 = [1.146976702, 0.611010093, 2.441311123];
 SEStartDist15 = [2.733333333, 1.107549848, 3.058685266];
@@ -76,28 +66,16 @@ plot3 = errorbar(axes3, xFlow, yFlow, SEFlow,'o--','MarkerSize',4,'MarkerEdgeCol
 %plot10 = errorbar(axes4, xStartDist, yStartDist1, SEStartDist1,'square','MarkerSize',4,'MarkerEdgeColor','black','MarkerFaceColor','blue');
 %plot15 = errorbar(axes4, xStartDist+0.05, yStartDist15, SEStartDist15,'<','MarkerSize',4,'MarkerEdgeColor','black','MarkerFaceColor','magenta');
 %plot20 = errorbar(axes4, xStartDist+0.1, yStartDist2,SEStartDist2,'>','MarkerSize',4,'MarkerEdgeColor','black','MarkerFaceColor','cyan');
-%plot05 = errorbar(axes4, xStartDistFlow, yStartDist(:,1), SEStartDist(:,1),'o--','MarkerSize',4,'MarkerEdgeColor','black','MarkerFaceColor','red');
-%plot10 = errorbar(axes4, xStartDistFlow, yStartDist(:,2), SEStartDist(:,2),'square-','MarkerSize',4,'MarkerEdgeColor','black','MarkerFaceColor','blue');
-%plot15 = errorbar(axes4, xStartDistFlow, yStartDist(:,3), SEStartDist(:,3),'<-.','MarkerSize',4,'MarkerEdgeColor','black','MarkerFaceColor','magenta');
-%plot20 = errorbar(axes4, xStartDistFlow, yStartDist(:,4), SEStartDist(:,4),'>:','MarkerSize',4,'MarkerEdgeColor','black','MarkerFaceColor','#008002');
+plot05 = errorbar(axes4, xStartDistFlow, yStartDist(:,1), SEStartDist(:,1),'o--','MarkerSize',4,'MarkerEdgeColor','black','MarkerFaceColor','red');
+plot10 = errorbar(axes4, xStartDistFlow, yStartDist(:,2), SEStartDist(:,2),'square-','MarkerSize',4,'MarkerEdgeColor','black','MarkerFaceColor','blue');
+plot15 = errorbar(axes4, xStartDistFlow, yStartDist(:,3), SEStartDist(:,3),'<-.','MarkerSize',4,'MarkerEdgeColor','black','MarkerFaceColor','magenta');
+plot20 = errorbar(axes4, xStartDistFlow, yStartDist(:,4), SEStartDist(:,4),'>:','MarkerSize',4,'MarkerEdgeColor','black','MarkerFaceColor','#008002');
 %barPlot05 = bar(axes4, xStartDistFlow, yflip,"stacked");
-newYStartDistTWO = yStartDist(:,[1,3]);
-newSESTARTDISTTWO = SEStartDist(:,[1,3]);
-barPlot05 = bar(axes4, xStartDistFlow.* 200, newYStartDistTWO,"grouped");
-hold on;
-barPlot05(1).FaceColor = 'red';
-barPlot05(2).FaceColor = 'blue';
+%barPlot05 = bar(axes4, xStartDistFlow, yStartDist,"grouped");
+%barPlot05(1).FaceColor = 'red';
+%barPlot05(2).FaceColor = 'blue';
 %barPlot05(3).FaceColor = 'magenta';
 %barPlot05(4).FaceColor = '#008002';
-
-ngroups = size(newYStartDistTWO, 1);
-nbars = size(newYStartDistTWO, 2);
-% Calculating the width for each bar group
-groupwidth = min(0.8, nbars/(nbars + 1.5));
-for i = 1:nbars
-    x = (1:ngroups) - groupwidth/2 + (2*i-1) * groupwidth / (2*nbars);
-    errorbar(x, newYStartDistTWO(:,i), newSESTARTDISTTWO(:,i), '.','Color','black');
-end
 %plot05 = errorbar(axes4, xStartDistFlow, yStartDist(:,1), SEStartDist(:,1),'MarkerSize',4,'MarkerEdgeColor','black','MarkerFaceColor','red');
 %plot10 = errorbar(axes4, xStartDistFlow, yStartDist(:,2), SEStartDist(:,2),'MarkerSize',4,'MarkerEdgeColor','black','MarkerFaceColor','blue');
 %plot15 = errorbar(axes4, xStartDistFlow, yStartDist(:,3), SEStartDist(:,3),'MarkerSize',4,'MarkerEdgeColor','black','MarkerFaceColor','magenta');
@@ -110,10 +88,10 @@ end
 plot1.Color = 'black';
 plot2.Color = 'black';
 plot3.Color = 'black';
-%plot05.Color = 'red';
-%plot10.Color = 'blue';
-%plot15.Color = 'magenta';
-%plot20.Color = "#008002";
+plot05.Color = 'red';
+plot10.Color = 'blue';
+plot15.Color = 'magenta';
+plot20.Color = "#008002";
 %plot05.Color = 'red';
 %plot10.Color = 'blue';
 %plot15.Color = 'magenta';
@@ -125,11 +103,10 @@ set(plot1,'DisplayName','Novint Falcon haptic device based control');%Effect of 
 set(plot2,'DisplayName','Novint Falcon haptic device based control');
 set(plot3,'DisplayName','Novint Falcon haptic device based control');
 
-set(barPlot05(1),'DisplayName','Particles start in a "Clump" formation');
-set(barPlot05(2),'DisplayName','Particles start in a "Split" formation');
-%set(barPlot05(2),'DisplayName','Particles start in a "Spread" formation');
-%set(barPlot05(3),'DisplayName','Particles start in a "Split Clump" formation');
-%set(barPlot05(4),'DisplayName','Particles start in a "Split Spread" formation');
+set(plot05,'DisplayName','Particles start in a "Clump" formation');
+set(plot10,'DisplayName','Particles start in a "Spread" formation');
+set(plot15,'DisplayName','Particles start in a "Split Clump" formation');
+set(plot20,'DisplayName','Particles start in a "Split Spread" formation');
 %set(plot05,'DisplayName','Fluid Flow of 0.5 m/s');
 %set(plot10,'DisplayName','Fluid Flow of 1 m/s');
 %set(plot15,'DisplayName','Fluid Flow of 1.5 m/s');
@@ -172,13 +149,9 @@ grid(axes3,'on');
 % Create legend
 legend(axes3,'show','Location','southwest');
 
-legend(axes4,'Particles start in a "Clump" formation','Particles start in a "Split" formation','Location','southwest'); %Spread" formation','Particles start in a "Split Clump" formation','Particles start in a "Split Spread" formation','','','',''
+legend(axes4,'show','Location','southwest');
 %axes4.XAxis.TickLabels = categorical(["Clump","Line","Split"]);
-%axes4.XAxis.TickLabels = categorical(["0.005","0.01","0.015","0.02","0.025","0.03"]);
-%axes4.XAxis.TickLabels = [0.005,"",0.01,"",0.015,"",0.02,"",0.025,"",0.03];
-axes4.XAxis.TickLabels = [0.005,0.01,0.015,0.02,0.025,0.03];
-%axes4.XAxis.TickValues = [0.005,0.01,0.015,0.02,0.025,0.03];
-%axes4.XAxis.TickLabels = [0.005,0.01,0.015,0.02,0.025,0.03];
+%axes4.XAxis.TickValues = [1,2,3];
 box(axes4,'on');
 grid(axes4,'on');
 
