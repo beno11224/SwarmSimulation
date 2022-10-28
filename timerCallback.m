@@ -18,7 +18,7 @@ function timerCallback(app)
     magForce = app.previousMagforce;
     smallerTMaxTotalSteps = 50; %Any more speed comes from making the sim more efficient or slowing it down (not real time) %150
     smallerTMaxStep = app.simTimerPeriod / smallerTMaxTotalSteps;
-    smallerTMaxStepReduced = smallerTMaxStep;% / 20; %use this to just run the simulation x times slower   %20
+    smallerTMaxStepReduced = smallerTMaxStep / app.slowDown;
     for smallerTMaxIndex = 1:smallerTMaxTotalSteps 
         magForce = magForce .* (1-magForceAlpha) + currentMagforce.* magForceAlpha;
         app.particleArrayForce = magForce;
@@ -66,7 +66,12 @@ function timerCallback(app)
     rotForce = (rotMat * [app.X1MAGauge.Value ; app.Y1MAGauge.Value])';
     rotVel = (rotMat * app.particleArrayVelocity')';
     rotLoc = (rotMat * app.particleArrayLocation')';
-    fprintf(app.fileID, app.timePassed + "," + mat2str(rotForce) + "," + goalPercentage + "," + mat2str(rotVel)+ "," + mat2str(rotLoc) + "\r\n");
+    if(app.printCounter >= app.slowDown)
+        fprintf(app.fileID, app.timePassed + "," + mat2str(rotForce) + "," + goalPercentage + "," + mat2str(rotVel)+ "," + mat2str(rotLoc) + "\r\n");
+        app.printCounter = 1;
+    else
+        app.printCounter = app.printCounter + 1;
+    end
     if(app.timeLimit > 0 && app.timePassed <= app.timeLimit)
         app.TimeRemainingsEditField.Value = round(app.timeLimit - app.timePassed);
         app.PercentageinGoalEditField.Value = round(goalPercentage .* 100);
