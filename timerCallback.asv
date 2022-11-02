@@ -6,9 +6,9 @@ function timerCallback(app)
 
     currentMagforce = app.particleFunctions.calculateMagneticForce([app.X1MAGauge.Value app.Y1MAGauge.Value],app.joyStick, 1, 3, app.controlMethod, app.mousePosition, app.MagForceRestrictMAM2EditField.Value, app.rotation);
     currentDial = currentMagforce ./10^6 ./ app.particleFunctions.magneticForceConstant;
-    Delay = 4;
-    hapticStrength = 4;
-    app.hapticFeedback = (app.hapticFeedback * Delay - app.hapticFeedback + [0, -currentDial(1) .* hapticStrength ,-currentDial(2) .* hapticStrength]) / Delay;
+    Delay = 3;
+    hapticForce = 10;
+    app.hapticFeedback = (app.hapticFeedback * Delay - app.hapticFeedback + [0, -currentDial(1) .* hapticForce ,-currentDial(2) .* 10]) / Delay;
     %WriteHaptic(inOut,"x","y");
     WriteHaptic(app.hapticFeedback(1), app.hapticFeedback(2), app.hapticFeedback(3));
 

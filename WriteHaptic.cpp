@@ -11,16 +11,17 @@
 
 void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 {
-    if(nrhs != 0)
-    {
-        mexErrMsgIdAndTxt("bitmarker:my_sum", "No inputs required.");
-    }
+   // if(nrhs != 1)
+   // {
+   //     mexErrMsgIdAndTxt("bitmarker:my_sum", "Array of three inputs required.");
+   // }
 
-    dhdSetBrakes(DHD_ON); //also apply zero force
-    double mx0, my0, mz0 = 0.1;
-    while( true){
-        dhdGetPosition (&mx0, &my0, &mz0, 0);
-        dhdSetForce(-5,-5,-1);
-    };
-   // dhdSetBrakes(); //also apply zero force
+   // dhdOpen();
+    double fx, fy, fz;
+    fx = *mxGetPr(prhs[0]);
+    fy = *mxGetPr(prhs[1]);
+    fz = *mxGetPr(prhs[2]);
+    dhdSetForce(fx,fy,fz);
+    //dhdSetBrakes(); //also apply zero force
+   // dhdClose();
 }
