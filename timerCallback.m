@@ -6,11 +6,27 @@ function timerCallback(app)
 
     currentMagforce = app.particleFunctions.calculateMagneticForce([app.X1MAGauge.Value app.Y1MAGauge.Value],app.joyStick, 1, 3, app.controlMethod, app.mousePosition, app.MagForceRestrictMAM2EditField.Value, app.rotation);
     currentDial = currentMagforce ./10^6 ./ app.particleFunctions.magneticForceConstant;
-    Delay = 4;
-    hapticStrength = 4;
-    app.hapticFeedback = (app.hapticFeedback * Delay - app.hapticFeedback + [0, -currentDial(1) .* hapticStrength ,-currentDial(2) .* hapticStrength]) / Delay;
+   % Delay = 2;
+    hapticDecay = 0.5;
+    hapticStrength = 5;
+    hapticCurve = 2;
+    hapticViscocity = 0.5;
+    for(count = 1:(size(app.hapticFeedback,1)-1))
+        app.hapticFeedback(count,:) = app.hapticFeedback(count + 1,:) .* hapticDecay;
+        app.hapticVelocity(count,:) = app.hapticVelocity(count + 1,:) .* hapticDecay;
+    end
+    app.hapticFeedback(size(app.hapticFeedback,1),:) = [0,currentDial(1),currentDial(2)];
+    app.hapticVelocity(size(app.hapticVelocity,1),:) = app.hapticFeedback(size(app.hapticFeedback,1),:) - app.hapticFeedback(size(app.hapticFeedback,1) - 1,:);
+    absfeedback = abs(app.hapticFeedback);
+    signs = absfeedback ./ app.hapticFeedback;
+    signs(isnan(signs)) = 1;
+    %hapticForce = sum((absfeedback .^ hapticCurve .* signs),1) .* hapticStrength + app.hapticVelocity(size(app.hapticVelocity,1),:) .* hapticViscocity;%sum((app.hapticVelocity),1) .* hapticViscocity;
+    hapticForce = app.hapticFeedback(size(app.hapticFeedback,1),:) .* hapticStrength + app.hapticVelocity(size(app.hapticVelocity,1),:) .* hapticViscocity;
+    WriteHaptic(hapticForce(1), -hapticForce(2), -hapticForce(3));
+    %OLD:
+    %app.hapticFeedback = (app.hapticFeedback * Delay - app.hapticFeedback + [0, -currentDial(1) .* hapticStrength ,-currentDial(2) .* hapticStrength]) / Delay;
     %WriteHaptic(inOut,"x","y");
-    WriteHaptic(app.hapticFeedback(1), app.hapticFeedback(2), app.hapticFeedback(3));
+    %WriteHaptic(app.hapticFeedback(1,:), app.hapticFeedback(2,:), app.hapticFeedback(3,:));
 
     if(app.controlMethod == "Controller")
         app.X1MAGauge.Value = currentDial(1);% ./10^6 ./ app.particleFunctions.magneticForceConstant;

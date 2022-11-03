@@ -6,11 +6,24 @@ function timerCallback(app)
 
     currentMagforce = app.particleFunctions.calculateMagneticForce([app.X1MAGauge.Value app.Y1MAGauge.Value],app.joyStick, 1, 3, app.controlMethod, app.mousePosition, app.MagForceRestrictMAM2EditField.Value, app.rotation);
     currentDial = currentMagforce ./10^6 ./ app.particleFunctions.magneticForceConstant;
-    Delay = 3;
-    hapticForce = 10;
-    app.hapticFeedback = (app.hapticFeedback * Delay - app.hapticFeedback + [0, -currentDial(1) .* hapticForce ,-currentDial(2) .* 10]) / Delay;
+   % Delay = 2;
+    hapticDecay = 0.5;
+    hapticStrength = 10;
+    hapticCurve = 2;
+    for(count = 1:(size(app.hapticFeedback,1)-1))
+        app.hapticFeedback(count,:) = app.hapticFeedback(count + 1,:) .* hapticDecay;
+    end
+    app.hapticFeedback(size(app.hapticFeedback,1),:) = [0,currentDial(1),currentDial(2)];
+    absfeedback = abs(app.hapticFeedback);
+    signs = absfeedback ./ app.hapticFeedback;
+    signs(isnan(signs)) = 1;
+    %absfeedback = absfeedback .^ 1.5 .* signs;
+    hapticForce = sum((absfeedback .^ hapticCurve .* signs),1) .* hapticStrength;
+    WriteHaptic(hapticForce(1), -hapticForce(2), -hapticForce(3));
+    %OLD:
+    %app.hapticFeedback = (app.hapticFeedback * Delay - app.hapticFeedback + [0, -currentDial(1) .* hapticStrength ,-currentDial(2) .* hapticStrength]) / Delay;
     %WriteHaptic(inOut,"x","y");
-    WriteHaptic(app.hapticFeedback(1), app.hapticFeedback(2), app.hapticFeedback(3));
+    %WriteHaptic(app.hapticFeedback(1,:), app.hapticFeedback(2,:), app.hapticFeedback(3,:));
 
     if(app.controlMethod == "Controller")
         app.X1MAGauge.Value = currentDial(1);% ./10^6 ./ app.particleFunctions.magneticForceConstant;
