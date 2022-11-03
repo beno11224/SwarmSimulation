@@ -262,7 +262,7 @@ classdef ParticleFunctions
         
         function inGoalZone = isParticleInEndZone(obj, goalZones, particleLocations)
             inGoalZone = zeros(size(particleLocations,1),size(goalZones,1));
-            for goalZoneIndex = 1:size(goalZones,1);
+            for goalZoneIndex = 1:size(goalZones,1)
                 [in,on] = inpolygon(particleLocations(:,1), particleLocations(:,2), goalZones(goalZoneIndex,:,1), goalZones(goalZoneIndex,:,2));
                 inGoalZone(:,goalZoneIndex) = in | on;
             end

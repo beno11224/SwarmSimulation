@@ -1,5 +1,4 @@
 function timerCallback(app)
- %   profile on
     %if(~app.currentlyDoingWorkSemaphore)
     %   app.currentlyDoingWorkSemaphore = true; %let the earlier tasks complete first, try and force other to leave things alone        
         
@@ -13,10 +12,11 @@ function timerCallback(app)
         hapticVelocity = [0,currentDial(1),currentDial(2)] - app.hapticFeedback;
         app.hapticFeedback = [0,currentDial(1),currentDial(2)];
         hapticForce = app.hapticFeedback .* hapticSpring + hapticVelocity .* hapticViscocity;
+        %mex "drdms64.lib" "dhdms64.lib" WriteHaptic.cpp
         WriteHaptic(hapticForce(1), -hapticForce(2), -hapticForce(3));
 
         app.X1MAGauge.Value = currentDial(1);
-        app.Y1MAGauge.Value = currentDial(2);
+        app.Y1MAGauge.Value = currentDial(2)
     end
 
     vFlow = app.particleFunctions.calculateFlow(real(app.particleArrayLocation), app.fd.FlowValues, app.mesh);
@@ -98,7 +98,6 @@ function timerCallback(app)
         end
     end
 
-  %  profile viewer
     app.previousMagforce = magForce;
     app.currentlyDoingWorkSemaphore = false;
 end
