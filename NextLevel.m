@@ -10,7 +10,6 @@ function NextLevel(app)
     app.MagForceRestrictMAM2EditField.Value = 0;
     generateNewParticles = true;
     app.hapticFeedback = [0,0,0];
-    app.hapticVelocity = [0,0,0];
     switch(floor((app.testNumber-1)/10)) %Do n of each
         
         case(0)

@@ -6,22 +6,20 @@ function timerCallback(app)
 
     currentMagforce = app.particleFunctions.calculateMagneticForce([app.X1MAGauge.Value app.Y1MAGauge.Value],app.joyStick, 1, 3, app.controlMethod, app.mousePosition, app.MagForceRestrictMAM2EditField.Value, app.rotation);
     currentDial = currentMagforce ./10^6 ./ app.particleFunctions.magneticForceConstant;
-    hapticSpring = 5;
-    hapticViscocity = 0.5;
-    app.hapticVelocity = [0,currentDial(1),currentDial(2)] - app.hapticFeedback;
-    app.hapticFeedback = [0,currentDial(1),currentDial(2)];
-    hapticForce = app.hapticFeedback(size(app.hapticFeedback,1),:) .* hapticSpring + app.hapticVelocity(size(app.hapticVelocity,1),:) .* hapticViscocity;
-    WriteHaptic(hapticForce(1), -hapticForce(2), -hapticForce(3));
-
     if(app.controlMethod == "Controller")
-        app.X1MAGauge.Value = currentDial(1);% ./10^6 ./ app.particleFunctions.magneticForceConstant;
-        app.Y1MAGauge.Value = currentDial(2);% ./10^6 ./ app.particleFunctions.magneticForceConstant;
+        hapticSpring = 3;
+        hapticViscocity = 0.4;
+        hapticVelocity = [0,currentDial(1),currentDial(2)] - app.hapticFeedback;
+        app.hapticFeedback = [0,currentDial(1),currentDial(2)];
+        hapticForce = app.hapticFeedback .* hapticSpring + hapticVelocity .* hapticViscocity;
+        WriteHaptic(hapticForce(1), -hapticForce(2), -hapticForce(3));
+
+        app.X1MAGauge.Value = currentDial(1);
+        app.Y1MAGauge.Value = currentDial(2);
     end
 
-    %TODO ADD THIS BACK IN
     vFlow = app.particleFunctions.calculateFlow(real(app.particleArrayLocation), app.fd.FlowValues, app.mesh);
     vFlow = vFlow .* app.FluidFlowmsEditField.Value;
-    %vFlow = [0 0];
 
     magForceAlpha = 0.05;
     magForce = app.previousMagforce;
@@ -39,10 +37,6 @@ function timerCallback(app)
         %drag (using last iterations velocity)
         dragForce = app.particleFunctions.calculateDragForce(app.particleArrayVelocity, vFlow);
         app.particleArrayForce = app.particleArrayForce - dragForce;
-
-       % exportgraphics(app.UIAxes,'test.png','Resolution',1200);
-       % exportapp(app.UIFigure,'testFig.pdf');
-      %  exportapp(app.UIFigure,'testFig.png');
         
         %friction
         app.particleArrayForce = app.particleArrayForce - app.particleFunctions.calculateFrictionForce(app.particleArrayVelocity, app.particleArrayForce, orthogonalWallContact);
