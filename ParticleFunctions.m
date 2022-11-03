@@ -156,14 +156,9 @@ classdef ParticleFunctions
         function force = calculateFrictionForce(obj, particleVelocity, particleForce, orthogonalWallContact)
             trueParticleVelocity = sum(abs(particleVelocity),2);
             movingParticles = trueParticleVelocity > 0;
-            %intialise return matrix
-            force = particleForce .* 0;
             coefficient = particleVelocity(:,1) .* 0;
             coefficient(movingParticles == 1) = obj.movingFrictionCoefficient;
             coefficient(coefficient == 0) = obj.staticFrictionCoefficient;
-            %for i = 1:length(particleForce)
-            %    force(i,:) = obj.vectorProjection(particleForce(i,:),orthogonalWallContact(i,:)) .* coefficient(i);
-            %end
             force = obj.matrixVectorProjection(particleForce, orthogonalWallContact) .* coefficient;
 
             testForSign = force .* orthogonalWallContact; %TODO need to check this...
@@ -199,17 +194,10 @@ classdef ParticleFunctions
             currentAcceleration = obj.calculateAcceleration(particleForce, particleMass);
             hypotheticalDeltaVelocity = 0.5.*(currentAcceleration + previousAcceleration).* timeSinceLastUpdate; %timeSinceLastUpdate must be fairly constant for this to work - maybe avg time?
             
-            wallContactVelocity = 0 .* hypotheticalDeltaVelocity;
-            for i = 1:length(hypotheticalDeltaVelocity)
-                %is the particle on a wall? 
-                if(any(~isnan(wallContact(i,:))))
-                    %Use vector rejection to project force along the wall.
-                    velocityOrthogonalToWallContact = obj.vectorProjection(hypotheticalDeltaVelocity(i,:),orthogonalWallContact(i,:));
-                    testForSign = velocityOrthogonalToWallContact .* orthogonalWallContact(i,:);
-                    velocityOrthogonalToWallContact(testForSign < 0) = 0;
-                    wallContactVelocity(i,:) = obj.vectorProjection(hypotheticalDeltaVelocity(i,:),wallContact(i,:)) + velocityOrthogonalToWallContact;
-                end
-            end
+            velocityOrthogonalToWallContact = obj.matrixVectorProjection(hypotheticalDeltaVelocity,orthogonalWallContact);
+            testForSign = velocityOrthogonalToWallContact .* orthogonalWallContact;
+            velocityOrthogonalToWallContact(testForSign < 0) = 0;
+            wallContactVelocity = obj.matrixVectorProjection(hypotheticalDeltaVelocity,wallContact) + velocityOrthogonalToWallContact;
             hypotheticalDeltaVelocity = hypotheticalDeltaVelocity .* isnan(wallContact) + wallContactVelocity;
 
             
