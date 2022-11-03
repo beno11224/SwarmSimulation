@@ -1,4 +1,5 @@
 function timerCallback(app)
+  %  profile on
     %if(~app.currentlyDoingWorkSemaphore)
     %   app.currentlyDoingWorkSemaphore = true; %let the earlier tasks complete first, try and force other to leave things alone        
         
@@ -63,6 +64,7 @@ function timerCallback(app)
         else                
             app.timePassed = app.timePassed + app.timestep / smallerTMaxTotalSteps;        
         end
+
     end
     %fprintf(app.fileID, app.timePassed + "," + app.timeLag + "," + mat2str(magForce) + "," + mat2str(dragForce)+ "," + goalPercentage + "," + mat2str(app.particleArrayVelocity)+ "," + mat2str(app.particleArrayLocation) + "\r\n");
     %Now rotate location values:
@@ -70,6 +72,7 @@ function timerCallback(app)
     rotForce = (rotMat * [app.X1MAGauge.Value ; app.Y1MAGauge.Value])';
     rotVel = (rotMat * app.particleArrayVelocity')';
     rotLoc = (rotMat * app.particleArrayLocation')';
+
     if(app.printCounter >= app.slowDown)
         fprintf(app.fileID, app.timePassed + "," + mat2str(rotForce) + "," + goalPercentage + "," + mat2str(rotVel)+ "," + mat2str(rotLoc) + "\r\n");
         app.printCounter = 1;
@@ -94,6 +97,8 @@ function timerCallback(app)
             app.timeLimit = 1;
         end
     end
+
+ %   profile viewer
     app.previousMagforce = magForce;
     app.currentlyDoingWorkSemaphore = false;
 end

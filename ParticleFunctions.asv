@@ -161,11 +161,9 @@ classdef ParticleFunctions
             coefficient = particleVelocity(:,1) .* 0;
             coefficient(movingParticles == 1) = obj.movingFrictionCoefficient;
             coefficient(coefficient == 0) = obj.staticFrictionCoefficient;
-            %for i = 1:length(particleForce)
-            %    force(i,:) = obj.vectorProjection(particleForce(i,:),orthogonalWallContact(i,:)) .* coefficient(i);
-            %end
-            force = obj.matrixVectorProjection(particleForce, orthogonalWallContact) .* coefficient;
-
+            for i = 1:length(particleForce)
+                force(i,:) = obj.vectorProjection(particleForce(i,:),orthogonalWallContact(i,:)) .* coefficient(i);
+            end
             testForSign = force .* orthogonalWallContact; %TODO need to check this...
             force(testForSign > 0) = 0;
             force(particleForce < 0 & force > 0) = force(particleForce < 0 & force > 0) .* -1; %Make  sign match force to allow it to be negated later
@@ -320,7 +318,7 @@ classdef ParticleFunctions
             vec = obj.realNum((dot(AB,CD) / dot(CD, CD)) * CD);
         end
         function matVec = matrixVectorProjection(obj,AB,CD)
-            matVec = obj.realNum(dot(AB,CD,2) ./ dot(CD,CD,2) .* CD); %TODO - division - is this correct?
+            matVec = obj.realNum(dot(ABVEC,CD))
         end
         
         %Fix matlabs tendency to make doubles into imaginary numbers
