@@ -16,7 +16,7 @@ function timerCallback(app)
         WriteHaptic(hapticForce(1), -hapticForce(2), -hapticForce(3));
 
         app.X1MAGauge.Value = currentDial(1);
-        app.Y1MAGauge.Value = currentDial(2)
+        app.Y1MAGauge.Value = currentDial(2);
     end
 
     vFlow = app.particleFunctions.calculateFlow(real(app.particleArrayLocation), app.fd.FlowValues, app.mesh);
