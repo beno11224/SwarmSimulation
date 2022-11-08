@@ -6,6 +6,7 @@ class QLearning:
     def __init__(self, n_states, n_actions, epsilon= 0.2, lr = 0.15, gamma = 0.995, episodes = 5*10**3, timestep = 1000):
         self.n_states = n_states
         self.n_actions = n_actions
+        
         self.epsilon = epsilon
         self.lr = lr
         self.gamma = gamma
@@ -13,9 +14,6 @@ class QLearning:
         self.timestep = timestep
         
         self.env = gym.make('CartPole-v0') # - use my sim
-
-        self.n_states = 4
-        self.n_actions = 2
 
         self.episode = 0
         self.steps = 0
@@ -85,25 +83,25 @@ class QLearning:
 
 
 # TRANING
-#obj1 = QLearning()
-#episodeEnd = False
-#obs = obj1.env.reset()
-#obj1.prev_state = obj1.Discrete(obs[0])
-#while(not episodeEnd):
-#    exit_Loop = False
-#    while(not exit_Loop):
-#        #Make the action decision
-#        if np.random.uniform(0,1) < obj1.epsilon:
-#            act = obj1.env.action_space.sample() #TODO what's this? - random action?
-#        else:
-#            act = np.argmax(obj1.q_table[obj1.prev_state])
-#
-#        #This is the action - this is where MATLAB sits - so the above action is passed in, and then the below is called.
-#        res = obj1.env.step(act);
-#        
-#        exit_Loop = obj1.Q_LearningActionLoop(res[0], res[1], res[2], res[3])
-#        #Above we actually return the action to take, and let matlab determine if we're done or not (res[3])
-#        #Matlab will actually do this loop, we're just contstructing the model in python and accessing it in matlab
-#    episodeEnd = obj1.episode > obj1.episodes
-#    obj1.env.reset();
+obj1 = QLearning()
+episodeEnd = False
+obs = obj1.env.reset()
+obj1.prev_state = obj1.Discrete(obs[0])
+while(not episodeEnd):
+    exit_Loop = False
+    while(not exit_Loop):
+        #Make the action decision
+        if np.random.uniform(0,1) < obj1.epsilon:
+            act = obj1.env.action_space.sample() #TODO what's this? - random action?
+        else:
+            act = np.argmax(obj1.q_table[obj1.prev_state])
+
+        #This is the action - this is where MATLAB sits - so the above action is passed in, and then the below is called.
+        res = obj1.env.step(act);
+        
+        exit_Loop = obj1.Q_LearningActionLoop(res[0], res[1], res[2], res[3])
+        #Above we actually return the action to take, and let matlab determine if we're done or not (res[3])
+        #Matlab will actually do this loop, we're just contstructing the model in python and accessing it in matlab
+    episodeEnd = obj1.episode > obj1.episodes
+    obj1.env.reset();
 #Have to split this so that matlab calls it in a loop. So must end run and store data across time steps.

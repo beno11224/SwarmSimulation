@@ -14,7 +14,7 @@ function NextLevel(app)
         
         case(0)
             app.polygon.change(3);
-            app.FluidFlowmsEditField.Value = 0.005;
+            app.FluidFlowmsEditField.Value = 0.025;
         case(1)
             app.polygon.change(3);
             app.FluidFlowmsEditField.Value = 0.005;
