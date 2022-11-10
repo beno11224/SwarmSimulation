@@ -7,13 +7,13 @@ function timerCallback(app)
     currentMagforce = app.particleFunctions.calculateMagneticForce([app.X1MAGauge.Value app.Y1MAGauge.Value],app.joyStick, 1, 3, app.controlMethod, app.mousePosition, app.MagForceRestrictMAM2EditField.Value, app.rotation);
     currentDial = currentMagforce ./10^6 ./ app.particleFunctions.magneticForceConstant;
     if(app.controlMethod == "Controller")
-        hapticSpring = 3;
-        hapticViscocity = 0.4;
-        hapticVelocity = [0,currentDial(1),currentDial(2)] - app.hapticFeedback;
-        app.hapticFeedback = [0,currentDial(1),currentDial(2)];
+        hapticSpring = app.HapticForceSlider.Value;
+        hapticViscocity = 0.3;
+        hapticVelocity = [1,currentDial(1),currentDial(2)] - app.hapticFeedback;
+        app.hapticFeedback = [1,currentDial(1),currentDial(2)];
         hapticForce = app.hapticFeedback .* hapticSpring + hapticVelocity .* hapticViscocity;
         %mex "drdms64.lib" "dhdms64.lib" WriteHaptic.cpp
-        WriteHaptic(hapticForce(1), -hapticForce(2), -hapticForce(3));
+        WriteHaptic(-hapticForce(1), -hapticForce(2), -hapticForce(3));
 
         app.X1MAGauge.Value = currentDial(1);
         app.Y1MAGauge.Value = currentDial(2);
