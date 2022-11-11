@@ -1,6 +1,6 @@
 <deployment-project plugin="plugin.ezdeploy" plugin-version="1.0">
   <configuration file="C:\Users\bj20907\Documents\GitHub\SwarmSimulation\SwarmSimulation2021.prj" location="C:\Users\bj20907\Documents\GitHub\SwarmSimulation" name="SwarmSimulation2021" target="target.ezdeploy.standalone" target-name="Application Compiler">
-    <param.appname>SwarmSimulation2021_1</param.appname>
+    <param.appname>SwarmSimulation2021</param.appname>
     <param.icon />
     <param.icons />
     <param.version>1.2</param.version>
@@ -11,7 +11,7 @@
     <param.description />
     <param.screenshot />
     <param.guid />
-    <param.installpath.string>\SwarmSimulation2021_1\</param.installpath.string>
+    <param.installpath.string>\SwarmSimulation2021\</param.installpath.string>
     <param.installpath.combo>option.installpath.programfiles</param.installpath.combo>
     <param.logo />
     <param.install.notes />
@@ -98,8 +98,8 @@
     </fileset.depfun>
     <build-deliverables>
       <file location="${PROJECT_ROOT}\SwarmSimulation2021\for_testing" name="splash.png" optional="false">C:\Users\bj20907\Documents\GitHub\SwarmSimulation\SwarmSimulation2021\for_testing\splash.png</file>
-      <file location="${PROJECT_ROOT}\SwarmSimulation2021\for_testing" name="SwarmSimulation2021_1.exe" optional="false">C:\Users\bj20907\Documents\GitHub\SwarmSimulation\SwarmSimulation2021\for_testing\SwarmSimulation2021_1.exe</file>
       <file location="${PROJECT_ROOT}\SwarmSimulation2021\for_testing" name="readme.txt" optional="true">C:\Users\bj20907\Documents\GitHub\SwarmSimulation\SwarmSimulation2021\for_testing\readme.txt</file>
+      <file location="${PROJECT_ROOT}\SwarmSimulation2021\for_testing" name="SwarmSimulation2021.exe" optional="false">C:\Users\bj20907\Documents\GitHub\SwarmSimulation\SwarmSimulation2021\for_testing\SwarmSimulation2021.exe</file>
     </build-deliverables>
     <workflow />
     <matlab>
