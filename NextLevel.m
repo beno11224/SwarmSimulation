@@ -11,6 +11,7 @@ function NextLevel(app)
     app.hapticFeedback = [0,0,0];
     app.slowDown = 1;
     app.goalIndex = 2;
+    app.HapticForceSlider.Enable = false;
     switch(floor((app.testNumber-1)/5)) %Do n of each
         
         case(0)
