@@ -12,7 +12,7 @@ function NextLevel(app)
     app.slowDown = 1;
     app.goalIndex = 2;
     app.HapticForceSlider.Enable = false;
-    switch(floor((app.testNumber-1)/10)) %Do n of each
+    switch(floor((app.testOrder(app.testNumber)-1)/10)) %Do n of each
         
         case(0)
             app.polygon.change(3);
