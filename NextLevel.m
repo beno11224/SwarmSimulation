@@ -12,48 +12,24 @@ function NextLevel(app)
     app.slowDown = 1;
     app.goalIndex = 2;
     app.HapticForceSlider.Enable = false;
-    switch(floor((app.testNumber-1)/5)) %Do n of each
+    switch(floor((app.testOrder(app.testNumber)-1)/10)) %Do n of each
         
         case(0)
             app.polygon.change(3);
-            app.FluidFlowmsEditField.Value = 0.02;
+            app.FluidFlowmsEditField.Value = 0.01;
             app.slowDown = 2;
         case(1)
             app.polygon.change(3);
-            app.FluidFlowmsEditField.Value = 0.02;
-            app.slowDown = 2;
+            app.FluidFlowmsEditField.Value = 0.015;
         case(2)
             app.polygon.change(3);
-            app.FluidFlowmsEditField.Value = 0.03;
-            app.slowDown = 2;
+            app.FluidFlowmsEditField.Value = 0.02;
          case(3)
             app.polygon.change(3);
-            app.FluidFlowmsEditField.Value = 0.03;
-            app.slowDown = 2;
+            app.FluidFlowmsEditField.Value = 0.025;
         case(4)
             app.polygon.change(3);
-            app.FluidFlowmsEditField.Value = 0.04;
-            app.slowDown = 3;
-        case(5)
-            app.polygon.change(3);
-            app.FluidFlowmsEditField.Value = 0.04;
-            app.slowDown = 3;
-        case(6)
-            app.polygon.change(3);
-            app.FluidFlowmsEditField.Value = 0.05;
-            app.slowDown = 4;
-        case(7)
-            app.polygon.change(3);
-            app.FluidFlowmsEditField.Value = 0.05;
-            app.slowDown = 4;
-        case(8)
-            app.polygon.change(3);
-            app.FluidFlowmsEditField.Value = 0.06;
-            app.slowDown = 5;
-        case(9)
-            app.polygon.change(3);
-            app.FluidFlowmsEditField.Value = 0.06;
-            app.slowDown = 5;
+            app.FluidFlowmsEditField.Value = 0.03;
         otherwise
              fprintf("The experiment has now ended, thank you for your participation. Please close this window.\r\n");
              app.polygon = app.polygon.change(1);
