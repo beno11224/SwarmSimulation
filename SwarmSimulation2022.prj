@@ -1,5 +1,5 @@
 <deployment-project plugin="plugin.apptool" plugin-version="1.0">
-  <configuration build-checksum="1948729554" file="C:\Users\bj20907\Documents\GitHub\SwarmSimulation\SwarmSimulation2022.prj" location="C:\Users\bj20907\Documents\GitHub\SwarmSimulation" name="SwarmSimulation2022" target="target.mlapps" target-name="Package App">
+  <configuration build-checksum="1340819855" file="C:\Users\bj20907\Documents\GitHub\SwarmSimulation\SwarmSimulation2022.prj" location="C:\Users\bj20907\Documents\GitHub\SwarmSimulation" name="SwarmSimulation2022" target="target.mlapps" target-name="Package App">
     <param.appname>SwarmSimulation2022</param.appname>
     <param.authnamewatermark />
     <param.email />
@@ -8,12 +8,14 @@
     <param.icons />
     <param.summary />
     <param.description />
-    <param.screenshot>C:\Users\bj20907\AppData\Local\Temp\tp50b2aecd_3afe_4e57_9542_7ebb3c002b8a.png</param.screenshot>
+    <param.screenshot>C:\Users\bj20907\AppData\Local\Temp\tp32bec18e_55df_40cd_a2fa_c532c70700d4.png</param.screenshot>
     <param.version>1.2</param.version>
     <param.products.name />
     <param.products.id />
     <param.products.version />
-    <param.platforms />
+    <param.platforms>
+      <item>win64</item>
+    </param.platforms>
     <param.output>${PROJECT_ROOT}</param.output>
     <param.guid>00afe46c-cfd2-4387-8dc4-7b921eda990a</param.guid>
     <unset>
@@ -27,7 +29,6 @@
       <param.products.name />
       <param.products.id />
       <param.products.version />
-      <param.platforms />
       <param.output />
     </unset>
     <fileset.main>
@@ -39,10 +40,12 @@
       <file>${PROJECT_ROOT}\FlowData.m</file>
       <file>${PROJECT_ROOT}\InitHaptic.mexw64</file>
       <file>${PROJECT_ROOT}\MeshAndPolygon.csv</file>
+      <file>${PROJECT_ROOT}\NextLevel.m</file>
       <file>${PROJECT_ROOT}\ParticleFunctions.m</file>
       <file>${PROJECT_ROOT}\Polygons.m</file>
       <file>${PROJECT_ROOT}\ReadHaptic.mexw64</file>
       <file>${PROJECT_ROOT}\timerCallback.m</file>
+      <file>${PROJECT_ROOT}\WriteHaptic.mexw64</file>
     </fileset.depfun>
     <fileset.resources />
     <fileset.package />
