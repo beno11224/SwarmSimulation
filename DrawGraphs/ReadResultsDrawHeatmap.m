@@ -1,9 +1,10 @@
-function ReadResultsDrawHeatmap(polygon)
+function ReadResultsDrawHeatmap()
     folderPath = uigetdir();
     allFiles = dir(fullfile(folderPath, '*.csv'));
     inputReadAll = input("Show Only results from all files? This may cause errors if files are not sanitized","s")
     readAllFiles = (inputReadAll == "y" || inputReadAll == "Y" || inputReadAll == "yes" || inputReadAll == "Yes");
-   
+    polygon = Polygons(0.0096);
+    polygon = polygon.change(2);    
 
     tr = triangulation(polyshape(polygon.currentPoly(:,1),polygon.currentPoly(:,2)));
     model = createpde(1);
