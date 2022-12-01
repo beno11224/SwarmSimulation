@@ -7,4 +7,7 @@ function drawTimerCallback(app)
 
     rotatedPoints = ([cosd(app.rotation), sind(app.rotation); -sind(app.rotation), cos(app.rotation)] * app.particleArrayLocation')';
     app.particlePoints = plot(app.UIAxes, app.particleFunctions.realNum(rotatedPoints(:,1)), app.particleFunctions.realNum(rotatedPoints(:,2)),'r.', 'markerSize', 23);
+   % plot(app.polygon.allPolys(2,:,1), app.polygon.allPolys(2,:,2));
+   % hold on
+   % plot(app.polygon.allPolys(2,:,1), app.polygon.allPolys(2,:,2),'r.', 'markerSize', 13);
 end

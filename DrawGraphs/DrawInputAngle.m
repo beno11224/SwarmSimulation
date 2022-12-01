@@ -51,6 +51,10 @@ function DrawInputAngle(particlePaths, stopDrawAtGoal, drawCorrectOutlet, drawIn
             scores(pIndex) = str2double(cell2mat(particlePaths(pIndex).overallPercentage));
         end
     end
-    plot(axGraph,avgAngle,scores,'r.', 'markerSize', 5);
+    if(~exist("avgAngle"))
+        fprintf("No data to show")
+    else
+        plot(axGraph,avgAngle,scores,'r.', 'markerSize', 5);
+    end
 end
 
