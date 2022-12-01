@@ -93,6 +93,7 @@ function timerCallback(app)
             delete(app.magLine);
             app.testNumber = app.testNumber + 1;
             NextLevel(app);
+            start(app.hapticFeedbackIdleProperty);
         else
             app.timeLimit = 1;
         end
