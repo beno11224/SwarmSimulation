@@ -1,11 +1,13 @@
-function ParticlePathData = ReadAllResults(readAllFiles, poly)
+function ParticlePathData = ReadAllResults(readAllFiles, poly, goalOutlet)
+    addpath 'E:\SwarmSimulation' %TODO remove
     if ~exist('readAllFiles','var')
      % third parameter does not exist, so default it to something
       readAllFiles = true;
     end
-    if ~exist('goalLocations','var') || ~exist('poly','var')
+    if ~exist('goalOutlet','var') || ~exist('poly','var')
         poly = Polygons(0.0096);
         poly = poly.change(2); 
+        goalOutlet = 2; %for legacy reasons
     end
     folderPath = uigetdir();
     allFiles = dir(fullfile(folderPath, '*.csv'));
@@ -44,6 +46,8 @@ function ParticlePathData = ReadAllResults(readAllFiles, poly)
                velocities = datas(4);
                positions = datas(5);
 
+%TODO - make these all numerical please!!
+
                velocities = strip(velocities,'[');
                velocities = strip(velocities,']');
                allVelocities = split(velocities,';');
@@ -52,7 +56,7 @@ function ParticlePathData = ReadAllResults(readAllFiles, poly)
                allPositions = split(positions,';');
                pagePositions = [];
                pageVelocities = [];
-               inputForce = [inputForce; magForce];
+               inputForce = [inputForce; strip(strip(magForce,']'),'[')];
                times = [times; time];
                for(lineIndex = 1:length(allPositions))
                    xAndYPositions = split(allPositions(lineIndex),' ');
@@ -67,22 +71,27 @@ function ParticlePathData = ReadAllResults(readAllFiles, poly)
             end
             
             pageCount = (fileIndex - 1 - badFilesCount) * size(tidiedPositions,1);
-
-            for lineCount = 1: size(tidiedPositions,1)
-                %TODO write all this to file
+            for particleCount = 1: size(tidiedPositions,1)
                 goalTime = 0;
                 correctOutlet = false;
-                for timeStepCount = 1:size(tidiedPositions(lineCount,:)) %TODO not comparing to correct space - draw it!
-                    goalTime = times(timeStepCount);
-                    if(inpolygon(tidiedPositions(lineCount,timeStepCount,1),tidiedPositions(lineCount,timeStepCount,2),poly.currentEndZone(2,:,1),poly.currentEndZone(2,:,2)))
-                        correctOutlet = true;
+                particleFinish = false;
+                for timeStepCount = 1:size(squeeze(tidiedPositions(particleCount,:,:)),2)
+                   for(outletCount = 1:size(poly.currentEndZone,1))
+                        if(inpolygon(tidiedPositions(particleCount,1,timeStepCount),tidiedPositions(particleCount,2,timeStepCount),poly.currentEndZone(outletCount,:,1),poly.currentEndZone(outletCount,:,2)))
+                            correctOutlet = outletCount == goalOutlet;
+                            goalTime = times(timeStepCount);
+                            particleFinish = true;
+                            break;
+                        end
+                    end
+                    if particleFinish
                         break;
                     end
                 end
-                validParticle = inpolygon(tidiedPositions(lineCount,timeStepCount,1),tidiedPositions(lineCount,timeStepCount,2),poly.currentPoly(:,1),poly.currentPoly(:,2)); %If the particle is out of bounds at end then it's invalid.
+                validParticle = inpolygon(tidiedPositions(particleCount,1,timeStepCount),tidiedPositions(particleCount,2,timeStepCount),poly.currentPoly(:,1),poly.currentPoly(:,2)); %If the particle is out of bounds at end then it's invalid.
                 try
                     %LineCount? or some other way?
-                    ParticlePathData(lineCount + pageCount) = ParticlePath(validParticle, correctOutlet, goalTime, inputForce, tidiedPositions(lineCount,:), tidiedVelocities(lineCount,:), times);
+                    ParticlePathData(particleCount + pageCount) = ParticlePath(validParticle, correctOutlet, goalTime, inputForce, squeeze(tidiedPositions(particleCount,:,:)), squeeze(tidiedVelocities(particleCount,:,:)), times, goalPercentage);
                 catch
                 %    i = 1; %use to debug
                 %    ParticlePathData(lineCount + pageCount) = ParticlePath(true, 0, inputForce, pagePositions, pageVelocities, times);
@@ -90,7 +99,7 @@ function ParticlePathData = ReadAllResults(readAllFiles, poly)
 
             end
 
-            pause(0.1);
+            pause(0.05);
             fclose(fid);
         end
     end

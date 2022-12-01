@@ -10,10 +10,11 @@ classdef ParticlePath
         Locations
         Velocities
         TimeSteps
+        overallPercentage
     end
     
     methods
-        function obj = ParticlePath(validRun, correctOutlet, goalTime, inputForces, locations, velocities, timeSteps) %String? File?
+        function obj = ParticlePath(validRun, correctOutlet, goalTime, inputForces, locations, velocities, timeSteps, recPercentage) %String? File?
             %PARTICLEPATH Construct an instance of this class
             %   Detailed explanation goes here
             obj.ValidRun = validRun;
@@ -23,6 +24,7 @@ classdef ParticlePath
             obj.Locations = locations;
             obj.Velocities = velocities;
             obj.TimeSteps = timeSteps;
+            obj.overallPercentage = recPercentage;
         end
         
         function outputArg = method1(obj,inputArg)
