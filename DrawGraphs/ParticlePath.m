@@ -14,17 +14,27 @@ classdef ParticlePath
     end
     
     methods
-        function obj = ParticlePath(validRun, correctOutlet, goalTime, inputForces, locations, velocities, timeSteps, recPercentage) %String? File?
-            %PARTICLEPATH Construct an instance of this class
-            %   Detailed explanation goes here
+        function obj = ParticlePath(validRun, correctOutlet, goalTime, inputForces, locations, velocities, timeSteps, recPercentage)
+
+            %Boolean
             obj.ValidRun = validRun;
             obj.CorrectOutlet = correctOutlet;
+
+            %Double
+            if(iscell(goalTime))
+                goalTime = str2double(cell2mat(goalTime));
+            end
+            if(iscell(recPercentage))
+                recPercentage = str2double(cell2mat(recPercentage));
+            end
             obj.GoalTime = goalTime;
+            obj.overallPercentage = recPercentage;
+
+            %Double Array
             obj.InputForces = inputForces;
             obj.Locations = locations;
             obj.Velocities = velocities;
             obj.TimeSteps = timeSteps;
-            obj.overallPercentage = recPercentage;
         end
         
         function outputArg = method1(obj,inputArg)

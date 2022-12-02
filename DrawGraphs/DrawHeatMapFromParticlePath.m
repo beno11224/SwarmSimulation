@@ -39,7 +39,7 @@ function DrawHeatMapFromParticlePath(particlePaths, stopDrawAtGoal, drawCorrectO
             end
             if(drawCorrectOutlet && particlePaths(fileIndex,pIndex).CorrectOutlet) || (drawIncorrectOutlet && ~particlePaths(fileIndex,pIndex).CorrectOutlet)
                 try
-                    timeLimit = str2double(cell2mat(particlePaths(fileIndex,pIndex).GoalTime));
+                    timeLimit = particlePaths(fileIndex,pIndex).GoalTime;
                 catch
                     if(drawIncomplete)
                         timeLimit = 0;
@@ -49,7 +49,7 @@ function DrawHeatMapFromParticlePath(particlePaths, stopDrawAtGoal, drawCorrectO
                 end
                 for(timeStepCount = 1: size(particlePaths(fileIndex,pIndex).Locations,2))
                     %a = str2double(cell2mat(particlePaths(pIndex).TimeSteps(timeStepCount)));
-                    if(stopDrawAtGoal && timeLimit < str2double(cell2mat(particlePaths(fileIndex,pIndex).TimeSteps(timeStepCount))))
+                    if(stopDrawAtGoal && timeLimit < particlePaths(fileIndex,pIndex).TimeSteps(timeStepCount))
                         break;
                     end
                     %closestNode = findNodes(mesh, 'nearest', particlePaths(pIndex).Locations(lineCount,:)');

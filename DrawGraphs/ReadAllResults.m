@@ -39,40 +39,37 @@ function ParticlePathData = ReadAllResults(readAllFiles, poly, goalOutlet)
             times = [];
             inputForce = [];
             while ischar(tline)
-               datas = split(tline,',');
-               time = datas(1);
-               magForce = datas(2);
-               goalPercentage = datas(3);
-               velocities = datas(4);
-               positions = datas(5);
+                datas = split(tline,',');
+                time = datas(1);
+                magForce = datas(2);
+                goalPercentage = datas(3);
+                velocities = datas(4);
+                positions = datas(5);
 
-%TODO - make these all numerical please!!
-
-               velocities = strip(velocities,'[');
-               velocities = strip(velocities,']');
-               allVelocities = split(velocities,';');
-               positions = strip(positions,'[');
-               positions = strip(positions,']');
-               allPositions = split(positions,';');
-               pagePositions = [];
-               pageVelocities = [];
-               inputForce = [inputForce; strip(strip(magForce,']'),'[')];
-               times = [times; time];
-               for(lineIndex = 1:length(allPositions))
-                   xAndYPositions = split(allPositions(lineIndex),' ');
-                   xAndYVelocities = split(allVelocities(lineIndex),' ');
-                   pagePositions = [pagePositions; [str2double(xAndYPositions(1)), str2double(xAndYPositions(2))]];
-                   pageVelocities = [pageVelocities; [str2double(xAndYVelocities(1)), str2double(xAndYVelocities(2))]];
-               end
-               tidiedPositions = cat(3,tidiedPositions, pagePositions);
-               tidiedVelocities = cat(3,tidiedVelocities,pageVelocities);
-
-               tline = fgetl(fid);    
+                goalPercentage = str2double(cell2mat(goalPercentage)) .* 100;
+                velocities = strip(velocities,'[');
+                velocities = strip(velocities,']');
+                allVelocities = split(velocities,';');
+                positions = strip(positions,'[');
+                positions = strip(positions,']');
+                allPositions = split(positions,';');
+                pagePositions = [];
+                pageVelocities = [];
+                inputForce = [inputForce; str2double(split(cell2mat(strip(strip(magForce,']'),'[')),' '))'];
+                times = [times; str2double(cell2mat(time))];
+                for(lineIndex = 1:length(allPositions))
+                    xAndYPositions = split(allPositions(lineIndex),' ');
+                    xAndYVelocities = split(allVelocities(lineIndex),' ');
+                    pagePositions = [pagePositions; [str2double(xAndYPositions(1)), str2double(xAndYPositions(2))]];
+                    pageVelocities = [pageVelocities; [str2double(xAndYVelocities(1)), str2double(xAndYVelocities(2))]];
+                end
+                tidiedPositions = cat(3,tidiedPositions, pagePositions);
+                tidiedVelocities = cat(3,tidiedVelocities,pageVelocities);
+                tline = fgetl(fid);
             end
             
             pageCount = (fileIndex - 1 - badFilesCount) * size(tidiedPositions,1);
             fileCount = fileIndex - badFilesCount;
-           % temporaryFileParticlePaths = [];
             for particleCount = 1: size(tidiedPositions,1)
                 goalTime = 0;
                 correctOutlet = false;
@@ -92,11 +89,7 @@ function ParticlePathData = ReadAllResults(readAllFiles, poly, goalOutlet)
                 end
                 validParticle = inpolygon(tidiedPositions(particleCount,1,timeStepCount),tidiedPositions(particleCount,2,timeStepCount),poly.currentPoly(:,1),poly.currentPoly(:,2)); %If the particle is out of bounds at end then it's invalid.
                 try
-                    %LineCount? or some other way?
-                %    ParticlePathData(particleCount + pageCount) = ParticlePath(validParticle, correctOutlet, goalTime, inputForce, squeeze(tidiedPositions(particleCount,:,:)), squeeze(tidiedVelocities(particleCount,:,:)), times, goalPercentage);
-                %    a = ParticlePath(validParticle, correctOutlet, goalTime, inputForce, squeeze(tidiedPositions(particleCount,:,:)), squeeze(tidiedVelocities(particleCount,:,:)), times, goalPercentage);
-               % ab(particleCount,fileCount) = (fileCount*50+particleCount)
-                temporaryFileParticlePaths(particleCount) = ParticlePath(validParticle, correctOutlet, goalTime, inputForce, squeeze(tidiedPositions(particleCount,:,:)), squeeze(tidiedVelocities(particleCount,:,:)), times, goalPercentage);
+                    temporaryFileParticlePaths(particleCount) = ParticlePath(validParticle, correctOutlet, goalTime, inputForce, squeeze(tidiedPositions(particleCount,:,:)), squeeze(tidiedVelocities(particleCount,:,:)), times, goalPercentage);
                 catch
                 %    i = 1; %use to debug
                 %    ParticlePathData(lineCount + pageCount) = ParticlePath(true, 0, inputForce, pagePositions, pageVelocities, times);
