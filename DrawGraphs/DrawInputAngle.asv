@@ -24,8 +24,8 @@ function DrawInputAngle(particlePaths, stopDrawAtGoal, drawCorrectOutlet, drawIn
     for(fileIndex = 1:size(particlePaths,1))
         quickestIndex = 1;
         quickestTime = particlePaths(fileIndex,1).GoalTime;
-        for(pIndex = 2:size(particlePaths,2))
-            if((drawCorrectOutlet && particlePaths(fileIndex,pIndex).CorrectOutlet || (drawIncorrectOutlet && ~particlePaths(pIndex).CorrectOutlet)) && particlePaths(fileIndex,pIndex).GoalTime < quickestTime)
+        for(pIndex = 2;size(particlePaths,2))
+            if(drawCorrectOutlet && particlePaths(,pIndex).CorrectOutlet particlePaths(fileIndex,pIndex).GoalTime < quickestTime)
                 quickestIndex = pIndex;
                 quickestTime = particlePaths(fileIndex,pIndex).GoalTime;
             end
@@ -38,25 +38,26 @@ function DrawInputAngle(particlePaths, stopDrawAtGoal, drawCorrectOutlet, drawIn
   %              timeLimit = str2double(cell2mat(particlePaths(pIndex).GoalTime));
   %          catch
   %              if(drawIncomplete)
-  %                  timeLimit = 0; %Above may fail, use this.
+  %                  timeLimit = 0;
   %              else
   %                  break;
   %              end
   %          end
-        angleSum = 0;
-       % magnitudeSum = 0;
-        timeStepCount = 1;
-        for timeStepCount = 1:size(particlePaths(fileIndex,quickestIndex).InputForces,1)
-            if(stopDrawAtGoal && timeLimit < str2double(cell2mat(particlePaths(fileIndex,quickestIndex).TimeSteps(timeStepCount))))
-                break;
+            angleSum = 0;
+           % magnitudeSum = 0;
+            timeStepCount = 1;
+            for timeStepCount = 1:size(particlePaths(pIndex).InputForces,1)
+                if(stopDrawAtGoal && timeLimit < str2double(cell2mat(particlePaths(pIndex).TimeSteps(timeStepCount))))
+                    break;
+                end
+                %https://uk.mathworks.com/matlabcentral/answers/180131-how-can-i-find-the-angle-between-two-vectors-including-directional-information
+                aa = str2num(cell2mat(particlePaths(pIndex).InputForces(timeStepCount,:)));
+                thisAngle = atan2d(aa(2),aa(1));
+                angleSum = angleSum + thisAngle;
             end
-            %https://uk.mathworks.com/matlabcentral/answers/180131-how-can-i-find-the-angle-between-two-vectors-including-directional-information
-            aa = str2num(cell2mat(particlePaths(fileIndex,quickestIndex).InputForces(timeStepCount,:)));
-            thisAngle = atan2d(aa(2),aa(1));
-            angleSum = angleSum + thisAngle;
+            avgAngle(pIndex) = angleSum / timeStepCount;
+            scores(pIndex) = str2double(cell2mat(particlePaths(pIndex).overallPercentage));
         end
-        avgAngle(fileIndex) = angleSum / timeStepCount;
-        scores(fileIndex) = str2double(cell2mat(particlePaths(fileIndex,quickestIndex).overallPercentage));
     end
     if(~exist("avgAngle"))
         fprintf("No data to show")
