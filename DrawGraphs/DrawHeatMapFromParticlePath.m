@@ -32,33 +32,34 @@ function DrawHeatMapFromParticlePath(particlePaths, stopDrawAtGoal, drawCorrectO
     polyLineMesh = plot(axMesh,polygon.currentPoly(:,1),polygon.currentPoly(:,2), 'Color','b');
     endLineMesh = plot(axMesh,polygon.currentEndZone(1,:,1),polygon.currentEndZone(1,:,2), 'Color','g');
 
-    for(pIndex = 1:length(particlePaths))
-        if(~ particlePaths(pIndex).ValidRun)
-            continue;
-        end
-        if(drawCorrectOutlet && particlePaths(pIndex).CorrectOutlet) || (drawIncorrectOutlet && ~particlePaths(pIndex).CorrectOutlet)
-            try
-                timeLimit = str2double(cell2mat(particlePaths(pIndex).GoalTime));
-            catch
-                if(drawIncomplete)
-                    timeLimit = 0;
-                else
-                    break;
-                end
+    for(fileIndex = 1:size(particlePaths,1))
+        for(pIndex = 1:size(particlePaths,2))
+            if(~ particlePaths(fileIndex,pIndex).ValidRun)
+                continue;
             end
-            for(timeStepCount = 1: size(particlePaths(pIndex).Locations,2))
-                %a = str2double(cell2mat(particlePaths(pIndex).TimeSteps(timeStepCount)));
-                if(stopDrawAtGoal && timeLimit < str2double(cell2mat(particlePaths(pIndex).TimeSteps(timeStepCount))))
-                    break;
+            if(drawCorrectOutlet && particlePaths(fileIndex,pIndex).CorrectOutlet) || (drawIncorrectOutlet && ~particlePaths(fileIndex,pIndex).CorrectOutlet)
+                try
+                    timeLimit = str2double(cell2mat(particlePaths(fileIndex,pIndex).GoalTime));
+                catch
+                    if(drawIncomplete)
+                        timeLimit = 0;
+                    else
+                        break;
+                    end
                 end
-                %closestNode = findNodes(mesh, 'nearest', particlePaths(pIndex).Locations(lineCount,:)');
-            %    aafb = particlePaths(pIndex).Locations(:,timeStepCount);
-                closestNode = findNodes(mesh, 'nearest', particlePaths(pIndex).Locations(:,timeStepCount));
-                meshValues(closestNode) = meshValues(closestNode) + 1;
+                for(timeStepCount = 1: size(particlePaths(fileIndex,pIndex).Locations,2))
+                    %a = str2double(cell2mat(particlePaths(pIndex).TimeSteps(timeStepCount)));
+                    if(stopDrawAtGoal && timeLimit < str2double(cell2mat(particlePaths(fileIndex,pIndex).TimeSteps(timeStepCount))))
+                        break;
+                    end
+                    %closestNode = findNodes(mesh, 'nearest', particlePaths(pIndex).Locations(lineCount,:)');
+                %    aafb = particlePaths(pIndex).Locations(:,timeStepCount);
+                    closestNode = findNodes(mesh, 'nearest', particlePaths(fileIndex,pIndex).Locations(:,timeStepCount));
+                    meshValues(closestNode) = meshValues(closestNode) + 1;
+                end
             end
         end
     end
-        
     
     meshValues = meshValues ./ quantile(meshValues,0.9); %between 0 and 1
     meshValues(meshValues > 1) = 1; %limit extremes

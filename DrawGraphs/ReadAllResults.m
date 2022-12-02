@@ -71,6 +71,8 @@ function ParticlePathData = ReadAllResults(readAllFiles, poly, goalOutlet)
             end
             
             pageCount = (fileIndex - 1 - badFilesCount) * size(tidiedPositions,1);
+            fileCount = fileIndex - badFilesCount;
+           % temporaryFileParticlePaths = [];
             for particleCount = 1: size(tidiedPositions,1)
                 goalTime = 0;
                 correctOutlet = false;
@@ -91,14 +93,17 @@ function ParticlePathData = ReadAllResults(readAllFiles, poly, goalOutlet)
                 validParticle = inpolygon(tidiedPositions(particleCount,1,timeStepCount),tidiedPositions(particleCount,2,timeStepCount),poly.currentPoly(:,1),poly.currentPoly(:,2)); %If the particle is out of bounds at end then it's invalid.
                 try
                     %LineCount? or some other way?
-                    ParticlePathData(particleCount + pageCount) = ParticlePath(validParticle, correctOutlet, goalTime, inputForce, squeeze(tidiedPositions(particleCount,:,:)), squeeze(tidiedVelocities(particleCount,:,:)), times, goalPercentage);
+                %    ParticlePathData(particleCount + pageCount) = ParticlePath(validParticle, correctOutlet, goalTime, inputForce, squeeze(tidiedPositions(particleCount,:,:)), squeeze(tidiedVelocities(particleCount,:,:)), times, goalPercentage);
+                %    a = ParticlePath(validParticle, correctOutlet, goalTime, inputForce, squeeze(tidiedPositions(particleCount,:,:)), squeeze(tidiedVelocities(particleCount,:,:)), times, goalPercentage);
+               % ab(particleCount,fileCount) = (fileCount*50+particleCount)
+                temporaryFileParticlePaths(particleCount) = ParticlePath(validParticle, correctOutlet, goalTime, inputForce, squeeze(tidiedPositions(particleCount,:,:)), squeeze(tidiedVelocities(particleCount,:,:)), times, goalPercentage);
                 catch
                 %    i = 1; %use to debug
                 %    ParticlePathData(lineCount + pageCount) = ParticlePath(true, 0, inputForce, pagePositions, pageVelocities, times);
                 end
 
             end
-
+            ParticlePathData(fileCount,:) = temporaryFileParticlePaths;
             pause(0.05);
             fclose(fid);
         end
