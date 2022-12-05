@@ -24,7 +24,8 @@ function DrawHeatMapFromParticlePath(particlePaths, stopDrawAtGoal, drawCorrectO
     tnodes = tr.Points';
     telements = tr.ConnectivityList';
     model.geometryFromMesh(tnodes, telements);
-    mesh = generateMesh(model, 'Hmax', 0.001);%was 0.000073 for old one.
+  %  mesh = generateMesh(model, 'Hmax', 0.001);%was 0.000073 for old one.
+    mesh = generateMesh(model, 'Hmax', 0.0005);%was 0.000073 for old one.
     meshValues = zeros([size(mesh.Nodes,2),1]);
     plotMesh = figure;
     axMesh = axes('Parent',plotMesh);
