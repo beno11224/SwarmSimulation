@@ -70,8 +70,8 @@ function DrawInputAngle(particlePaths, stopDrawAtGoal, drawCorrectOutlet, drawIn
         %plot(axGraph,avgAngle,scores,'r.', 'markerSize', 5);
         errorbar(axGraph,avgAngle,scores,stdErr,'horizontal','.', 'markerSize', 10,"MarkerEdgeColor","red","Color",[0.65 0.55 0.45]);
         axGraph.XLim = [-180,180];
-        axGraph.XLabel = "Average angle from the positive X axis (deg)";
-        axGraph.YLabel = "Percentage of particles that reached the goal";
+     %   axGraph.XLabel = "Average angle from the positive X axis (deg)";
+     %   axGraph.YLabel = "Percentage of particles that reached the goal";
     end
 end
 
