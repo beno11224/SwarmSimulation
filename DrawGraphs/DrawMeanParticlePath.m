@@ -35,6 +35,9 @@ function DrawMeanParticlePath(particlePaths, stopDrawAtGoal, drawCorrectOutlet, 
     endLineMesh = plot(axMesh,polygon.currentEndZone(1,:,1),polygon.currentEndZone(1,:,2), 'Color','g');
 
     DataAtTimeStep = [];
+    ZSum = [];
+
+    totalFileCount = 0;
 
     for(fileIndex = 1:size(particlePaths,1))
         for(pIndex = 1:size(particlePaths,2))
@@ -42,6 +45,7 @@ function DrawMeanParticlePath(particlePaths, stopDrawAtGoal, drawCorrectOutlet, 
                 continue;
             end
             if(drawCorrectOutlet && particlePaths(fileIndex,pIndex).CorrectOutlet) || (drawIncorrectOutlet && ~particlePaths(fileIndex,pIndex).CorrectOutlet)
+                totalFileCount = totalFileCount + 1;
                 try
                     timeLimit = particlePaths(fileIndex,pIndex).GoalTime;
                 catch
@@ -78,7 +82,7 @@ function DrawMeanParticlePath(particlePaths, stopDrawAtGoal, drawCorrectOutlet, 
         avgLocations = [avgLocationsX;avgLocationsY]';
         forceAngleAtTimeStep = atan2d(forceAngle(:,2),forceAngle(:,1));%forceAngle;
         %plot(1:170,forceAngleAtTimeStep);
-        plot(avgLocationsX,avgLocationsY);
+      %  plot(avgLocationsX,avgLocationsY);
        % plot(forceAtTimeStep(:,1),forceAtTimeStep(:,2))
         ZPlot = zeros(200);
         for(TimeStepCount = 1:size(avgLocations,1))
@@ -93,32 +97,32 @@ function DrawMeanParticlePath(particlePaths, stopDrawAtGoal, drawCorrectOutlet, 
            ZPlot(index(1),index(2)) = forceAngleAtTimeStep(TimeStepCount);
         end
         %ZPlot (round(avgLocations + 0.01 * size(ZPlot/2 * 100))) = 100;
-        ZPlot = imgaussfilt(ZPlot,2);
+    %    ZSum(fileIndex,:,:) = imgaussfilt(ZPlot,2);
+        ZSum(fileIndex,:,:) = ZPlot;
+
        % XYValues = size(ZPlot).*2 ./ 100 - 0.01;
-        XYIndexes = linspace(-0.01,0.01,size(ZPlot,1));
-        ZPlot(ZPlot == 0) = NaN;
-        %s = surf(ZPlot');
-       % imageFilter=fspecial('gaussian',5,5);
-       % ZPlot = nanconv(ZPlot,imageFilter, 'nanout');
-      %  comap = colormap(turbo);
-        s = surf(XYIndexes,XYIndexes,ZPlot','FaceAlpha',0.5);%,colormap,'turbo');
-        %colormap(turbo)
-        s.EdgeColor = 'none';
-        colorbar;
 
 
-
-
-
-        try
-            DataAtTimeStep(fileIndex,:,:) = tempDataAtTimeStep;
-        catch
-            %data is probably wrong size, make it smaller/bigger.
-            DataAtTimeStep(fileIndex,:,:) = NaN;
-            DataAtTimeStep(fileIndex,1:size(tempDataAtTimeStep,1),1:size(tempDataAtTimeStep,2)) = tempDataAtTimeStep;
-        end
+  %      try
+  %          DataAtTimeStep(fileIndex,:,:) = tempDataAtTimeStep;
+  %      catch
+  %          %data is probably wrong size, make it smaller/bigger.
+  %          DataAtTimeStep(fileIndex,:,:) = NaN;
+  %          DataAtTimeStep(fileIndex,1:size(tempDataAtTimeStep,1),1:size(tempDataAtTimeStep,2)) = tempDataAtTimeStep;
+  %      end
         clear forceAngle;
     end
+
+
+    XYIndexes = linspace(-0.01,0.01,size(ZSum,2));
+    ZSum(ZSum == 0) = NaN;
+    ZSum = ZSum ./ totalFileCount;
+    ZSum = squeeze(sum(ZSum));
+
+    s = surf(XYIndexes,XYIndexes,ZSum','FaceAlpha',0.5);%,colormap,'turbo');
+    s.EdgeColor = 'none';
+    colorbar;
+
     kMeansDataAtTimeStep = [];
     for (timeStep = 1:size(DataAtTimeStep,2))
         % https://uk.mathworks.com/matlabcentral/answers/18365-kernel-density-for-2d-data
