@@ -51,65 +51,15 @@ function DrawMeanParticlePath(particlePaths, stopDrawAtGoal, drawCorrectOutlet, 
                         break;
                     end
                 end
-                doForce = ~exist("ForceAngle");
-                for(timeStepCount = 1: size(particlePaths(fileIndex,pIndex).Locations,2))                    
-                    if(doForce)
-                        forceAngle(timeStepCount,:) = particlePaths(fileIndex,pIndex).InputForces(timeStepCount,:);
-                    end
+                for(timeStepCount = 1: size(particlePaths(fileIndex,pIndex).Locations,2))
                     if(stopDrawAtGoal && timeLimit < particlePaths(fileIndex,pIndex).TimeSteps(timeStepCount))
                         %break;
-                        locationDataByTimeStepX(pIndex,timeStepCount) = NaN;
-                        locationDataByTimeStepY(pIndex,timeStepCount) = NaN;
-                      %  tempDataAtTimeStep(timeStepCount,:) = NaN;
-                      if(doForce)
-                          forceAngle(timeStepCount,:) = [NaN NaN];
-                      end
+                        tempDataAtTimeStep(timeStepCount,:) = NaN;
                     end
-                    locationDataByTimeStepX(pIndex,timeStepCount) = particlePaths(fileIndex,pIndex).Locations(1,timeStepCount);
-                    locationDataByTimeStepY(pIndex,timeStepCount) = particlePaths(fileIndex,pIndex).Locations(2,timeStepCount);
-                   % tempDataAtTimeStep(timeStepCount,:) = particlePaths(fileIndex,pIndex).Locations(:,timeStepCount);
+                    tempDataAtTimeStep(timeStepCount,:) = particlePaths(fileIndex,pIndex).Locations(:,timeStepCount);
                 end
             end
         end
-        %Averages for file:
-    %    plot(locationDataByTimeStepX(10,:),locationDataByTimeStepY(10,:));
-        avgLocationsX = mean(locationDataByTimeStepX,'omitnan');
-        avgLocationsY = mean(locationDataByTimeStepY,'omitnan');
-        avgLocations = [avgLocationsX;avgLocationsY]';
-        forceAngleAtTimeStep = atan2d(forceAngle(:,2),forceAngle(:,1));%forceAngle;
-        %plot(1:170,forceAngleAtTimeStep);
-        plot(avgLocationsX,avgLocationsY);
-       % plot(forceAtTimeStep(:,1),forceAtTimeStep(:,2))
-        ZPlot = zeros(200);
-        for(TimeStepCount = 1:size(avgLocations,1))
-         %   ab = avgLocations(TimeStepCount,:);
-         %   abc = size(ZPlot)./2 .* 100;
-         %   abcd = (avgLocations(TimeStepCount,:) + 0.01) .* size(ZPlot)./2 .* 100;
-            index = (round((avgLocations(TimeStepCount,:) + 0.01) .* size(ZPlot)./2 .* 100));
-            if(isnan(ZPlot(index(1),index(2))))
-                ZPlot(index(1),index(2)) = 0;
-            end
-           % ZPlot(index(1),index(2)) = %ZPlot(index(1),index(2)) + 1;
-           ZPlot(index(1),index(2)) = forceAngleAtTimeStep(TimeStepCount);
-        end
-        %ZPlot (round(avgLocations + 0.01 * size(ZPlot/2 * 100))) = 100;
-        ZPlot = imgaussfilt(ZPlot,2);
-       % XYValues = size(ZPlot).*2 ./ 100 - 0.01;
-        XYIndexes = linspace(-0.01,0.01,size(ZPlot,1));
-        ZPlot(ZPlot == 0) = NaN;
-        %s = surf(ZPlot');
-       % imageFilter=fspecial('gaussian',5,5);
-       % ZPlot = nanconv(ZPlot,imageFilter, 'nanout');
-      %  comap = colormap(turbo);
-        s = surf(XYIndexes,XYIndexes,ZPlot','FaceAlpha',0.5);%,colormap,'turbo');
-        %colormap(turbo)
-        s.EdgeColor = 'none';
-        colorbar;
-
-
-
-
-
         try
             DataAtTimeStep(fileIndex,:,:) = tempDataAtTimeStep;
         catch
@@ -117,7 +67,6 @@ function DrawMeanParticlePath(particlePaths, stopDrawAtGoal, drawCorrectOutlet, 
             DataAtTimeStep(fileIndex,:,:) = NaN;
             DataAtTimeStep(fileIndex,1:size(tempDataAtTimeStep,1),1:size(tempDataAtTimeStep,2)) = tempDataAtTimeStep;
         end
-        clear forceAngle;
     end
     kMeansDataAtTimeStep = [];
     for (timeStep = 1:size(DataAtTimeStep,2))
