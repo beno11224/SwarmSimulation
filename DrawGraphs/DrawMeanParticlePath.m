@@ -101,24 +101,26 @@ function DrawMeanParticlePath(particlePaths, stopDrawAtGoal, drawCorrectOutlet, 
 
 
     XYIndexes = linspace(-0.01,0.01,size(ZSum,2));
-    ZSum(ZSum == 0) = NaN;
     ZSum = squeeze(sum(ZSum));
     ZSum = ZSum ./ totalFileCount;
+    ZSum(ZSum == 0) = NaN;
 
-    s = surf(XYIndexes,XYIndexes,ZSum','FaceAlpha',0.5);%,colormap,'turbo');
+    s = surf(XYIndexes,XYIndexes,ZSum','FaceAlpha',0.75);%,colormap,'turbo');
     s.EdgeColor = 'none';
+    colormap(turbo);
+    clim([-180,180]);
     colorbar;
 
-    kMeansDataAtTimeStep = [];
-    for (timeStep = 1:size(DataAtTimeStep,2))
+%    kMeansDataAtTimeStep = [];
+%    for (timeStep = 1:size(DataAtTimeStep,2))
         % https://uk.mathworks.com/matlabcentral/answers/18365-kernel-density-for-2d-data
-        xData = squeeze(DataAtTimeStep(:,timeStep,1)) .* -1;
-        yData = squeeze(DataAtTimeStep(:,timeStep,2)) .* -1;
+%        xData = squeeze(DataAtTimeStep(:,timeStep,1)) .* -1;
+%        yData = squeeze(DataAtTimeStep(:,timeStep,2)) .* -1;
         %abx = fitdist(xData,'Kernel','Width',4);
         %aby = fitdist(yData,'Kernel','Width',4);
-        figure
-        [f,xi] = ksdensity([xData,yData]);
-        mesh(xi,f);
+%        figure
+%        [f,xi] = ksdensity([xData,yData]);
+%        mesh(xi,f);
     %    [g, xj] = ksdensity(yData);
 
         %plot(xi,f);
@@ -139,13 +141,13 @@ function DrawMeanParticlePath(particlePaths, stopDrawAtGoal, drawCorrectOutlet, 
         %    end
         %    [amin,loc] = min(closestmatrix);
         %end
-        kMeansDataAtTimeStep(:,timeStep,:) = C;
+  %      kMeansDataAtTimeStep(:,timeStep,:) = C;
         
         %try to order KMeans??
         %Find closest one from last
 
-    end
-    plot(axMesh,kMeansDataAtTimeStep(1,:,1),kMeansDataAtTimeStep(1,:,2));
+  %  end
+%    plot(axMesh,kMeansDataAtTimeStep(1,:,1),kMeansDataAtTimeStep(1,:,2));
 end
 
 
