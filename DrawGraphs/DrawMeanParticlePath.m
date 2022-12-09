@@ -37,15 +37,13 @@ function DrawMeanParticlePath(particlePaths, stopDrawAtGoal, drawCorrectOutlet, 
     DataAtTimeStep = [];
     ZSum = [];
 
-    totalFileCount = 0;
-
     for(fileIndex = 1:size(particlePaths,1))
         for(pIndex = 1:size(particlePaths,2))
             if(~ particlePaths(fileIndex,pIndex).ValidRun)
                 continue;
             end
             if(drawCorrectOutlet && particlePaths(fileIndex,pIndex).CorrectOutlet) || (drawIncorrectOutlet && ~particlePaths(fileIndex,pIndex).CorrectOutlet)
-                totalFileCount = totalFileCount + 1;
+              %  totalFileCount = totalFileCount + 1;
                 try
                     timeLimit = particlePaths(fileIndex,pIndex).GoalTime;
                 catch
@@ -61,17 +59,14 @@ function DrawMeanParticlePath(particlePaths, stopDrawAtGoal, drawCorrectOutlet, 
                         forceAngle(timeStepCount,:) = particlePaths(fileIndex,pIndex).InputForces(timeStepCount,:);
                     end
                     if(stopDrawAtGoal && timeLimit < particlePaths(fileIndex,pIndex).TimeSteps(timeStepCount))
-                        %break;
                         locationDataByTimeStepX(pIndex,timeStepCount) = NaN;
                         locationDataByTimeStepY(pIndex,timeStepCount) = NaN;
-                      %  tempDataAtTimeStep(timeStepCount,:) = NaN;
                       if(doForce)
                           forceAngle(timeStepCount,:) = [NaN NaN];
                       end
                     end
                     locationDataByTimeStepX(pIndex,timeStepCount) = particlePaths(fileIndex,pIndex).Locations(1,timeStepCount);
                     locationDataByTimeStepY(pIndex,timeStepCount) = particlePaths(fileIndex,pIndex).Locations(2,timeStepCount);
-                   % tempDataAtTimeStep(timeStepCount,:) = particlePaths(fileIndex,pIndex).Locations(:,timeStepCount);
                 end
             end
         end
@@ -80,44 +75,35 @@ function DrawMeanParticlePath(particlePaths, stopDrawAtGoal, drawCorrectOutlet, 
         avgLocationsX = mean(locationDataByTimeStepX,'omitnan');
         avgLocationsY = mean(locationDataByTimeStepY,'omitnan');
         avgLocations = [avgLocationsX;avgLocationsY]';
-        forceAngleAtTimeStep = atan2d(forceAngle(:,2),forceAngle(:,1));%forceAngle;
-        %plot(1:170,forceAngleAtTimeStep);
-      %  plot(avgLocationsX,avgLocationsY);
-       % plot(forceAtTimeStep(:,1),forceAtTimeStep(:,2))
+        if(~exist("forceAngle"))
+            continue;
+        end
+        forceAngleAtTimeStep = atan2d(forceAngle(:,2),forceAngle(:,1));
         ZPlot = zeros(200);
-        for(TimeStepCount = 1:size(avgLocations,1))
-         %   ab = avgLocations(TimeStepCount,:);
-         %   abc = size(ZPlot)./2 .* 100;
-         %   abcd = (avgLocations(TimeStepCount,:) + 0.01) .* size(ZPlot)./2 .* 100;
+        if(~exist("totalFileCount"))
+            totalFileCount = ZPlot;
+        end
+        for(TimeStepCount = 1:size(forceAngleAtTimeStep,1))
             index = (round((avgLocations(TimeStepCount,:) + 0.01) .* size(ZPlot)./2 .* 100));
             if(isnan(ZPlot(index(1),index(2))))
                 ZPlot(index(1),index(2)) = 0;
             end
-           % ZPlot(index(1),index(2)) = %ZPlot(index(1),index(2)) + 1;
-           ZPlot(index(1),index(2)) = forceAngleAtTimeStep(TimeStepCount);
+            try
+            ZPlot(index(1),index(2)) = forceAngleAtTimeStep(TimeStepCount);
+            catch
+                i = 1;
+            end
+            totalFileCount(index(1),index(2)) = totalFileCount(index(1),index(2)) + 1;
         end
-        %ZPlot (round(avgLocations + 0.01 * size(ZPlot/2 * 100))) = 100;
-    %    ZSum(fileIndex,:,:) = imgaussfilt(ZPlot,2);
         ZSum(fileIndex,:,:) = ZPlot;
-
-       % XYValues = size(ZPlot).*2 ./ 100 - 0.01;
-
-
-  %      try
-  %          DataAtTimeStep(fileIndex,:,:) = tempDataAtTimeStep;
-  %      catch
-  %          %data is probably wrong size, make it smaller/bigger.
-  %          DataAtTimeStep(fileIndex,:,:) = NaN;
-  %          DataAtTimeStep(fileIndex,1:size(tempDataAtTimeStep,1),1:size(tempDataAtTimeStep,2)) = tempDataAtTimeStep;
-  %      end
         clear forceAngle;
     end
 
 
     XYIndexes = linspace(-0.01,0.01,size(ZSum,2));
     ZSum(ZSum == 0) = NaN;
-    ZSum = ZSum ./ totalFileCount;
     ZSum = squeeze(sum(ZSum));
+    ZSum = ZSum ./ totalFileCount;
 
     s = surf(XYIndexes,XYIndexes,ZSum','FaceAlpha',0.5);%,colormap,'turbo');
     s.EdgeColor = 'none';
