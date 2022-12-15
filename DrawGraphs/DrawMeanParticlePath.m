@@ -103,8 +103,9 @@ function DrawMeanParticlePath(particlePaths, stopDrawAtGoal, drawCorrectOutlet, 
     XYIndexes = linspace(-0.01,0.01,size(ZSum,2));
     ZSum = squeeze(sum(ZSum));
     ZSum = ZSum ./ totalFileCount;
-    ZSum(ZSum == 0) = NaN;
+    %ZSum(ZSum == 0) = NaN;
 
+    m = mesh(ZSum','omitnan');
     s = surf(XYIndexes,XYIndexes,ZSum','FaceAlpha',0.75);%,colormap,'turbo');
     s.EdgeColor = 'none';
     colormap(turbo);
