@@ -271,8 +271,7 @@ classdef Polygons
                -0.00165 0.00027;
                -0.0009 -0.00043;
                -0.00025 0.00036];
-           obj.allEndZones{3} = v3endzones;
-           allEndZones4bif(1,:,:) = []; %TODO
+           obj.allEndZones{}
 
       %     obj.allEndZones(4,1,:,:) = [0.00006 0.00632;%upper2nd
       %         -0.00096 0.00632;
