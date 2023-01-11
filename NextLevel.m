@@ -15,20 +15,20 @@ function NextLevel(app)
     switch(floor((app.testOrder(app.testNumber)-1)/10)) %Do n of each
         
         case(0)
-            app.polygon.change(3);
+            app.polygon = app.polygon.change(4);
             app.FluidFlowmsEditField.Value = 0.01;
             app.slowDown = 2;
         case(1)
-            app.polygon.change(3);
+            app.polygon = app.polygon.change(4);
             app.FluidFlowmsEditField.Value = 0.015;
         case(2)
-            app.polygon.change(3);
+            app.polygon = app.polygon.change(4);
             app.FluidFlowmsEditField.Value = 0.02;
          case(3)
-            app.polygon.change(3);
+            app.polygon = app.polygon.change(4);
             app.FluidFlowmsEditField.Value = 0.025;
         case(4)
-            app.polygon.change(3);
+            app.polygon =  app.polygon.change(4);
             app.FluidFlowmsEditField.Value = 0.03;
         otherwise
              fprintf("The experiment has now ended, thank you for your participation. Please close this window.\r\n");

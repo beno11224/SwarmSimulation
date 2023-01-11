@@ -18,10 +18,9 @@ classdef Polygons
         function obj = Polygons(width)
             obj.padding = 0.0002;
             len = width - obj.padding*2;
-            obj.allPolys = zeros(1,20,2);
             obj.outOfBoundsPolys = zeros(1,4,2);
            
-            obj.allPolys(1,:,:) = [-len len; %Training
+            obj.allPolys{1} = [-len len; %Training
                -len*0.5 len;
                -len*0.25 len;
                len*0.5 len;
@@ -63,7 +62,7 @@ classdef Polygons
            %    -len -len*0.2;
            %    -len -len*0.45]; 
            
-           obj.allPolys(2,:,:) = [-0.0095 -0.004; %Ex1
+           obj.allPolys{2} = [-0.0095 -0.004; %Ex1
                -0.0045 -0.004;
                -0.00096 -0.00754;%1st lower
                -0.00025 -0.00683;%1st lower
@@ -84,7 +83,7 @@ classdef Polygons
                -0.0095 -0.003;
                -0.0095 -0.004]; 
            
-           obj.allPolys(3,:,:) = [-0.0095 -0.004; %Ex2
+           obj.allPolys{3} = [-0.0095 -0.004; %Ex2
                -0.0045 -0.004;
                -0.00096 -0.00754;%1st lower
                -0.00025 -0.00683;%1st lower
@@ -105,28 +104,53 @@ classdef Polygons
                -0.0095 -0.003;
                -0.0095 -0.004];
            
-            obj.allPolys(4,:,:) = [-0.0095 -0.004; %Ex3
-               -0.0045 -0.004;
-               -0.00096 -0.00754;%1st lower
-               -0.00025 -0.00683;%1st lower
-               -0.00363 -0.0035;%centre 1st
-               -0.00025 0.00036;%upper 1st
-               0.00501 0.00036;%right2nd
-               0.00870 -0.0034;%lower3rd
-               0.00941 -0.00269;%lower3rdg
-               0.00587 0.00085;%centre3rd
-               0.00941 0.00438;%upper3rd
-               0.00870 0.00509;%upper3rd
-               0.00501 0.00132;%right2nd
-               0.00006 0.00132;%centre2nd %done
-               0.00006 0.00632;%upper2nd
-               -0.00096 0.00632;%upper2nd
-               -0.00096 0.00107;%upper1st
-               -0.0045 -0.003;
-               -0.0095 -0.003;
-               -0.0095 -0.004];
+%            obj.allPolys{4} = [-0.0095 -0.004; %Ex3
+%               -0.0045 -0.004;
+%               -0.00096 -0.00754;%1st lower
+%               -0.00025 -0.00683;%1st lower
+%               -0.00363 -0.0035;%centre 1st
+%               -0.00025 0.00036;%upper 1st
+%               0.00501 0.00036;%right2nd
+%               0.00870 -0.0034;%lower3rd
+%               0.00941 -0.00269;%lower3rdg
+%               0.00587 0.00085;%centre3rd
+%               0.00941 0.00438;%upper3rd
+%               0.00870 0.00509;%upper3rd
+%               0.00501 0.00132;%right2nd
+%               0.00006 0.00132;%centre2nd %done
+%               0.00006 0.00632;%upper2nd
+%               -0.00096 0.00632;%upper2nd
+%               -0.00096 0.00107;%upper1st
+%               -0.0045 -0.003;
+%               -0.0095 -0.003;
+%               -0.0095 -0.004];
+            obj.allPolys{4} = [0.010644161 -0.002909076;
+                0.008509683 0.001249924;
+                0.012959844 0.002681477;
+                0.01264254 0.0036298;
+                0.007900921 0.002043277;
+                0.003507602 0.003826168;
+                0.005353453 0.008193409;
+                0.004429574 0.008576092;
+                0.002516157 0.003956694;
+                -0.001851084 0.002110843;
+                -0.003633975 0.006504162;
+                -0.004557854 0.006121479;
+                -0.002644437 0.001502081;
+                -0.0045 -0.003;
+                -0.0095 -0.003;
+                -0.0095 -0.004;
+                -0.0045 -0.004;
+                -0.0045 -0.004;
+                -0.002644437 -0.008502081;
+                -0.001720557 -0.008119398;
+                -0.003633975 -0.0035;
+                -0.001720557 0.001119398;
+                0.00289884 0.003032815;
+                0.007518238 0.001119398;
+                0.009749227 -0.003355274];
            
-            obj.currentPoly = squeeze(obj.allPolys(1,:,:));
+            obj.currentPoly = squeeze(obj.allPolys{1});
             
             obj.allStartZones(1,1,:,:) = [len*0.25, len*0.25;
                 -len*0.25, len*0.25;
@@ -414,7 +438,7 @@ classdef Polygons
         end
         
         function obj = change(obj,num)
-            obj.currentPoly = squeeze(obj.allPolys(num,:,:));
+            obj.currentPoly = squeeze(obj.allPolys{num});
             for i = 1:length(obj.currentPoly)-1 
                 obj.currentPolyVector(i,:) = obj.currentPoly(i,:) - obj.currentPoly(i+1,:);
             end
