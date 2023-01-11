@@ -2,7 +2,7 @@ function NextLevel(app)
     delete(app.particlePoints);
     fclose(app.fileID);
     app.ScenarioEditField.Value = "Test " + app.testNumber;
-    app.polygon = app.polygon.change(2);
+    app.polygon = app.polygon.change(2,app.fd);
     app.rotation = 0;
     app.NumberofParticlesEditField.Value = 50;
     app.FluidFlowmsEditField.Value = 0.005;
@@ -15,24 +15,24 @@ function NextLevel(app)
     switch(floor((app.testOrder(app.testNumber)-1)/10)) %Do n of each
         
         case(0)
-            app.polygon.change(3);
+            app.polygon = app.polygon.change(4,app.fd);
             app.FluidFlowmsEditField.Value = 0.01;
             app.slowDown = 2;
         case(1)
-            app.polygon.change(3);
+            app.polygon = app.polygon.change(4,app.fd);
             app.FluidFlowmsEditField.Value = 0.015;
         case(2)
-            app.polygon.change(3);
+            app.polygon = app.polygon.change(4,app.fd);
             app.FluidFlowmsEditField.Value = 0.02;
          case(3)
-            app.polygon.change(3);
+            app.polygon = app.polygon.change(4,app.fd);
             app.FluidFlowmsEditField.Value = 0.025;
         case(4)
-            app.polygon.change(3);
+            app.polygon =  app.polygon.change(4,app.fd);
             app.FluidFlowmsEditField.Value = 0.03;
         otherwise
              fprintf("The experiment has now ended, thank you for your participation. Please close this window.\r\n");
-             app.polygon = app.polygon.change(1);
+             app.polygon = app.polygon.change(1,app.fd);
              app.NumberofParticlesEditField.Value = 10;
              app.FluidFlowmsEditField.Value = 0;
              app.TimeRemainingsEditField.Value = 1200;
@@ -88,11 +88,12 @@ function NextLevel(app)
     app.mousePosition = [0 0];
     app.magLine = plot(app.UIAxes,0,0);    
 
-    tr = triangulation(polyshape(app.polygon.currentPoly(:,1),app.polygon.currentPoly(:,2)));
-    model = createpde(1);
-    tnodes = tr.Points';
-    telements = tr.ConnectivityList';
-    g = model.geometryFromMesh(tnodes, telements);
-    app.mesh = generateMesh(model, 'Hmax', 0.001);%was 0.000073 for old one.
+%    tr = triangulation(polyshape(app.polygon.currentPoly(:,1),app.polygon.currentPoly(:,2)));
+%    model = createpde(1);
+%    tnodes = tr.Points';
+%    telements = tr.ConnectivityList';
+%    g = model.geometryFromMesh(tnodes, telements);
+%    app.mesh = generateMesh(model, 'Hmax', 0.001);%was 0.000073 for old one.
+    app.mesh = FlowData.
 end
 
