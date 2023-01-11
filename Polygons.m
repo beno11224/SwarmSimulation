@@ -13,12 +13,13 @@ classdef Polygons
         allEndZones;
         currentEndZone;
         allPolyFlows;
+        currentFlowValues;
+        currentFlowLocations;
     end
     methods ( Access = public)
-        function obj = Polygons(width)
+        function obj = Polygons(width,fd)
             obj.padding = 0.0002;
             len = width - obj.padding*2;
-            obj.outOfBoundsPolys = zeros(1,4,2);
            
             obj.allPolys{1} = [-len len; %Training
                -len*0.5 len;
@@ -152,8 +153,6 @@ classdef Polygons
            
             obj.currentPoly = squeeze(obj.allPolys{1});
             
-            allStartZones3bif(1,:,:) = 
-
             obj.allStartZones{1} = [len*0.25, len*0.25;
                 -len*0.25, len*0.25;
                 -len*0.25, -len*0.25;
@@ -210,7 +209,7 @@ classdef Polygons
            %    -len -len*0.43;
            %    -len -len*0.45];  
            
-           obj.currentStartZone = squeeze(obj.allStartZones{1}(1,:,:));
+           obj.currentStartZone = squeeze(obj.allStartZones{1});
            
            allEndZones3bif(1,:,:) = [0.00941 -0.00269 %Test?(same as 3 bifurcations)
                0.00870 -0.0034;
@@ -272,7 +271,11 @@ classdef Polygons
                -0.0009 -0.00043;
                -0.00025 0.00036];
            obj.allEndZones{3} = v3endzones;
-           allEndZones4bif(1,:,:) = []; %TODO
+           allEndZones4bif(1,:,:) = [-0.00025 0.00036;%1st upper
+               -0.00096 0.00107;
+               -0.00165 0.00027;
+               -0.0009 -0.00043;
+               -0.00025 0.00036]; %TODO
 
       %     obj.allEndZones(4,1,:,:) = [0.00006 0.00632;%upper2nd
       %         -0.00096 0.00632;
@@ -460,16 +463,24 @@ classdef Polygons
             for i = 1:length(obj.currentPoly)-1 
                 obj.currentPolyVector(i,:) = obj.currentPoly(i,:) - obj.currentPoly(i+1,:);
             end
+            obj.currentFlowValues = fd.FlowValues{1};
+            obj.currentFlowLocations = fd.FlowLocations{1};
+
         end
         
-        function obj = change(obj,num)
+        function obj = change(obj,num,fd)
             obj.currentPoly = squeeze(obj.allPolys{num});
             for i = 1:length(obj.currentPoly)-1 
                 obj.currentPolyVector(i,:) = obj.currentPoly(i,:) - obj.currentPoly(i+1,:);
             end
-            obj.currentStartZone = squeeze(obj.allStartZones{num}(1,:,:));
+            obj.currentStartZone = squeeze(obj.allStartZones{num});
+            if(size(obj.currentStartZone) == 3)
+                obj.currentStartZone = squeeze(obj.currentStartZone(1,:,:));
+            end
             obj.currentEndZone = squeeze(obj.allEndZones{num});
             obj.hardCodedOrthogonalWallContacts = obj.hardCodedOrthogonalWallContacts{num};
+       %     obj.currentFlowValues = fd.FlowValues{num};
+       %     obj.currentFlowLocations = fd.FlowValues{num};
         end
 
     end

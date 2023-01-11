@@ -2,7 +2,6 @@ classdef FlowData
     
     properties
         FlowValues
-        FlowLocations
     end
     
     methods
@@ -10,7 +9,7 @@ classdef FlowData
             %The below data is for levels following Ex2, entered manually.
             %In future this will be read in from the filesystem
             
-            obj.FlowValues{1} = [0.01 0;
+            obj.FlowValues = [0.01 0;
                 0.01 0;
                 0.01 0;
                 0.005 0.005;
@@ -268,15 +267,6 @@ classdef FlowData
                 0.005 -0.005;
                 0.7 -0.7;
                 0.005 -0.005];
-            obj.FlowValues{2} = obj.FlowValues{1};
-            obj.FlowValues{3} = obj.FlowValues{1};
-
-            obj.FlowValues{4} = []; %TODO copy in flow values - the mesh should be saved somewhere too as a point cloud and loaded in rather than meshing each time.
-
-            obj.FlowLocations{1} = [];
-            obj.FlowLocations{2} = obj.FlowLocations{1};
-            obj.FlowLocations{3} = obj.FlowLocations{1};
-            obj.FlowLocations{1} = [];
         end
     end
 end
