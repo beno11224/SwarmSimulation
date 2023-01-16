@@ -1,10 +1,12 @@
-function ReadInFlowDataFromComsolCSV()
-close all;
+ function [locX,locY,flowX,flowY] = ReadInFlowDataFromComsolCSV(polyPath, meshPath)
+ %   close all;
     %open polygon vertexes, then the flow data. - EITHER 
     % - must match the matlab ones OR
     % - matlab needs to load in these files.
-    [fPName,fPPath] = uigetfile('*.csv'); %points are x,y, newline for each point.
-    polyPath = fPPath +""+ fPName;
+    if(polyPath == "")
+        [fPName,fPPath] = uigetfile('*.csv'); %points are x,y, newline for each point.
+        polyPath = fPPath +""+ fPName;
+    end
     pfid = fopen(polyPath);
     polyCount = 0;
     tline = fgetl(pfid);
@@ -17,16 +19,18 @@ close all;
         tline = fgetl(pfid);
     end
 
-    [fName,fPath] = uigetfile('*.csv');
-    fullPath = fPath +""+ fName;
-    fid = fopen(fullPath);
+    if(meshPath == "")
+        [fName,fPath] = uigetfile('*.csv');
+        meshPath = fPath +""+ fName;
+    end
+    fid = fopen(meshPath);
     tline = fgetl(fid);
     if(tline == -1)
         "Nothing in the File : " + allFiles(fileIndex).name
         return;
     end
 
-    lineCount = 0;
+    lineCount = 1;
     while ischar(tline)
         if(tline(1) == '%')
             lineCount = lineCount + 1;
@@ -46,8 +50,8 @@ close all;
         end
         tline = fgetl(fid);
     end
-   ashape = alphaShape(locX',locY');
-    plot(ashape);
+  % ashape = alphaShape(locX',locY');
+  %  plot(ashape);
    % ashape.Points.
     %triplot(ashape);
 %    polygon = Polygons(0.0096);
