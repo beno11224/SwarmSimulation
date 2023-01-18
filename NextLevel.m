@@ -12,31 +12,44 @@ function NextLevel(app)
     app.slowDown = 1;
     app.goalIndex = 2;
     app.HapticForceSlider.Enable = false;
+    meshLocations = app.fd.FlowLocations{1};
     switch(floor((app.testOrder(app.testNumber)-1)/10)) %Do n of each
         
         case(0)
             app.polygon = app.polygon.change(4,app.fd);
             app.FluidFlowmsEditField.Value = 0.01;
             app.slowDown = 2;
+            meshLocations = app.fd.FlowLocations{4};
+            app.currentFlowValues = app.fd.FlowValues{4};
         case(1)
             app.polygon = app.polygon.change(4,app.fd);
             app.FluidFlowmsEditField.Value = 0.015;
+            meshLocations = app.fd.FlowLocations{4};
+            app.currentFlowValues = app.fd.FlowValues{4};
         case(2)
             app.polygon = app.polygon.change(4,app.fd);
             app.FluidFlowmsEditField.Value = 0.02;
+            meshLocations = app.fd.FlowLocations{4};
+            app.currentFlowValues = app.fd.FlowValues{4};
          case(3)
             app.polygon = app.polygon.change(4,app.fd);
             app.FluidFlowmsEditField.Value = 0.025;
+            meshLocations = app.fd.FlowLocations{4};
+            app.currentFlowValues = app.fd.FlowValues{4};
         case(4)
             app.polygon =  app.polygon.change(4,app.fd);
             app.FluidFlowmsEditField.Value = 0.03;
+            meshLocations = app.fd.FlowLocations{4};
+            app.currentFlowValues = app.fd.FlowValues{4};
         otherwise
-             fprintf("The experiment has now ended, thank you for your participation. Please close this window.\r\n");
-             app.polygon = app.polygon.change(1,app.fd);
-             app.NumberofParticlesEditField.Value = 10;
-             app.FluidFlowmsEditField.Value = 0;
-             app.TimeRemainingsEditField.Value = 1200;
-             app.MagForceRestrictMAM2EditField.Value = 0;
+            fprintf("The experiment has now ended, thank you for your participation. Please close this window.\r\n");
+            app.polygon = app.polygon.change(1,app.fd);
+            app.NumberofParticlesEditField.Value = 10;
+            app.FluidFlowmsEditField.Value = 0;
+            app.TimeRemainingsEditField.Value = 1200;
+            app.MagForceRestrictMAM2EditField.Value = 0;
+            meshLocations = app.fd.FlowLocations{1};
+            app.currentFlowValues = app.fd.FlowValues{1};
     end    
 
  %   minTimeToTravel = 4 * (0.005 ./ app.FluidFlowmsEditField.Value); %4 paths, length, velocity
@@ -69,7 +82,7 @@ function NextLevel(app)
     rotateMatrix = [cosd(app.rotation), sind(app.rotation); -sind(app.rotation), cos(app.rotation)];
     rotatedOutline = (rotateMatrix * app.polygon.currentPoly')';
     app.polyLine = plot(app.UIAxes, rotatedOutline(:,1), rotatedOutline(:,2), 'Color','b');
-    for(lineCount = 1:length(app.polygon.currentEndZone)-1)
+    for(lineCount = 1:size(app.polygon.currentEndZone,1)-1)
         rotatedEndZone = (rotateMatrix * squeeze(app.polygon.currentEndZone(lineCount,:,:))')';
         app.wrongEndLine(lineCount) = plot(app.UIAxes, rotatedEndZone(:,1), rotatedEndZone(:,2), 'Color','r');
         if(lineCount == app.goalIndex)
@@ -79,7 +92,7 @@ function NextLevel(app)
     app.previousMagforce = 0;
     app.X1MAGauge.Value = 0;
     app.Y1MAGauge.Value = 0;
-    %app.fd = FlowData();
+   % app.fd = FlowData();
     app.haltParticlesInEndZone = zeros(app.numParticles,1);
     app.currentlyDoingWorkSemaphore = false;
     app.timePassed = 0;
@@ -88,12 +101,16 @@ function NextLevel(app)
     app.mousePosition = [0 0];
     app.magLine = plot(app.UIAxes,0,0);    
 
+
+ %   app.mesh = alphaShape(meshLocations(:,1),meshLocations(:,2));
+    app.mesh = delaunayTriangulation(meshLocations);
+
 %    tr = triangulation(polyshape(app.polygon.currentPoly(:,1),app.polygon.currentPoly(:,2)));
 %    model = createpde(1);
 %    tnodes = tr.Points';
 %    telements = tr.ConnectivityList';
 %    g = model.geometryFromMesh(tnodes, telements);
 %    app.mesh = generateMesh(model, 'Hmax', 0.001);%was 0.000073 for old one.
-    app.mesh = FlowData.
+
 end
 

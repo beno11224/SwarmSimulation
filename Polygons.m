@@ -276,6 +276,13 @@ classdef Polygons
                -0.00165 0.00027;
                -0.0009 -0.00043;
                -0.00025 0.00036]; %TODO
+           allEndZones4bif(2,:,:) = [-0.00025 0.00036;%1st upper
+               -0.00096 0.00107;
+               -0.00165 0.00027;
+               -0.0009 -0.00043;
+               -0.00025 0.00036];
+
+           obj.allEndZones{4} = allEndZones4bif;
 
       %     obj.allEndZones(4,1,:,:) = [0.00006 0.00632;%upper2nd
       %         -0.00096 0.00632;
@@ -323,7 +330,7 @@ classdef Polygons
            %    -len -len*0.35;
            %    -len -len*0.38]; 
             
-           obj.currentEndZone = squeeze(obj.allEndZones(1,:,:,:));
+           obj.currentEndZone = squeeze(obj.allEndZones{1});
            %{
            [-0.0095 -0.004; %Ex1
                -0.0045 -0.004;
@@ -478,6 +485,7 @@ classdef Polygons
                 obj.currentStartZone = squeeze(obj.currentStartZone(1,:,:));
             end
             obj.currentEndZone = squeeze(obj.allEndZones{num});
+            obj.currentOutOfBoundsPolys = squeeze(obj.outOfBoundsPolys{num});
             obj.hardCodedOrthogonalWallContacts = obj.hardCodedOrthogonalWallContacts{num};
        %     obj.currentFlowValues = fd.FlowValues{num};
        %     obj.currentFlowLocations = fd.FlowValues{num};

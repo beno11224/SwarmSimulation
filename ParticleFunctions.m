@@ -70,9 +70,9 @@ classdef ParticleFunctions
         function force = calculateDragForce(obj, particleVelocity, flowVelocity)
             force = ((particleVelocity - flowVelocity) .* obj.dragForceConstant); %Stokes Drag Equation
         end
+
         function [wallContact, orthogonalWallContact, particleLocation, particleVelocity] = isParticleOnWallPIP(obj, particleLocation, particleVelocity, particleForce, polygon, tMax)
             %this just returns anything INSIDE the polygon, not anything on the walls
-            
             in = inpolygon(particleLocation(:,1), particleLocation(:,2), polygon.currentPoly(:,1), polygon.currentPoly(:,2));
 
             wallContact = particleVelocity .* nan;
@@ -80,7 +80,7 @@ classdef ParticleFunctions
             %If no particles are outside the shape, we can skip all this.
             if(any(~in))
                 distMove = particleVelocity .* 0;
-                dists = zeros(length(wallContact),1);                
+                dists = zeros(length(wallContact),1);
                 for outOfBoundsCount = 1:length(polygon.outOfBoundsPolys)
                     [inOOB,onOOB] = inpolygon(particleLocation(:,1), particleLocation(:,2), polygon.outOfBoundsPolys(outOfBoundsCount,:,1), polygon.outOfBoundsPolys(outOfBoundsCount,:,2));
                     inOnOOB = (inOOB|onOOB); %Or together to get anything that is in or on the polygon
@@ -126,10 +126,11 @@ classdef ParticleFunctions
                     delete(abz);
                 end
             %}
-            if(size(mesh.Nodes,2) == size(flowMatrix,1))
-                closestNode = findNodes(mesh, 'nearest', particleLocation');
-                velocity(:,1) = flowMatrix(closestNode,1);
-                velocity(:,2) = flowMatrix(closestNode,2);
+            if(size(mesh.Points,2) == size(flowMatrix,1))
+              %  closestNode = findNodes(mesh, 'nearest', particleLocation');
+                closestNode = nearestNeighbor(mesh,particleLocation);
+                velocity(:,1) = flowMatrix(1,closestNode);%,1);
+                velocity(:,2) = flowMatrix(2,closestNode);%,2);
             else
                 velocity = [0 0];
             end
@@ -261,7 +262,7 @@ classdef ParticleFunctions
         end
         
         function inGoalZone = isParticleInEndZone(obj, goalZones, particleLocations)
-            inGoalZone = zeros(size(particleLocations,1),size(goalZones,1));
+            inGoalZone = zeros(size(particleLocations,1),size(goalZones,2));
             for goalZoneIndex = 1:size(goalZones,1)
                 [in,on] = inpolygon(particleLocations(:,1), particleLocations(:,2), goalZones(goalZoneIndex,:,1), goalZones(goalZoneIndex,:,2));
                 inGoalZone(:,goalZoneIndex) = in | on;

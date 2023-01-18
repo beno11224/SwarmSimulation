@@ -3,7 +3,6 @@ function timerCallback(app)
     %   app.currentlyDoingWorkSemaphore = true; %let the earlier tasks complete first, try and force other to leave things alone        
         
 
-
     currentMagforce = app.particleFunctions.calculateMagneticForce([app.X1MAGauge.Value app.Y1MAGauge.Value],app.joyStick, 1, 3, app.controlMethod, app.mousePosition, app.MagForceRestrictMAM2EditField.Value, app.rotation);
     currentDial = currentMagforce ./10^6 ./ app.particleFunctions.magneticForceConstant;
     if(app.controlMethod == "Controller")
@@ -19,7 +18,7 @@ function timerCallback(app)
         app.Y1MAGauge.Value = currentDial(2);
     end
 
-    vFlow = app.particleFunctions.calculateFlow(real(app.particleArrayLocation), app.fd.FlowValues, app.mesh);
+    vFlow = app.particleFunctions.calculateFlow(real(app.particleArrayLocation), app.currentFlowValues, app.mesh);
     vFlow = vFlow .* app.FluidFlowmsEditField.Value;
 
     magForceAlpha = 0.05;
@@ -101,4 +100,6 @@ function timerCallback(app)
 
     app.previousMagforce = magForce;
     app.currentlyDoingWorkSemaphore = false;
+
+    f = "endLoop"
 end
