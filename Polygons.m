@@ -15,6 +15,8 @@ classdef Polygons
         allPolyFlows;
         currentFlowValues;
         currentFlowLocations;
+        currentOutOfBoundsPolys;
+        currentHardCodedOrthogonalWallContacts;
     end
     methods ( Access = public)
         function obj = Polygons(width,fd)
@@ -434,38 +436,46 @@ classdef Polygons
             outOfBoundsPolys4BIF(1,:,:) = [-0.0095 -0.003;
                 -0.0095 -0.004;
                 -0.01 -0.004;
-                -0.01 -0.003]; %TODO!
+                -0.01 -0.003];
+            outOfBoundsPolys4BIF(2,:,:) = [-0.0095 -0.003;
+                -0.0095 -0.004;
+                -0.02 -0.005;
+                -0.02 -0.004];   %TODO!
 
             obj.outOfBoundsPolys{1} = outOfBoundsPolys3BIF; %change this for the square at the start if needed.
             obj.outOfBoundsPolys{2} = outOfBoundsPolys3BIF;
             obj.outOfBoundsPolys{3} = outOfBoundsPolys3BIF;
             obj.outOfBoundsPolys{4} = outOfBoundsPolys4BIF;
 
-        obj.hardCodedOrthogonalWallContacts{1} = [0 1; 
-            0.7071 0.7071;
-            -0.7071 0.7071;
-            -0.7018 -0.7124;
-            -0.7523 0.6588;
-            0 1;
-            0.7137 0.7004;
-            -0.7071 0.7071;
-            -0.7071 -0.7071;
-            -0.7061 0.7081;
-            -0.7071 -0.7071;
-            0.7146 -0.6995;
-            0 -1;
-            -1 0;
-            0 -1;
-            1 0;
-            0.7545 -0.6563;
-            0 -1;
-            1 0];
-        obj.hardCodedOrthogonalWallContacts{2} = obj.hardCodedOrthogonalWallContacts{1};
-        obj.hardCodedOrthogonalWallContacts{3} = obj.hardCodedOrthogonalWallContacts{1};
-        obj.hardCodedOrthogonalWallContacts{4} = [-0.0095 -0.003;
+            obj.currentOutOfBoundsPolys = obj.outOfBoundsPolys{1};
+
+            obj.hardCodedOrthogonalWallContacts{1} = [0 1; 
+                0.7071 0.7071;
+                -0.7071 0.7071;
+                -0.7018 -0.7124;
+                -0.7523 0.6588;
+                0 1;
+                0.7137 0.7004;
+                -0.7071 0.7071;
+                -0.7071 -0.7071;
+                -0.7061 0.7081;
+                -0.7071 -0.7071;
+                0.7146 -0.6995;
+                0 -1;
+                -1 0;
+                0 -1;
+                1 0;
+                0.7545 -0.6563;
+                0 -1;
+                1 0];
+            obj.hardCodedOrthogonalWallContacts{2} = obj.hardCodedOrthogonalWallContacts{1};
+            obj.hardCodedOrthogonalWallContacts{3} = obj.hardCodedOrthogonalWallContacts{1};
+            obj.hardCodedOrthogonalWallContacts{4} = [-0.0095 -0.003;
                 -0.0095 -0.004;
                 -0.01 -0.004;
                 -0.01 -0.003];   %TODO
+
+            obj.currentHardCodedOrthogonalWallContacts = obj.hardCodedOrthogonalWallContacts{1};
 
             for i = 1:length(obj.currentPoly)-1 
                 obj.currentPolyVector(i,:) = obj.currentPoly(i,:) - obj.currentPoly(i+1,:);
@@ -486,7 +496,7 @@ classdef Polygons
             end
             obj.currentEndZone = squeeze(obj.allEndZones{num});
             obj.currentOutOfBoundsPolys = squeeze(obj.outOfBoundsPolys{num});
-            obj.hardCodedOrthogonalWallContacts = obj.hardCodedOrthogonalWallContacts{num};
+             obj.currentHardCodedOrthogonalWallContacts = squeeze(obj.hardCodedOrthogonalWallContacts{num});
        %     obj.currentFlowValues = fd.FlowValues{num};
        %     obj.currentFlowLocations = fd.FlowValues{num};
         end

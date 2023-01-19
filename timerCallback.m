@@ -37,7 +37,6 @@ function timerCallback(app)
         %drag (using last iterations velocity)
         dragForce = app.particleFunctions.calculateDragForce(app.particleArrayVelocity, vFlow);
         app.particleArrayForce = app.particleArrayForce - dragForce;
-        
         %friction
         app.particleArrayForce = app.particleArrayForce - app.particleFunctions.calculateFrictionForce(app.particleArrayVelocity, app.particleArrayForce, orthogonalWallContact);
 
@@ -100,6 +99,4 @@ function timerCallback(app)
 
     app.previousMagforce = magForce;
     app.currentlyDoingWorkSemaphore = false;
-
-    f = "endLoop"
 end
