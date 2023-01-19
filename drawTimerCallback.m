@@ -10,4 +10,5 @@ function drawTimerCallback(app)
    % plot(app.polygon.allPolys(2,:,1), app.polygon.allPolys(2,:,2));
    % hold on
    % plot(app.polygon.allPolys(2,:,1), app.polygon.allPolys(2,:,2),'r.', 'markerSize', 13);
+
 end

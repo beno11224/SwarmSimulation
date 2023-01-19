@@ -81,8 +81,19 @@ function NextLevel(app)
     
     rotateMatrix = [cosd(app.rotation), sind(app.rotation); -sind(app.rotation), cos(app.rotation)];
     rotatedOutline = (rotateMatrix * app.polygon.currentPoly')';
-    app.polyLine = plot(app.UIAxes, rotatedOutline(:,1), rotatedOutline(:,2), 'Color','b');
+    app.polyLine = plot(app.UIAxes, rotatedOutline(:,1), rotatedOutline(:,2), 'Color','b');   
+ 
+    
+
+
+    %set(app.UIAxes,'padded')
+    app.UIAxes.XLim = [min(app.polygon.currentPoly(:,1)) + (min(app.polygon.currentPoly(:,1))/20), max(app.polygon.currentPoly(:,1)) + (max(app.polygon.currentPoly(:,1))/20)];
+    app.UIAxes.YLim = [min(app.polygon.currentPoly(:,2)) + (min(app.polygon.currentPoly(:,2))/20), max(app.polygon.currentPoly(:,2)) + (max(app.polygon.currentPoly(:,2))/20)];
+
+
+
     for(lineCount = 1:size(app.polygon.currentEndZone,1)-1)
+        ab = app.polygon.currentEndZone(lineCount,:,:)
         rotatedEndZone = (rotateMatrix * squeeze(app.polygon.currentEndZone(lineCount,:,:))')';
         app.wrongEndLine(lineCount) = plot(app.UIAxes, rotatedEndZone(:,1), rotatedEndZone(:,2), 'Color','r');
         if(lineCount == app.goalIndex)
@@ -104,6 +115,10 @@ function NextLevel(app)
 
  %   app.mesh = alphaShape(meshLocations(:,1),meshLocations(:,2));
     app.mesh = delaunayTriangulation(meshLocations);
+    
+    %set(app.UIAxes,'padded')
+    app.UIAxes.XLim = [min(app.polygon.currentPoly(:,1)) + (min(app.polygon.currentPoly(:,1))/20), max(app.polygon.currentPoly(:,1)) + (max(app.polygon.currentPoly(:,1))/20)];
+    app.UIAxes.YLim = [min(app.polygon.currentPoly(:,2)) + (min(app.polygon.currentPoly(:,2))/20), max(app.polygon.currentPoly(:,2)) + (max(app.polygon.currentPoly(:,2))/20)];
 
 %    tr = triangulation(polyshape(app.polygon.currentPoly(:,1),app.polygon.currentPoly(:,2)));
 %    model = createpde(1);
