@@ -18,7 +18,7 @@ function timerCallback(app)
         app.Y1MAGauge.Value = currentDial(2);
     end
 
-    vFlow = app.particleFunctions.calculateFlow(real(app.particleArrayLocation), app.currentFlowValues, app.mesh);
+    vFlow = app.particleFunctions.calculateFlow(real(app.particleArrayLocation), app.polygon.currentFlowValues, app.mesh);
     vFlow = vFlow .* app.FluidFlowmsEditField.Value;
 
     magForceAlpha = 0.05;

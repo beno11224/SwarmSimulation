@@ -448,14 +448,18 @@ classdef Polygons
                 -0.01 -0.004;
                 -0.01 -0.003];  
 
-            outOfBoundsPolys4BIF(1,:,:) = [-0.0095 -0.003;
+            outOfBoundsPolys4BIF(1,:,:) = [-0.0095 -0.004;
+                -0.0045 -0.004;
+                -0.0045 -0.005;
+                -0.0095 -0.005];
+            outOfBoundsPolys4BIF(2,:,:) = [-0.0095 -0.003;
                 -0.0095 -0.004;
                 -0.01 -0.004;
                 -0.01 -0.003];
-            outOfBoundsPolys4BIF(2,:,:) = [-0.0095 -0.003;
+            outOfBoundsPolys4BIF(3,:,:) = [-0.0095 -0.003;
                 -0.0045,-0.003;
-                -0.0045,-0.0025;
-                -0.0095 -0.0025];   %TODO!
+                -0.0045,-0.001;
+                -0.0095 -0.001];   %TODO!
 
             obj.outOfBoundsPolys{1} = outOfBoundsPolys3BIF; %change this for the square at the start if needed.
             obj.outOfBoundsPolys{2} = outOfBoundsPolys3BIF;
@@ -485,10 +489,8 @@ classdef Polygons
                 1 0];
             obj.hardCodedOrthogonalWallContacts{2} = obj.hardCodedOrthogonalWallContacts{1};
             obj.hardCodedOrthogonalWallContacts{3} = obj.hardCodedOrthogonalWallContacts{1};
-            obj.hardCodedOrthogonalWallContacts{4} = [-0.0095 -0.003;
-                -0.0095 -0.004;
-                -0.01 -0.004;
-                -0.01 -0.003];   %TODO
+            obj.hardCodedOrthogonalWallContacts{4} = [1 0;
+                0 -1];   %TODO
 
             obj.currentHardCodedOrthogonalWallContacts = obj.hardCodedOrthogonalWallContacts{1};
 
@@ -512,8 +514,8 @@ classdef Polygons
             obj.currentEndZone = squeeze(obj.allEndZones{num});
             obj.currentOutOfBoundsPolys = squeeze(obj.outOfBoundsPolys{num});
              obj.currentHardCodedOrthogonalWallContacts = squeeze(obj.hardCodedOrthogonalWallContacts{num});
-       %     obj.currentFlowValues = fd.FlowValues{num};
-       %     obj.currentFlowLocations = fd.FlowValues{num};
+            obj.currentFlowValues = fd.FlowValues{num};
+            obj.currentFlowLocations = fd.FlowValues{num};
         end
 
     end

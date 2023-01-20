@@ -12,35 +12,35 @@ function NextLevel(app)
     app.slowDown = 1;
     app.goalIndex = 2;
     app.HapticForceSlider.Enable = false;
-    meshLocations = app.fd.FlowLocations{1};
+   % meshLocations = app.fd.FlowLocations{1};
     switch(floor((app.testOrder(app.testNumber)-1)/10)) %Do n of each
         
         case(0)
             app.polygon = app.polygon.change(4,app.fd);
             app.FluidFlowmsEditField.Value = 0.01;
             app.slowDown = 2;
-            meshLocations = app.fd.FlowLocations{4};
-            app.currentFlowValues = app.fd.FlowValues{4};
+        %    meshLocations = app.fd.FlowLocations{4};
+        %    app.currentFlowValues = app.fd.FlowValues{4};
         case(1)
             app.polygon = app.polygon.change(4,app.fd);
             app.FluidFlowmsEditField.Value = 0.015;
-            meshLocations = app.fd.FlowLocations{4};
-            app.currentFlowValues = app.fd.FlowValues{4};
+        %    meshLocations = app.fd.FlowLocations{4};
+        %    app.currentFlowValues = app.fd.FlowValues{4};
         case(2)
             app.polygon = app.polygon.change(4,app.fd);
             app.FluidFlowmsEditField.Value = 0.02;
-            meshLocations = app.fd.FlowLocations{4};
-            app.currentFlowValues = app.fd.FlowValues{4};
+        %    meshLocations = app.fd.FlowLocations{4};
+        %    app.currentFlowValues = app.fd.FlowValues{4};
          case(3)
             app.polygon = app.polygon.change(4,app.fd);
             app.FluidFlowmsEditField.Value = 0.025;
-            meshLocations = app.fd.FlowLocations{4};
-            app.currentFlowValues = app.fd.FlowValues{4};
+       %     meshLocations = app.fd.FlowLocations{4};
+        %    app.currentFlowValues = app.fd.FlowValues{4};
         case(4)
             app.polygon =  app.polygon.change(4,app.fd);
             app.FluidFlowmsEditField.Value = 0.03;
-            meshLocations = app.fd.FlowLocations{4};
-            app.currentFlowValues = app.fd.FlowValues{4};
+%             meshLocations = app.fd.FlowLocations{4};
+%             app.currentFlowValues = app.fd.FlowValues{4};
         otherwise
             fprintf("The experiment has now ended, thank you for your participation. Please close this window.\r\n");
             app.polygon = app.polygon.change(1,app.fd);
@@ -48,8 +48,8 @@ function NextLevel(app)
             app.FluidFlowmsEditField.Value = 0;
             app.TimeRemainingsEditField.Value = 1200;
             app.MagForceRestrictMAM2EditField.Value = 0;
-            meshLocations = app.fd.FlowLocations{1};
-            app.currentFlowValues = app.fd.FlowValues{1};
+%             meshLocations = app.fd.FlowLocations{1};
+%             app.currentFlowValues = app.fd.FlowValues{1};
     end    
 
  %   minTimeToTravel = 4 * (0.005 ./ app.FluidFlowmsEditField.Value); %4 paths, length, velocity
@@ -93,7 +93,6 @@ function NextLevel(app)
 
 
     for(lineCount = 1:size(app.polygon.currentEndZone,1)-1)
-        ab = app.polygon.currentEndZone(lineCount,:,:)
         rotatedEndZone = (rotateMatrix * squeeze(app.polygon.currentEndZone(lineCount,:,:))')';
         app.wrongEndLine(lineCount) = plot(app.UIAxes, rotatedEndZone(:,1), rotatedEndZone(:,2), 'Color','r');
         if(lineCount == app.goalIndex)
@@ -114,7 +113,9 @@ function NextLevel(app)
 
 
  %   app.mesh = alphaShape(meshLocations(:,1),meshLocations(:,2));
-    app.mesh = delaunayTriangulation(meshLocations);
+%     app.mesh = delaunayTriangulation(meshLocations);
+    app.mesh = delaunayTriangulation(app.polygon.currentFlowLocations);
+    plot(app.mesh.Points(:,1),app.mesh.Points(:,2),'.');
     
     %set(app.UIAxes,'padded')
     app.UIAxes.XLim = [min(app.polygon.currentPoly(:,1)) + (min(app.polygon.currentPoly(:,1))/20), max(app.polygon.currentPoly(:,1)) + (max(app.polygon.currentPoly(:,1))/20)];

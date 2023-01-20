@@ -126,11 +126,11 @@ classdef ParticleFunctions
                     delete(abz);
                 end
             %}
-            if(size(mesh.Points,2) == size(flowMatrix,1))
+            if(size(mesh.Points,1) == size(flowMatrix,1))
               %  closestNode = findNodes(mesh, 'nearest', particleLocation');
                 closestNode = nearestNeighbor(mesh,particleLocation);
-                velocity(:,1) = flowMatrix(1,closestNode);%,1);
-                velocity(:,2) = flowMatrix(2,closestNode);%,2);
+                velocity(:,1) = flowMatrix(closestNode,1);
+                velocity(:,2) = flowMatrix(closestNode,2);
             else
                 velocity = [0 0];
             end
