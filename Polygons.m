@@ -515,7 +515,7 @@ classdef Polygons
             obj.currentOutOfBoundsPolys = squeeze(obj.outOfBoundsPolys{num});
              obj.currentHardCodedOrthogonalWallContacts = squeeze(obj.hardCodedOrthogonalWallContacts{num});
             obj.currentFlowValues = fd.FlowValues{num};
-            obj.currentFlowLocations = fd.FlowValues{num};
+            obj.currentFlowLocations = fd.FlowLocations{num};
         end
 
     end

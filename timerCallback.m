@@ -18,8 +18,8 @@ function timerCallback(app)
         app.Y1MAGauge.Value = currentDial(2);
     end
 
-    vFlow = app.particleFunctions.calculateFlow(real(app.particleArrayLocation), app.polygon.currentFlowValues, app.mesh);
-    vFlow = vFlow .* app.FluidFlowmsEditField.Value;
+     vFlow = app.particleFunctions.calculateFlow(real(app.particleArrayLocation), app.polygon.currentFlowValues, app.mesh);
+     vFlow = vFlow .* app.FluidFlowmsEditField.Value;
 
     magForceAlpha = 0.05;
     magForce = app.previousMagforce;
@@ -27,6 +27,7 @@ function timerCallback(app)
     smallerTMaxStep = app.simTimerPeriod / smallerTMaxTotalSteps;
     smallerTMaxStepReduced = smallerTMaxStep / app.slowDown;
     for smallerTMaxIndex = 1:smallerTMaxTotalSteps 
+ %       vFlow = app.particleFunctions.calculateFlow(real(app.particleArrayLocation), app.polygon.currentFlowValues, app.mesh);
         
         magForce = magForce .* (1-magForceAlpha) + currentMagforce.* magForceAlpha;
         app.particleArrayForce = magForce;

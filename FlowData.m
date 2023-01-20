@@ -6,7 +6,7 @@ classdef FlowData
     end
     
     methods
-        function obj = FlowData(fourValues, fourLocations)
+        function obj = FlowData(fourLocations,fourValues)
             %The below data is for levels following Ex2, entered manually.
             %In future this will be read in from the filesystem
             
@@ -271,7 +271,7 @@ classdef FlowData
             obj.FlowValues{2} = obj.FlowValues{1};
             obj.FlowValues{3} = obj.FlowValues{1};
 
-            obj.FlowValues{4} = fourValues; %TODO copy in flow values - the mesh should be saved somewhere too as a point cloud and loaded in rather than meshing each time.
+            obj.FlowValues{4} = fourValues.*-1; %TODO copy in flow values - the mesh should be saved somewhere too as a point cloud and loaded in rather than meshing each time.
 
             obj.FlowLocations{1} = [-0.0095,-0.004;
                 -0.0095,-0.003;
