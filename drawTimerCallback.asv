@@ -11,16 +11,14 @@ function drawTimerCallback(app)
    % hold on
    % plot(app.polygon.allPolys(2,:,1), app.polygon.allPolys(2,:,2),'r.', 'markerSize', 13);
 
-%    n = 3;
-%    a = plot(app.UIAxes,0,0,'r.', 'markerSize', 15);
-%      for(i = 1:size(app.polygon.outOfBoundsPolys{n}))
-%          ab = plot(app.UIAxes, app.polygon.outOfBoundsPolys{n}(i,:,1), app.polygon.outOfBoundsPolys{n}(i,:,2));
-%          ac = plot(app.UIAxes, [0;app.polygon.hardCodedOrthogonalWallContacts{n}(i,1).*0.001], [0;app.polygon.hardCodedOrthogonalWallContacts{n}(i,2).*0.001]);
-%       %   ad = app.polygon.hardCodedOrthogonalWallContacts{3}(i,:);
-%       %   ae = app.polygon.hardCodedOrthogonalWallContacts{n}(i,:);
-%       asf = app.polygon.outOfBoundsPolys{n}(i,:,:);
-%          delete(ab);
-%          delete(ac);
-%      end
+   n = 4;
+     for(i = 1:size(app.polygon.outOfBoundsPolys{n}))
+         ab = plot(app.UIAxes, app.polygon.outOfBoundsPolys{n}(i,:,1), app.polygon.outOfBoundsPolys{n}(i,:,2));
+         ac = plot(app.UIAxes, [0;app.polygon.hardCodedOrthogonalWallContacts{n}(i,1).], [0;app.polygon.hardCodedOrthogonalWallContacts{n}(i,2)]);
+         ad = app.polygon.hardCodedOrthogonalWallContacts{3}(i,:);
+         ae = app.polygon.hardCodedOrthogonalWallContacts{n}(i,:);
+         delete(ab);
+         delete(ac);
+     end
 
 end

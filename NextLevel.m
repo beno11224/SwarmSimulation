@@ -17,32 +17,32 @@ function NextLevel(app)
         
         case(0)
             app.polygon = app.polygon.change(4,app.fd);
-            app.FluidFlowmsEditField.Value = 0.01;
-            app.slowDown = 500;
+            app.FluidFlowmsEditField.Value = 0.001;
+            app.slowDown = 2;
         %    meshLocations = app.fd.FlowLocations{4};
         %    app.currentFlowValues = app.fd.FlowValues{4};
         case(1)
             app.polygon = app.polygon.change(4,app.fd);
-            app.FluidFlowmsEditField.Value = 0.01;
-            app.slowDown = 500;
+            app.FluidFlowmsEditField.Value = 0.001;
+            app.slowDown = 2;
         %    meshLocations = app.fd.FlowLocations{4};
         %    app.currentFlowValues = app.fd.FlowValues{4};
         case(2)
             app.polygon = app.polygon.change(4,app.fd);
-            app.FluidFlowmsEditField.Value = 0.01;
-            app.slowDown = 500;
+            app.FluidFlowmsEditField.Value = 0.001;
+            app.slowDown = 2;
         %    meshLocations = app.fd.FlowLocations{4};
         %    app.currentFlowValues = app.fd.FlowValues{4};
          case(3)
             app.polygon = app.polygon.change(4,app.fd);
-            app.FluidFlowmsEditField.Value = 0.01;
-            app.slowDown = 500;
+            app.FluidFlowmsEditField.Value = 0.001;
+            app.slowDown = 2;
        %     meshLocations = app.fd.FlowLocations{4};
         %    app.currentFlowValues = app.fd.FlowValues{4};
         case(4)
             app.polygon =  app.polygon.change(4,app.fd);
-            app.FluidFlowmsEditField.Value = 0.01;
-            app.slowDown = 500;
+            app.FluidFlowmsEditField.Value = 0.001;
+            app.slowDown = 2;
 %             meshLocations = app.fd.FlowLocations{4};
 %             app.currentFlowValues = app.fd.FlowValues{4};
         otherwise
