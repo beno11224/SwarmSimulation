@@ -50,6 +50,16 @@
         end
         tline = fgetl(fid);
     end
+    
+    writefidlocs = fopen("Location.txt","w");
+    writefidvalues = fopen("Values.txt","w");
+    ab = length(locX);
+    for(i = 1:length(locX))
+        fprintf(writefidlocs, '%s', string(locX(i)) + " " + string(locY(i)) + ";" + newline);
+        fprintf(writefidvalues, '%s', string(flowX(i)) + " " + string(flowY(i))+";" + newline);
+    end
+    fclose(writefidlocs);
+    fclose(writefidvalues);
   % ashape = alphaShape(locX',locY');
   %  plot(ashape);
    % ashape.Points.

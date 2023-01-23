@@ -12,13 +12,18 @@ function NextLevel(app)
     app.slowDown = 1;
     app.goalIndex = 2;
     app.HapticForceSlider.Enable = false;
+    minTimeToTravel = 1.7;
+%   minTimeToTravel = 4 * (0.005 ./ app.FluidFlowmsEditField.Value); %4 paths, length, velocity
    % meshLocations = app.fd.FlowLocations{1};
     switch(floor((app.testOrder(app.testNumber)-1)/10)) %Do n of each
         
         case(0)
-            app.polygon = app.polygon.change(4,app.fd);
-            app.FluidFlowmsEditField.Value = 0.001;
-            app.slowDown = 2;
+            app.polygon = app.polygon.change(3,app.fd);
+            app.FluidFlowmsEditField.Value = 1;
+           % app.FluidFlowmsEditField.Value = 0.001;
+            app.slowDown = 1;
+            app.goalIndex = 2;
+         %   minTimeToTravel = 3;
         %    meshLocations = app.fd.FlowLocations{4};
         %    app.currentFlowValues = app.fd.FlowValues{4};
         case(1)
@@ -56,8 +61,6 @@ function NextLevel(app)
 %             app.currentFlowValues = app.fd.FlowValues{1};
     end    
 
- %   minTimeToTravel = 4 * (0.005 ./ app.FluidFlowmsEditField.Value); %4 paths, length, velocity
-    minTimeToTravel = 1.7;
     app.TimeRemainingsEditField.Value = minTimeToTravel .* 5;%2.5;TODO RESET ME
     app.timeLimit = app.TimeRemainingsEditField.Value;
     app.numParticles = app.NumberofParticlesEditField.Value;
@@ -96,7 +99,7 @@ function NextLevel(app)
 
 
 
-    for(lineCount = 1:size(app.polygon.currentEndZone,1)-1)
+    for(lineCount = 1:size(app.polygon.currentEndZone,1))
         rotatedEndZone = (rotateMatrix * squeeze(app.polygon.currentEndZone(lineCount,:,:))')';
         app.wrongEndLine(lineCount) = plot(app.UIAxes, rotatedEndZone(:,1), rotatedEndZone(:,2), 'Color','r');
         if(lineCount == app.goalIndex)
