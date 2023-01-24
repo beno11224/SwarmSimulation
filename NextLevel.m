@@ -19,7 +19,7 @@ function NextLevel(app)
         
         case(0)
             app.polygon = app.polygon.change(3,app.fd);
-            app.FluidFlowmsEditField.Value = 1;
+            app.FluidFlowmsEditField.Value = 0.001;
            % app.FluidFlowmsEditField.Value = 0.001;
             app.slowDown = 1;
             app.goalIndex = 2;
