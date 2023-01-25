@@ -33,7 +33,7 @@
     lineCount = 1;
     while ischar(tline)
         if(tline(1) == '%')
-            lineCount = lineCount + 1;
+          %  lineCount = lineCount + 1;
             %Not data
             tline = fgetl(fid);
             continue;

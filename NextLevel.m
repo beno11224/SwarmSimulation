@@ -12,44 +12,34 @@ function NextLevel(app)
     app.slowDown = 1;
     app.goalIndex = 2;
     app.HapticForceSlider.Enable = false;
-    minTimeToTravel = 1.7;
+ %   minTimeToTravel = 1.7;
+    minTimeToTravel = 2;
 %   minTimeToTravel = 4 * (0.005 ./ app.FluidFlowmsEditField.Value); %4 paths, length, velocity
    % meshLocations = app.fd.FlowLocations{1};
-    switch(floor((app.testOrder(app.testNumber)-1)/10)) %Do n of each
+    switch(floor((app.testOrder(app.testNumber)-1)/5)) %Do n of each
         
         case(0)
             app.polygon = app.polygon.change(3,app.fd);
-            app.FluidFlowmsEditField.Value = 0.001;
+%             app.polygon = app.polygon.change(4,app.fd);
+            app.FluidFlowmsEditField.Value = 1;
            % app.FluidFlowmsEditField.Value = 0.001;
             app.slowDown = 1;
+%             app.goalIndex = 3;
             app.goalIndex = 2;
          %   minTimeToTravel = 3;
         %    meshLocations = app.fd.FlowLocations{4};
         %    app.currentFlowValues = app.fd.FlowValues{4};
+
+        
         case(1)
             app.polygon = app.polygon.change(4,app.fd);
-            app.FluidFlowmsEditField.Value = 0.001;
-            app.slowDown = 2;
+            app.FluidFlowmsEditField.Value = 1;
+           % app.FluidFlowmsEditField.Value = 0.001;
+            app.slowDown = 1;
+            app.goalIndex = 3;
+         %   minTimeToTravel = 3;
         %    meshLocations = app.fd.FlowLocations{4};
         %    app.currentFlowValues = app.fd.FlowValues{4};
-        case(2)
-            app.polygon = app.polygon.change(4,app.fd);
-            app.FluidFlowmsEditField.Value = 0.001;
-            app.slowDown = 2;
-        %    meshLocations = app.fd.FlowLocations{4};
-        %    app.currentFlowValues = app.fd.FlowValues{4};
-         case(3)
-            app.polygon = app.polygon.change(4,app.fd);
-            app.FluidFlowmsEditField.Value = 0.001;
-            app.slowDown = 2;
-       %     meshLocations = app.fd.FlowLocations{4};
-        %    app.currentFlowValues = app.fd.FlowValues{4};
-        case(4)
-            app.polygon =  app.polygon.change(4,app.fd);
-            app.FluidFlowmsEditField.Value = 0.001;
-            app.slowDown = 2;
-%             meshLocations = app.fd.FlowLocations{4};
-%             app.currentFlowValues = app.fd.FlowValues{4};
         otherwise
             fprintf("The experiment has now ended, thank you for your participation. Please close this window.\r\n");
             app.polygon = app.polygon.change(1,app.fd);
