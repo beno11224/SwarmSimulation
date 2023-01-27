@@ -33,7 +33,7 @@ function timerCallback(app)
         app.particleArrayForce = magForce;
 
         %determine if particles are in collision with the wall - particles are inelastic - no bouncing.
-        [wallContact, orthogonalWallContact, app.particleArrayLocation, app.particleArrayVelocity] = app.particleFunctions.isParticleOnWallPIP(app.particleArrayLocation, app.particleArrayVelocity, app.particleArrayForce, app.polygon, smallerTMaxStepReduced);
+        [wallContact, orthogonalWallContact, app.particleArrayLocation, app.particleArrayVelocity] = app.particleFunctions.isParticleOnWallPIP(app.particleArrayLocation, app.particleArrayVelocity, app.particleArrayForce, app.polygon, smallerTMaxStepReduced,app);
 
         %drag (using last iterations velocity)
         dragForce = app.particleFunctions.calculateDragForce(app.particleArrayVelocity, vFlow);
