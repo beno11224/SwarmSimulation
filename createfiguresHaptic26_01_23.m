@@ -77,19 +77,19 @@ set(plot4,'DisplayName','4 bifurcations');
 box(axes1,'on');
 grid(axes1,'on');
 % Create legend
-legend(axes1,'show','Location','southeast');
+legend(axes1,'show','Location','southwest');
 box(axes2,'on');
 grid(axes2,'on');
 % Create legend
-legend(axes2,'show','Location','southeast');
+legend(axes2,'show','Location','southwest');
 
  % Create x and y labels
  xlabel(axes1,"Maximum Inlet Flow Velocity (m/s)");
  ylabel(axes1, 'Percentage of particles reaching goal state');
- ylim(axes1,[50,100]);
+ ylim(axes1,[70,100]);
  xlabel(axes2,"Maximum Inlet Flow Velocity (m/s)");
  ylabel(axes2, 'Percentage of particles reaching goal state');
- ylim(axes2,[50,100]);
+ ylim(axes2,[70,100]);
 
 
 % Create multiple line objects using matrix input to plot

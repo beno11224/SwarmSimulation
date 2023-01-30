@@ -1,5 +1,5 @@
  function [locX,locY,flowX,flowY] = ReadInFlowDataFromComsolCSV(polyPath, meshPath)
- %   close all;
+    close all;
     %open polygon vertexes, then the flow data. - EITHER 
     % - must match the matlab ones OR
     % - matlab needs to load in these files.
@@ -60,8 +60,11 @@
     end
     fclose(writefidlocs);
     fclose(writefidvalues);
-  % ashape = alphaShape(locX',locY');
-  %  plot(ashape);
+
+%    ashape = alphaShape(locX',locY','HoleThreshold',10);    
+    ashape = alphaShape(locX',locY','HoleThreshold',1);
+    ashape.Alpha = 0.0002;
+    plot(ashape);
    % ashape.Points.
     %triplot(ashape);
 %    polygon = Polygons(0.0096);
