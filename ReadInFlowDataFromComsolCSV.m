@@ -1,5 +1,5 @@
  function [locX,locY,flowX,flowY] = ReadInFlowDataFromComsolCSV(polyPath, meshPath)
- %   close all;
+    close all;
     %open polygon vertexes, then the flow data. - EITHER 
     % - must match the matlab ones OR
     % - matlab needs to load in these files.
@@ -50,18 +50,22 @@
         end
         tline = fgetl(fid);
     end
-    
-    writefidlocs = fopen("Location.txt","w");
-    writefidvalues = fopen("Values.txt","w");
-    ab = length(locX);
-    for(i = 1:length(locX))
-        fprintf(writefidlocs, '%s', string(locX(i)) + " " + string(locY(i)) + ";" + newline);
-        fprintf(writefidvalues, '%s', string(flowX(i)) + " " + string(flowY(i))+";" + newline);
-    end
-    fclose(writefidlocs);
-    fclose(writefidvalues);
-  % ashape = alphaShape(locX',locY');
-  %  plot(ashape);
+%     
+%     writefidlocs = fopen("Location.txt","w");
+%     writefidvalues = fopen("Values.txt","w");
+%     ab = length(locX);
+%     for(i = 1:length(locX))
+%         fprintf(writefidlocs, '%s', string(locX(i)) + " " + string(locY(i)) + ";" + newline);
+%         fprintf(writefidvalues, '%s', string(flowX(i)) + " " + string(flowY(i))+";" + newline);
+%     end
+%     fclose(writefidlocs);
+%     fclose(writefidvalues);
+    ashape = alphaShape(locX',locY','HoleThreshold',0.05);
+    ashape.Alpha = 0.00009;
+    colortoUse = flowX.*flowY;
+    aplot = plot(ashape);
+    aplot.ColorMode = 'manual';
+    aplot.Color = colortoUse;
    % ashape.Points.
     %triplot(ashape);
 %    polygon = Polygons(0.0096);

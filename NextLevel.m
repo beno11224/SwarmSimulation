@@ -16,7 +16,7 @@ function NextLevel(app)
     minTimeToTravel = 2;
 %   minTimeToTravel = 4 * (0.005 ./ app.FluidFlowmsEditField.Value); %4 paths, length, velocity
    % meshLocations = app.fd.FlowLocations{1};
-    switch(floor((app.testOrder(app.testNumber)-1)/11)) %Do n of each
+    switch(floor((app.testOrder(app.testNumber)-1)/1)) %Do n of each
         
         case(0)
             app.polygon = app.polygon.change(3,app.fd);
@@ -35,7 +35,7 @@ function NextLevel(app)
             app.polygon = app.polygon.change(4,app.fd);
             app.FluidFlowmsEditField.Value = 1;
            % app.FluidFlowmsEditField.Value = 0.001;
-            app.slowDown = 1;
+            app.slowDown = 10;
             app.goalIndex = 3;
          %   minTimeToTravel = 3;
         %    meshLocations = app.fd.FlowLocations{4};

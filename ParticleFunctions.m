@@ -78,13 +78,13 @@ classdef ParticleFunctions
             wallContact = particleVelocity .* nan;
             orthogonalWallContact = wallContact;
             %If no particles are outside the shape, we can skip all this.
-            aaaa = plot(app.UIAxes, [0,1],[1,10]);
+           % aaaa = plot(app.UIAxes, [0,1],[1,10]);
             if(any(~in))
                 distMove = particleVelocity .* 0;
                 dists = zeros(length(wallContact),1);
                 for outOfBoundsCount = 1:size(polygon.currentOutOfBoundsPolys,1)
-                    delete(aaaa);
-                    aaaa = plot(app.UIAxes, polygon.currentOutOfBoundsPolys(outOfBoundsCount,:,1),polygon.currentOutOfBoundsPolys(outOfBoundsCount,:,2));
+               %     delete(aaaa);
+                %    aaaa = plot(app.UIAxes, polygon.currentOutOfBoundsPolys(outOfBoundsCount,:,1),polygon.currentOutOfBoundsPolys(outOfBoundsCount,:,2));
                     [inOOB,onOOB] = inpolygon(particleLocation(:,1), particleLocation(:,2), polygon.currentOutOfBoundsPolys(outOfBoundsCount,:,1), polygon.currentOutOfBoundsPolys(outOfBoundsCount,:,2));
                     inOnOOB = (inOOB|onOOB); %Or together to get anything that is in or on the polygon
                     if(any(inOnOOB))
