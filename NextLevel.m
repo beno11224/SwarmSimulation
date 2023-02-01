@@ -13,33 +13,105 @@ function NextLevel(app)
     app.goalIndex = 2;
     app.HapticForceSlider.Enable = false;
  %   minTimeToTravel = 1.7;
-    minTimeToTravel = 2;
+    minTimeToTravel = 10;
 %   minTimeToTravel = 4 * (0.005 ./ app.FluidFlowmsEditField.Value); %4 paths, length, velocity
    % meshLocations = app.fd.FlowLocations{1};
     switch(floor((app.testOrder(app.testNumber)-1)/1)) %Do n of each
         
-        case(0)
-            app.polygon = app.polygon.change(3,app.fd);
-%             app.polygon = app.polygon.change(4,app.fd);
-            app.FluidFlowmsEditField.Value = 1;
-           % app.FluidFlowmsEditField.Value = 0.001;
-            app.slowDown = 1;
-%             app.goalIndex = 3;
-            app.goalIndex = 1;
-         %   minTimeToTravel = 3;
-        %    meshLocations = app.fd.FlowLocations{4};
-        %    app.currentFlowValues = app.fd.FlowValues{4};
+%         case(0)
+%             app.polygon = app.polygon.change(3,app.fd);
+% %             app.polygon = app.polygon.change(4,app.fd);
+%             app.FluidFlowmsEditField.Value = 1;
+%            % app.FluidFlowmsEditField.Value = 0.001;
+%             app.slowDown = 1;
+% %             app.goalIndex = 3;
+%             app.goalIndex = 1;
+%          %   minTimeToTravel = 3;
+%         %    meshLocations = app.fd.FlowLocations{4};
+%         %    app.currentFlowValues = app.fd.FlowValues{4};
 
         
+%         case(1)
+%             app.polygon = app.polygon.change(4,app.fd);
+%             app.FluidFlowmsEditField.Value = 1;
+%            % app.FluidFlowmsEditField.Value = 0.001;
+%             app.slowDown = 1;
+%             app.goalIndex = 3;
+%          %   minTimeToTravel = 3;
+%         %    meshLocations = app.fd.FlowLocations{4};
+%         %    app.currentFlowValues = app.fd.FlowValues{4};
+        case(0)
+            app.polygon = app.polygon.change(4,app.fd);
+            app.FluidFlowmsEditField.Value = 1;
+            app.goalIndex = 4;
+            app.fd = FlowData40();
+            minTimeToTravel = 50;
         case(1)
             app.polygon = app.polygon.change(4,app.fd);
             app.FluidFlowmsEditField.Value = 1;
-           % app.FluidFlowmsEditField.Value = 0.001;
-            app.slowDown = 10;
-            app.goalIndex = 3;
-         %   minTimeToTravel = 3;
-        %    meshLocations = app.fd.FlowLocations{4};
-        %    app.currentFlowValues = app.fd.FlowValues{4};
+            app.goalIndex = 4;
+            app.fd = FlowData45();
+            minTimeToTravel = 48;
+        case(2)
+            app.polygon = app.polygon.change(4,app.fd);
+            app.FluidFlowmsEditField.Value = 1;
+            app.goalIndex = 4;
+            app.fd = FlowData60();
+            minTimeToTravel = 46;
+        case(3)
+            app.polygon = app.polygon.change(4,app.fd);
+            app.FluidFlowmsEditField.Value = 1;
+            app.goalIndex = 4;
+            app.fd = FlowData20();
+            minTimeToTravel = 44;
+        case(4)
+            app.polygon = app.polygon.change(4,app.fd);
+            app.FluidFlowmsEditField.Value = 1;
+            app.goalIndex = 4;
+            app.fd = FlowData25();
+            minTimeToTravel = 42;
+        case(5)
+            app.polygon = app.polygon.change(4,app.fd);
+            app.FluidFlowmsEditField.Value = 1;
+            app.goalIndex = 4;
+            app.fd = FlowData30();
+            minTimeToTravel = 40;
+        case(6)
+            app.polygon = app.polygon.change(4,app.fd);
+            app.FluidFlowmsEditField.Value = 1;
+            app.goalIndex = 4;
+            app.fd = FlowData35();
+            minTimeToTravel = 38;
+        case(7)
+            app.polygon = app.polygon.change(4,app.fd);
+            app.FluidFlowmsEditField.Value = 1;
+            app.goalIndex = 4;
+            app.fd = FlowData40();
+            minTimeToTravel = 36;
+        case(8)
+            app.polygon = app.polygon.change(4,app.fd);
+            app.FluidFlowmsEditField.Value = 1;
+            app.goalIndex = 4;
+            app.fd = FlowData45();
+            minTimeToTravel = 34;
+        case(9)
+            app.polygon = app.polygon.change(4,app.fd);
+            app.FluidFlowmsEditField.Value = 1;
+            app.goalIndex = 4;
+            app.fd = FlowData50();
+            minTimeToTravel = 32;
+        case(10)
+            app.polygon = app.polygon.change(4,app.fd);
+            app.FluidFlowmsEditField.Value = 1;
+            app.goalIndex = 4;
+            app.fd = FlowData55();
+            minTimeToTravel = 30;
+        case(11)
+            app.polygon = app.polygon.change(4,app.fd);
+            app.FluidFlowmsEditField.Value = 1;
+            app.goalIndex = 4;
+            app.fd = FlowData60();
+            minTimeToTravel = 30;
         otherwise
             fprintf("The experiment has now ended, thank you for your participation. Please close this window.\r\n");
             app.polygon = app.polygon.change(1,app.fd);
@@ -51,7 +123,7 @@ function NextLevel(app)
 %             app.currentFlowValues = app.fd.FlowValues{1};
     end    
 
-    app.TimeRemainingsEditField.Value = minTimeToTravel .* 5;%2.5;TODO RESET ME
+    app.TimeRemainingsEditField.Value = minTimeToTravel;% .* 5;%2.5;TODO RESET ME
     app.timeLimit = app.TimeRemainingsEditField.Value;
     app.numParticles = app.NumberofParticlesEditField.Value;
     app.previousMagforce = 0;
@@ -135,6 +207,8 @@ function NextLevel(app)
     %set(app.UIAxes,'padded')
     app.UIAxes.XLim = [min(app.polygon.currentPoly(:,1)) + (min(app.polygon.currentPoly(:,1))/20), max(app.polygon.currentPoly(:,1)) + (max(app.polygon.currentPoly(:,1))/20)];
     app.UIAxes.YLim = [min(app.polygon.currentPoly(:,2)) + (min(app.polygon.currentPoly(:,2))/20), max(app.polygon.currentPoly(:,2)) + (max(app.polygon.currentPoly(:,2))/20)];
+
+
 
 %    tr = triangulation(polyshape(app.polygon.currentPoly(:,1),app.polygon.currentPoly(:,2)));
 %    model = createpde(1);
