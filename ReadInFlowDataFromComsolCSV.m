@@ -60,19 +60,40 @@
 %     end
 %     fclose(writefidlocs);
 %     fclose(writefidvalues);
+
+%ASHAPE CODE WORKS, can't do colour though.
     ashape = alphaShape(locX',locY','HoleThreshold',0.05);
     ashape.Alpha = 0.00009;
-    colortoUse = flowX.*flowY;
-    aplot = plot(ashape);
-    aplot.ColorMode = 'manual';
-    aplot.Color = colortoUse;
+    [faces,nodes] = boundaryFacets(ashape)
+    for(i = 1:length(faces))
+        for(j = 1:length(locX))
+            if(nodes(i,:) == [locX(j),locY(j)])
+                colorValues(i) = flowX(j).*flowY(j);
+            end
+        end
+    end
+    patch(nodes(:,1),nodes(:,2),1:length(nodes));
+    hold on;
+    patch(nodes(:,1),nodes(:,2),colorValues)
+   % colortoUse = flowX.*flowY;
+   % aplot = plot(ashape,'FaceAlpha',0,'LineWidth',0.001);
+
+
+
    % ashape.Points.
     %triplot(ashape);
 %    polygon = Polygons(0.0096);
 %    C = squeeze(polygon.allPolys(2,:,:));
-%    tri = delaunayTriangulation([locX',locY']);%,C);
-%    triplot(tri); %draw like this
-%    IO = isInterior(tri);
+% constraints = [(1:length(poly))',((1:length(poly))+1)'];
+% constraints(length(constraints),2) = 1;
+%     tri = delaunayTriangulation([poly;[locX',locY']],constraints);%,C);
+%     IO = isInterior(tri);
+%    % triplot(tri(IO,:),tri.Points(:,1),tri.Points(:,2),[flowX',flowY']);
+%    % %draw like this
+%    ab = tri(IO,:);
+%    colurs = [flowX'.*flowY'];
+%    patch(tri(IO,:),tri.Points,colurs); %draw like this
+% %    IO = isInterior(tri);
    % triplot(tri(IO,:));
 %    triplot(tri(IO, :),tri.Points(:,1), tri.Points(:,2));
 end
