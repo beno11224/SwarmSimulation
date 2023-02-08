@@ -4,7 +4,7 @@ function NextLevel(app)
     app.ScenarioEditField.Value = "Test " + app.testNumber;
     app.polygon = app.polygon.change(2,app.fd);
     app.rotation = 0;
-    app.NumberofParticlesEditField.Value = 50;
+    app.NumberofParticlesEditField.Value = 25;%50;
     app.FluidFlowmsEditField.Value = 0.005;
     app.MagForceRestrictMAM2EditField.Value = 0;
     generateNewParticles = true;
@@ -44,25 +44,29 @@ function NextLevel(app)
             app.polygon = app.polygon.change(4,app.fd);
             app.FluidFlowmsEditField.Value = 1;
             app.goalIndex = 4;
-            app.fd = FlowData40();
+            %app.slowDown = 1;
+            app.fd = FlowData05();
             minTimeToTravel = 50;
         case(1)
             app.polygon = app.polygon.change(4,app.fd);
             app.FluidFlowmsEditField.Value = 1;
             app.goalIndex = 4;
-            app.fd = FlowData45();
+           % app.slowDown = 2;
+            app.fd = FlowData10();
             minTimeToTravel = 48;
         case(2)
             app.polygon = app.polygon.change(4,app.fd);
             app.FluidFlowmsEditField.Value = 1;
             app.goalIndex = 4;
-            app.fd = FlowData60();
+           % app.slowDown = 8;
+            app.fd = FlowData15();
             minTimeToTravel = 46;
         case(3)
             app.polygon = app.polygon.change(4,app.fd);
             app.FluidFlowmsEditField.Value = 1;
             app.goalIndex = 4;
             app.fd = FlowData20();
+           % app.slowDown = 16;
             minTimeToTravel = 44;
         case(4)
             app.polygon = app.polygon.change(4,app.fd);
@@ -208,7 +212,20 @@ function NextLevel(app)
     app.UIAxes.XLim = [min(app.polygon.currentPoly(:,1)) + (min(app.polygon.currentPoly(:,1))/20), max(app.polygon.currentPoly(:,1)) + (max(app.polygon.currentPoly(:,1))/20)];
     app.UIAxes.YLim = [min(app.polygon.currentPoly(:,2)) + (min(app.polygon.currentPoly(:,2))/20), max(app.polygon.currentPoly(:,2)) + (max(app.polygon.currentPoly(:,2))/20)];
 
-
+    import java.awt.*;
+    import java.awt.event.*;
+    %Create a Robot-object to do the key-pressing
+    rob=Robot;
+    %Commands for pressing keys:
+    % If the text cursor isn't in the edit box allready, then it
+    % needs to be placed there for ctrl+a to select the text.
+    % Therefore, we make sure the cursor is in the edit box by
+    % forcing a mouse button press:
+    rob.mousePress(InputEvent.BUTTON1_MASK );
+    rob.mouseRelease(InputEvent.BUTTON1_MASK );
+    % CONTROL + A :
+    rob.keyPress(KeyEvent.VK_SPACE)
+    rob.keyRelease(KeyEvent.VK_SPACE)
 
 %    tr = triangulation(polyshape(app.polygon.currentPoly(:,1),app.polygon.currentPoly(:,2)));
 %    model = createpde(1);

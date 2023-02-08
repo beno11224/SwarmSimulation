@@ -17,11 +17,11 @@ function timerCallback(app)
 
         app.X1MAGauge.Value = currentDial(1);
         app.Y1MAGauge.Value = currentDial(2);
-    end
+    end 
 
-     vFlow = app.particleFunctions.calculateFlow(real(app.particleArrayLocation), app.polygon.currentFlowValues, app.mesh);
-     vFlow = vFlow .* app.FluidFlowmsEditField.Value;
-
+    vFlow = app.particleFunctions.calculateFlow(real(app.particleArrayLocation), app.polygon.currentFlowValues, app.mesh);
+    vFlow = vFlow .* app.FluidFlowmsEditField.Value;
+ 
     magForceAlpha = 0.05;
     magForce = app.previousMagforce;
     smallerTMaxTotalSteps = 50; %Any more speed comes from making the sim more efficient or slowing it down (not real time) %150
@@ -33,26 +33,29 @@ function timerCallback(app)
         magForce = magForce .* (1-magForceAlpha) + currentMagforce.* magForceAlpha;
         app.particleArrayForce = magForce;
 
-        %determine if particles are in collision with the wall - particles are inelastic - no bouncing.
+        %determine if particles are in collision with the wall - particles
+        %are inelastic - no bouncing.NO! Now they're elastic as it makes more sense
         [wallContact, orthogonalWallContact, app.particleArrayLocation, app.particleArrayVelocity] = app.particleFunctions.isParticleOnWallPIP(app.particleArrayLocation, app.particleArrayVelocity, app.particleArrayForce, app.polygon, smallerTMaxStepReduced,app);
 
         %drag (using last iterations velocity)
         dragForce = app.particleFunctions.calculateDragForce(app.particleArrayVelocity, vFlow);
         app.particleArrayForce = app.particleArrayForce - dragForce;
         %friction
-        app.particleArrayForce = app.particleArrayForce - app.particleFunctions.calculateFrictionForce(app.particleArrayVelocity, app.particleArrayForce, orthogonalWallContact);
+        ffric = app.particleFunctions.calculateFrictionForce(app.particleArrayVelocity, app.particleArrayForce, orthogonalWallContact);
+        app.particleArrayForce = app.particleArrayForce - ffric;%app.particleFunctions.calculateFrictionForce(app.particleArrayVelocity, app.particleArrayForce, orthogonalWallContact);
 
         app.particleArrayForce = app.particleArrayForce .* ~app.haltParticlesInEndZone;
         app.particleArrayVelocity = app.particleArrayVelocity .* ~app.haltParticlesInEndZone;
         temporaryVelocity = app.particleArrayVelocity;
-        temporaryLocation = app.particleArrayLocation;
+      %  temporaryLocation = app.particleArrayLocation;
         
+           
         %calculate the new locations 
-        app.particleArrayLocation = app.particleFunctions.calculateCurrentLocationCD(app.particleArrayLocation, temporaryVelocity, app.particleArrayPreviousAcceleration, smallerTMaxStepReduced);
+        app.particleArrayLocation = app.particleFunctions.calculateCurrentLocationCD(app.particleArrayLocation, app.particleArrayVelocity, app.particleArrayPreviousAcceleration, smallerTMaxStepReduced);
         %Make sure that we have the correct data stored for the next loop.        
         %calculate the new velocity
         [app.particleArrayVelocity,app.particleArrayPreviousAcceleration] = app.particleFunctions.calculateCurrentVelocityCD(orthogonalWallContact, wallContact, temporaryVelocity, app.particleArrayPreviousAcceleration, app.particleArrayForce, app.particleFunctions.particleMass, smallerTMaxStepReduced);
-        app.particleArrayPreviousLocation = temporaryLocation;
+        % app.particleArrayPreviousLocation = temporaryLocation;
 
         particlesInEndZone = app.particleFunctions.isParticleInEndZone(app.polygon.currentEndZone,app.particleArrayLocation);
         app.haltParticlesInEndZone = any(particlesInEndZone,2);
@@ -70,9 +73,10 @@ function timerCallback(app)
     %Now rotate location values:
     rotMat = [cosd(app.rotation), sind(app.rotation); -sind(app.rotation), cos(app.rotation)];
     rotForce = (rotMat * [app.X1MAGauge.Value ; app.Y1MAGauge.Value])';
-    rotVel = (rotMat * app.particleArrayVelocity')';
+    %rotVel = (rotMat * app.particleArrayVelocity')';
+    rotVel = (rotMat * app.particleArrayPreviousAcceleration')';
     rotLoc = (rotMat * app.particleArrayLocation')';
-
+ 
     if(app.printCounter >= app.slowDown)
         fprintf(app.fileID, app.timePassed + "," + mat2str(rotForce) + "," + goalPercentage + "," + mat2str(rotVel)+ "," + mat2str(rotLoc) + "," + mat2str(particlesInEndZone) + "\r\n");
         app.printCounter = 1;

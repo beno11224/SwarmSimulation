@@ -9,12 +9,12 @@ classdef ParticleFunctions
         particleMass;
         workspaceSizePositive;%use for the positive limits
         workspaceSizeMinus; %use for negative limits
+        fiftyParticleStartLocations;
     end
     methods (Access = public)
         %Constructor
         function obj = ParticleFunctions(permeabilityOfFreeSpace, particleDiameter, particleMass, fluidViscocity, staticFrictionCoefficient, motionFrictionCoefficient, workspaceSize)
             obj = obj.ChangeMetaValues(permeabilityOfFreeSpace, particleDiameter, particleMass, fluidViscocity, staticFrictionCoefficient, motionFrictionCoefficient, workspaceSize);
-
         end
         %So user can change parameters on the fly
         function obj = ChangeMetaValue(obj, permeabilityOfFreeSpace, particleDiameter, particleMass, fluidViscocity, staticFrictionCoefficient, motionFrictionCoefficient, workspaceSize)
@@ -31,6 +31,56 @@ classdef ParticleFunctions
             obj.particleDiameter = particleDiameter;
             obj.workspaceSizePositive = workspaceSize;
             obj.workspaceSizeMinus = -1 * workspaceSize;
+            obj.fiftyParticleStartLocations = [-0.00949, -0.00398;
+                -0.00949, -0.00397;
+                -0.00949, -0.00395;
+                -0.00949, -0.00393;
+                -0.00949, -0.00391;
+                -0.00949, -0.00389;
+                -0.00949, -0.00387;
+                -0.00949, -0.00385;
+                -0.00949, -0.00383;
+                -0.00949, -0.00381;
+                -0.00949, -0.00379;
+                -0.00949, -0.00377;
+                -0.00949, -0.00375;
+                -0.00949, -0.00373;
+                -0.00949, -0.00371;
+                -0.00949, -0.00369;
+                -0.00949, -0.00367;
+                -0.00949, -0.00365;
+                -0.00949, -0.00363;
+                -0.00949, -0.00361;
+                -0.00949, -0.00359;
+                -0.00949, -0.00357;
+                -0.00949, -0.00355;
+                -0.00949, -0.00353;
+                -0.00949, -0.00351];  %%MIDPOINT
+%                 -0.00949, -0.00349;
+%                 -0.00949, -0.00347;
+%                 -0.00949, -0.00345;
+%                 -0.00949, -0.00343;
+%                 -0.00949, -0.00341;
+%                 -0.00949, -0.00339;
+%                 -0.00949, -0.00337;
+%                 -0.00949, -0.00335;
+%                 -0.00949, -0.00333;
+%                 -0.00949, -0.00331;
+%                 -0.00949, -0.00329;
+%                 -0.00949, -0.00327;
+%                 -0.00949, -0.00325;
+%                 -0.00949, -0.00323;
+%                 -0.00949, -0.00321;
+%                 -0.00949, -0.00319;
+%                 -0.00949, -0.00317;
+%                 -0.00949, -0.00315;
+%                 -0.00949, -0.00313;
+%                 -0.00949, -0.00311;
+%                 -0.00949, -0.00309;
+%                 -0.00949, -0.00307;
+%                 -0.00949, -0.00305;
+%                 -0.00949, -0.00303;
+%                -0.00949, -0.00302];
         end
         
         %public functions
@@ -193,7 +243,9 @@ classdef ParticleFunctions
         
         function [velocity,acceleration] = calculateCurrentVelocityCD(obj, orthogonalWallContact, wallContact, previousVelocity, previousAcceleration, particleForce, particleMass, timeSinceLastUpdate)            
             currentAcceleration = obj.calculateAcceleration(particleForce, particleMass);
+%             hypotheticalDeltaVelocity = currentAcceleration .* timeSinceLastUpdate; 
             hypotheticalDeltaVelocity = 0.5.*(currentAcceleration + previousAcceleration).* timeSinceLastUpdate; %timeSinceLastUpdate must be fairly constant for this to work - maybe avg time?
+                                                                                                                    %This is v = u+at : the 0.5 is _averaging_ the accelerations.
             
             velocityOrthogonalToWallContact = obj.matrixVectorProjection(hypotheticalDeltaVelocity,orthogonalWallContact);
             testForSign = velocityOrthogonalToWallContact .* orthogonalWallContact;
@@ -207,6 +259,8 @@ classdef ParticleFunctions
             capRateofChangeAt(capRateofChangeAt < 0.1) = 0.1; %limit the lower end.
             rateOfChange(isinf(rateOfChange)) = intmax;
             rateOfChange(isnan(rateOfChange)) = 0;
+            %yes, this is aboslutely required, otherwise we IMMEDIATELY get
+            %lots of errors
             if(any(any(abs(rateOfChange) > capRateofChangeAt)))
                 cappedRateOfChange = rateOfChange;
                 cappedRateOfChange(abs(rateOfChange) > capRateofChangeAt) = capRateofChangeAt(abs(rateOfChange) > capRateofChangeAt); %cap it
@@ -247,16 +301,20 @@ classdef ParticleFunctions
         end
         
         function particleLocations = generateParticleLocations(obj, poly, particleLocationsLength)
-            [xlim ylim] = boundingbox(polyshape(poly));
-            particleLocationIndex = 1;
-            particleLocations = zeros(length(particleLocationsLength), 2);
-            %init return value
-            while(particleLocationIndex <= particleLocationsLength)
-                particleLocations(particleLocationIndex,:) = real([xlim(1), ylim(1)] + [xlim(2)-xlim(1),ylim(2)-ylim(1)] .* rand(1, 2));
-                particleLocationXValue = particleLocations(particleLocationIndex,1);
-                particleLocationYValue = particleLocations(particleLocationIndex,2);
-                if(inpolygon(particleLocationXValue,particleLocationYValue,poly(:,1), poly(:,2)))
-                    particleLocationIndex = particleLocationIndex + 1;
+            if(true)
+                particleLocations = obj.fiftyParticleStartLocations;
+            else
+                [xlim ylim] = boundingbox(polyshape(poly));
+                particleLocationIndex = 1;
+                particleLocations = zeros(length(particleLocationsLength), 2);
+                %init return value
+                while(particleLocationIndex <= particleLocationsLength)
+                    particleLocations(particleLocationIndex,:) = real([xlim(1), ylim(1)] + [xlim(2)-xlim(1),ylim(2)-ylim(1)] .* rand(1, 2));
+                    particleLocationXValue = particleLocations(particleLocationIndex,1);
+                    particleLocationYValue = particleLocations(particleLocationIndex,2);
+                    if(inpolygon(particleLocationXValue,particleLocationYValue,poly(:,1), poly(:,2)))
+                        particleLocationIndex = particleLocationIndex + 1;
+                    end
                 end
             end
         end
