@@ -212,20 +212,20 @@ function NextLevel(app)
     app.UIAxes.XLim = [min(app.polygon.currentPoly(:,1)) + (min(app.polygon.currentPoly(:,1))/20), max(app.polygon.currentPoly(:,1)) + (max(app.polygon.currentPoly(:,1))/20)];
     app.UIAxes.YLim = [min(app.polygon.currentPoly(:,2)) + (min(app.polygon.currentPoly(:,2))/20), max(app.polygon.currentPoly(:,2)) + (max(app.polygon.currentPoly(:,2))/20)];
 
-    import java.awt.*;
-    import java.awt.event.*;
-    %Create a Robot-object to do the key-pressing
-    rob=Robot;
-    %Commands for pressing keys:
-    % If the text cursor isn't in the edit box allready, then it
-    % needs to be placed there for ctrl+a to select the text.
-    % Therefore, we make sure the cursor is in the edit box by
-    % forcing a mouse button press:
-    rob.mousePress(InputEvent.BUTTON1_MASK );
-    rob.mouseRelease(InputEvent.BUTTON1_MASK );
-    % CONTROL + A :
-    rob.keyPress(KeyEvent.VK_SPACE)
-    rob.keyRelease(KeyEvent.VK_SPACE)
+%     import java.awt.*;
+%     import java.awt.event.*;
+%     %Create a Robot-object to do the key-pressing
+%     rob=Robot;
+%     %Commands for pressing keys:
+%     % If the text cursor isn't in the edit box allready, then it
+%     % needs to be placed there for ctrl+a to select the text.
+%     % Therefore, we make sure the cursor is in the edit box by
+%     % forcing a mouse button press:
+%     rob.mousePress(InputEvent.BUTTON1_MASK );
+%     rob.mouseRelease(InputEvent.BUTTON1_MASK );
+%     % CONTROL + A :
+%     rob.keyPress(KeyEvent.VK_SPACE)
+%     rob.keyRelease(KeyEvent.VK_SPACE)
 
 %    tr = triangulation(polyshape(app.polygon.currentPoly(:,1),app.polygon.currentPoly(:,2)));
 %    model = createpde(1);
