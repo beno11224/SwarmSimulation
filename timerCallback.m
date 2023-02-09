@@ -3,8 +3,8 @@ function timerCallback(app)
     %   app.currentlyDoingWorkSemaphore = true; %let the earlier tasks complete first, try and force other to leave things alone        
         
 
-    currentMagforce = app.particleFunctions.calculateMagneticForce([app.X1MAGauge.Value app.Y1MAGauge.Value],app.joyStick, 1, 3, app.controlMethod, app.mousePosition, app.MagForceRestrictMAM2EditField.Value, app.rotation);
-%     currentMagforce = [0 0];
+%     currentMagforce = app.particleFunctions.calculateMagneticForce([app.X1MAGauge.Value app.Y1MAGauge.Value],app.joyStick, 1, 3, app.controlMethod, app.mousePosition, app.MagForceRestrictMAM2EditField.Value, app.rotation);
+    currentMagforce = [0 0]; 
     currentDial = currentMagforce ./10^6 ./ app.particleFunctions.magneticForceConstant;
     if(app.controlMethod == "Controller")
         hapticSpring = app.HapticForceSlider.Value;
@@ -73,8 +73,8 @@ function timerCallback(app)
     %Now rotate location values:
     rotMat = [cosd(app.rotation), sind(app.rotation); -sind(app.rotation), cos(app.rotation)];
     rotForce = (rotMat * [app.X1MAGauge.Value ; app.Y1MAGauge.Value])';
-    %rotVel = (rotMat * app.particleArrayVelocity')';
-    rotVel = (rotMat * app.particleArrayPreviousAcceleration')';
+    rotVel = (rotMat * app.particleArrayVelocity')';
+%     rotVel = (rotMat * app.particleArrayPreviousAcceleration')';
     rotLoc = (rotMat * app.particleArrayLocation')';
  
     if(app.printCounter >= app.slowDown)

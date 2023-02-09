@@ -55,32 +55,32 @@ classdef ParticleFunctions
                 -0.00949, -0.00357;
                 -0.00949, -0.00355;
                 -0.00949, -0.00353;
-                -0.00949, -0.00351];  %%MIDPOINT
-%                 -0.00949, -0.00349;
-%                 -0.00949, -0.00347;
-%                 -0.00949, -0.00345;
-%                 -0.00949, -0.00343;
-%                 -0.00949, -0.00341;
-%                 -0.00949, -0.00339;
-%                 -0.00949, -0.00337;
-%                 -0.00949, -0.00335;
-%                 -0.00949, -0.00333;
-%                 -0.00949, -0.00331;
-%                 -0.00949, -0.00329;
-%                 -0.00949, -0.00327;
-%                 -0.00949, -0.00325;
-%                 -0.00949, -0.00323;
-%                 -0.00949, -0.00321;
-%                 -0.00949, -0.00319;
-%                 -0.00949, -0.00317;
-%                 -0.00949, -0.00315;
-%                 -0.00949, -0.00313;
-%                 -0.00949, -0.00311;
-%                 -0.00949, -0.00309;
-%                 -0.00949, -0.00307;
-%                 -0.00949, -0.00305;
-%                 -0.00949, -0.00303;
-%                -0.00949, -0.00302];
+                -0.00949, -0.00351;%];  %%MIDPOINT
+                -0.00949, -0.00349;
+                -0.00949, -0.00347;
+                -0.00949, -0.00345;
+                -0.00949, -0.00343;
+                -0.00949, -0.00341;
+                -0.00949, -0.00339;
+                -0.00949, -0.00337;
+                -0.00949, -0.00335;
+                -0.00949, -0.00333;
+                -0.00949, -0.00331;
+                -0.00949, -0.00329;
+                -0.00949, -0.00327;
+                -0.00949, -0.00325;
+                -0.00949, -0.00323;
+                -0.00949, -0.00321;
+                -0.00949, -0.00319;
+                -0.00949, -0.00317;
+                -0.00949, -0.00315;
+                -0.00949, -0.00313;
+                -0.00949, -0.00311;
+                -0.00949, -0.00309;
+                -0.00949, -0.00307;
+                -0.00949, -0.00305;
+                -0.00949, -0.00303;
+               -0.00949, -0.00302];
         end
         
         %public functions
@@ -155,6 +155,7 @@ classdef ParticleFunctions
                 perpendicularVelocity(~in,:) = obj.vectorProjection(particleVelocity(~in,:),orthogonalWallContact(~in,:));
                 testForSign(~in,:) = perpendicularVelocity(~in,:) .* orthogonalWallContact(~in,:);
                 perpendicularVelocity(testForSign < 0) = perpendicularVelocity(testForSign < 0).*-1;  %bounce particles off wall by inverting any momentum into the wall.
+%                perpendicularVelocity(testForSign < 0) = 0;% perpendicularVelocity(testForSign < 0).*-1;  %bounce particles off wall by inverting any momentum into the wall.
                    
                 particleVelocity = particleVelocity .* in + parallelVelocity + perpendicularVelocity;                
             end
@@ -243,8 +244,8 @@ classdef ParticleFunctions
         
         function [velocity,acceleration] = calculateCurrentVelocityCD(obj, orthogonalWallContact, wallContact, previousVelocity, previousAcceleration, particleForce, particleMass, timeSinceLastUpdate)            
             currentAcceleration = obj.calculateAcceleration(particleForce, particleMass);
-%             hypotheticalDeltaVelocity = currentAcceleration .* timeSinceLastUpdate; 
-            hypotheticalDeltaVelocity = 0.5.*(currentAcceleration + previousAcceleration).* timeSinceLastUpdate; %timeSinceLastUpdate must be fairly constant for this to work - maybe avg time?
+            hypotheticalDeltaVelocity = currentAcceleration .* timeSinceLastUpdate; 
+%             hypotheticalDeltaVelocity = 0.5.*(currentAcceleration + previousAcceleration).* timeSinceLastUpdate; %timeSinceLastUpdate must be fairly constant for this to work - maybe avg time?
                                                                                                                     %This is v = u+at : the 0.5 is _averaging_ the accelerations.
             
             velocityOrthogonalToWallContact = obj.matrixVectorProjection(hypotheticalDeltaVelocity,orthogonalWallContact);
