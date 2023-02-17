@@ -24,7 +24,7 @@ function timerCallback(app)
  
     magForceAlpha = 0.05;
     magForce = app.previousMagforce;
-    smallerTMaxTotalSteps = 50; %Any more speed comes from making the sim more efficient or slowing it down (not real time) %150
+    smallerTMaxTotalSteps = 2; %Any more speed comes from making the sim more efficient or slowing it down (not real time) %150
     smallerTMaxStep = app.simTimerPeriod / smallerTMaxTotalSteps;
     smallerTMaxStepReduced = smallerTMaxStep / app.slowDown;
     for smallerTMaxIndex = 1:smallerTMaxTotalSteps 
@@ -38,11 +38,15 @@ function timerCallback(app)
         [wallContact, orthogonalWallContact, app.particleArrayLocation, app.particleArrayVelocity] = app.particleFunctions.isParticleOnWallPIP(app.particleArrayLocation, app.particleArrayVelocity, app.particleArrayForce, app.polygon, smallerTMaxStepReduced,app);
 
         %drag (using last iterations velocity)
-        dragForce = app.particleFunctions.calculateDragForce(app.particleArrayVelocity, vFlow);
-        app.particleArrayForce = app.particleArrayForce - dragForce;
+%         dragForce = app.particleFunctions.calculateDragForce(app.particleArrayVelocity, vFlow);
+%         app.particleArrayForce = app.particleArrayForce - dragForce;
         %friction
-        ffric = app.particleFunctions.calculateFrictionForce(app.particleArrayVelocity, app.particleArrayForce, orthogonalWallContact);
-        app.particleArrayForce = app.particleArrayForce - ffric;%app.particleFunctions.calculateFrictionForce(app.particleArrayVelocity, app.particleArrayForce, orthogonalWallContact);
+%         ffric = app.particleFunctions.calculateFrictionForce(app.particleArrayVelocity, app.particleArrayForce, orthogonalWallContact);
+%         app.particleArrayForce = app.particleArrayForce - ffric;%app.particleFunctions.calculateFrictionForce(app.particleArrayVelocity, app.particleArrayForce, orthogonalWallContact);
+%         
+        
+        app.particleArrayPreviousAcceleration = (vFlow - app.particleArrayVelocity) ./ smallerTMaxStepReduced;
+        app.particleArrayVelocity = vFlow;
 
         app.particleArrayForce = app.particleArrayForce .* ~app.haltParticlesInEndZone;
         app.particleArrayVelocity = app.particleArrayVelocity .* ~app.haltParticlesInEndZone;
@@ -54,7 +58,7 @@ function timerCallback(app)
         app.particleArrayLocation = app.particleFunctions.calculateCurrentLocationCD(app.particleArrayLocation, app.particleArrayVelocity, app.particleArrayPreviousAcceleration, smallerTMaxStepReduced);
         %Make sure that we have the correct data stored for the next loop.        
         %calculate the new velocity
-        [app.particleArrayVelocity,app.particleArrayPreviousAcceleration] = app.particleFunctions.calculateCurrentVelocityCD(orthogonalWallContact, wallContact, temporaryVelocity, app.particleArrayPreviousAcceleration, app.particleArrayForce, app.particleFunctions.particleMass, smallerTMaxStepReduced);
+        %[app.particleArrayVelocity,app.particleArrayPreviousAcceleration] = app.particleFunctions.calculateCurrentVelocityCD(orthogonalWallContact, wallContact, temporaryVelocity, app.particleArrayPreviousAcceleration, app.particleArrayForce, app.particleFunctions.particleMass, smallerTMaxStepReduced);
         % app.particleArrayPreviousLocation = temporaryLocation;
 
         particlesInEndZone = app.particleFunctions.isParticleInEndZone(app.polygon.currentEndZone,app.particleArrayLocation);
@@ -73,16 +77,16 @@ function timerCallback(app)
     %Now rotate location values:
     rotMat = [cosd(app.rotation), sind(app.rotation); -sind(app.rotation), cos(app.rotation)];
     rotForce = (rotMat * [app.X1MAGauge.Value ; app.Y1MAGauge.Value])';
-    rotVel = (rotMat * app.particleArrayVelocity')';
-%     rotVel = (rotMat * app.particleArrayPreviousAcceleration')';
+%     rotVel = (rotMat * app.particleArrayVelocity')';
+    rotVel = (rotMat * app.particleArrayPreviousAcceleration')';
     rotLoc = (rotMat * app.particleArrayLocation')';
  
-    if(app.printCounter >= app.slowDown)
+%     if(app.printCounter >= app.slowDown)
         fprintf(app.fileID, app.timePassed + "," + mat2str(rotForce) + "," + goalPercentage + "," + mat2str(rotVel)+ "," + mat2str(rotLoc) + "," + mat2str(particlesInEndZone) + "\r\n");
-        app.printCounter = 1;
-    else
-        app.printCounter = app.printCounter + 1;
-    end
+%         app.printCounter = 1;
+%     else
+         app.printCounter = app.printCounter + 1;
+%     end
     if(app.timeLimit > 0 && app.timePassed <= app.timeLimit)
         app.TimeRemainingsEditField.Value = round(app.timeLimit - app.timePassed);
         app.PercentageinGoalEditField.Value = round(goalPercentage .* 100);

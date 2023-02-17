@@ -18,16 +18,17 @@ function DrawMeanParticlePath(particlePaths, stopDrawAtGoal, drawCorrectOutlet, 
       drawIncomplete = 1;
     end
 
-    polygon = Polygons(0.0096);
-    polygon = polygon.change(2);
+    polygon = Polygons(0.0096,FlowData05());
+    polygon = polygon.change(4,FlowData05());
     tr = triangulation(polyshape(polygon.currentPoly(:,1),polygon.currentPoly(:,2)));
     model = createpde(1);
     tnodes = tr.Points';
     telements = tr.ConnectivityList';
     model.geometryFromMesh(tnodes, telements);
   %  mesh = generateMesh(model, 'Hmax', 0.001);%was 0.000073 for old one.
-    mesh = generateMesh(model, 'Hmax', 0.0005);%was 0.000073 for old one.
-    meshValues = zeros([size(mesh.Nodes,2),1]);
+  %  mesh = generateMesh(model, 'Hmax', 0.0005);%was 0.000073 for old one.
+    mesh = delaunayTriangulation(polygon.currentFlowLocations);
+    meshValues = zeros([size(polygon.currentFlowLocations),1]);
     plotMesh = figure;
     axMesh = axes('Parent',plotMesh);
     hold on

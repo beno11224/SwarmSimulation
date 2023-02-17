@@ -1,4 +1,4 @@
-function createfiguresHaptic()
+function createfiguresHaptic26_01_23()
 %CREATEFIGURE(X1, YMatrix1)
 %  X1:  vector of plot x data
 %  YMATRIX1:  matrix of plot y data
@@ -9,7 +9,7 @@ close all;
 
 %xParticleSize = [50, 75, 100, 125, 150, 175, 200];
 xFlowBoth3 = [0.001, 0.0025, 0.005, 0.01, 0.015, 0.02, 0.025];
-xFlow3v4 = [00.005, 0.01, 0.015, 0.02, 0.025, 0.03, 0.035, 0.04, 0.045, 0.05, 0.055, 0.06];
+xFlow3v4 = [0.005, 0.01, 0.015, 0.02, 0.025, 0.03, 0.035, 0.04, 0.045, 0.05, 0.055, 0.06];
 yFlowBoth3Old = [97.6,97.6,98, 97.2, 96.4, 85, 86.8];
 yFlowBoth3New = [nan,nan,97.6, 99.8, 99.4, 94.2, 91.6];
 yFlow3v43 = [97.6, 99.8, 99.4, 94.2, 91.6, 88.6, 93.6, 90.6, 81.4, 88.8, 82.8, 84.2];
@@ -66,7 +66,7 @@ plot4 = errorbar(axes2, xFlow3v4, yFlow3v44, SEFlow3v44,'o-','MarkerSize',4,'Mar
 
 % Create title
 title(axes1,'Comparison of new flow implementation and old flow implementation');
-title(axes2,'Effect of adding a fourth bifurcation in comparison to 3 bifurcations');
+title(axes2,'Effect of four bifurcation in comparison to three bifurcations');
 
 set(plot1,'DisplayName','Previous flow implementation');
 set(plot2,'DisplayName','Newly implemented flow');

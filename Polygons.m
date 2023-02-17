@@ -634,8 +634,8 @@ classdef Polygons
             end
             obj.currentEndZone = squeeze(obj.allEndZones{num});
             obj.currentOutOfBoundsPolys = squeeze(obj.outOfBoundsPolys{num});
-             obj.currentHardCodedOrthogonalWallContacts = squeeze(obj.hardCodedOrthogonalWallContacts{num});
-            obj.currentFlowValues = fd.FlowValues{num};
+            obj.currentHardCodedOrthogonalWallContacts = squeeze(obj.hardCodedOrthogonalWallContacts{num});
+             obj.currentFlowValues = fd.FlowValues{num};
             obj.currentFlowLocations = fd.FlowLocations{num};
         end
 

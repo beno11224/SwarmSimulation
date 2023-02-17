@@ -51,33 +51,36 @@
         tline = fgetl(fid);
     end
 %     
-%     writefidlocs = fopen("Location.txt","w");
-%     writefidvalues = fopen("Values.txt","w");
-%     ab = length(locX);
-%     for(i = 1:length(locX))
-%         fprintf(writefidlocs, '%s', string(locX(i)) + " " + string(locY(i)) + ";" + newline);
-%         fprintf(writefidvalues, '%s', string(flowX(i)) + " " + string(flowY(i))+";" + newline);
-%     end
-%     fclose(writefidlocs);
-%     fclose(writefidvalues);
-
-%ASHAPE CODE WORKS, can't do colour though.
-    ashape = alphaShape(locX',locY','HoleThreshold',0.05);
-    ashape.Alpha = 0.00009;
-    [faces,nodes] = boundaryFacets(ashape)
-    for(i = 1:length(faces))
-        for(j = 1:length(locX))
-            if(nodes(i,:) == [locX(j),locY(j)])
-                colorValues(i) = flowX(j).*flowY(j);
-            end
-        end
+    writefidlocs = fopen("Location.txt","w");
+    writefidvalues = fopen("Values.txt","w");
+    ab = length(locX);
+    for(i = 1:length(locX))
+        fprintf(writefidlocs, '%s', string(locX(i)) + " " + string(locY(i)) + ";" + newline);
+        fprintf(writefidvalues, '%s', string(flowX(i)) + " " + string(flowY(i))+";" + newline);
     end
-    patch(nodes(:,1),nodes(:,2),1:length(nodes));
-    hold on;
-    patch(nodes(:,1),nodes(:,2),colorValues)
-   % colortoUse = flowX.*flowY;
-   % aplot = plot(ashape,'FaceAlpha',0,'LineWidth',0.001);
+    fclose(writefidlocs);
+    fclose(writefidvalues);
 
+
+% %ASHAPE CODE WORKS, can't do colour though.
+%     ashape = alphaShape(locX',locY','HoleThreshold',0.05);
+%     ashape.Alpha = 0.00009;
+% %     [faces,nodes] = boundaryFacets(ashape)
+% %     for(i = 1:length(faces))
+% %         for(j = 1:length(locX))
+% %             if(nodes(i,:) == [locX(j),locY(j)])
+% %                 colorValues(i) = flowX(j).*flowY(j);
+% %             end
+% %         end
+% %     end
+% %     patch(nodes(:,1),nodes(:,2),1:length(nodes));
+% %     hold on;
+% %     patch(nodes(:,1),nodes(:,2),colorValues)
+%    % colortoUse = flowX.*flowY;
+%     aplot = plot(ashape,'FaceAlpha',0,'LineWidth',0.001);
+    ashape = alphaShape(locX',locY','HoleThreshold',0.03);
+    ashape.Alpha = 0.0004;
+    aplot = plot(ashape,'FaceAlpha',0,'LineWidth',0.01);
 
 
    % ashape.Points.

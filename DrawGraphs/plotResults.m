@@ -9,7 +9,7 @@ close all;
 
 x = 5:5:60;
 x = x ./ 1000;
-y = [15	5	3	2	25;
+yCOMSOL = [15	5	3	2	25;
 15	5	2	2	25;
 15	5	2	2	25;
 15	5	2	2	25;
@@ -21,6 +21,68 @@ y = [15	5	3	2	25;
 15	5	2	2	25;
 15	5	2	1	25;
 15	5	1	2	25];
+% yMATLAB = [23	13	0	0	14; %Something before?
+% 3	0	0	36	11;
+% 1	3	1	25	20;
+% 0	13	1	14	22;
+% 0	25	0	5	20;
+% 0	19	1	7	19;
+% 1	28	0	1	19;
+% 0	26	1	1	21;
+% 1	29	0	0	17;
+% 0	30	0	1	18;
+% 0	29	0	0	21;
+% 0	25	0	0	25];
+% yMATLAB = [13 20 0 0 13 %NewFlow
+% 1 2 0 21 22
+% 0 1 0 23 22
+% 0 12 0 14 20
+% 0 22 0 3 21
+% 0 19 1 7 19
+% 0 22 0 1 23
+% 0 25 0 0 21
+% 0 25 0 0 21
+% 0 22 0 0 23
+% 0 21 0 0 25
+% 0 23 0 0 23];
+% yMATLAB = [11	11	0	0	24; %Initial Velocity
+% 1	1	0	33	11;
+% 0	3	0	25	18;
+% 1	15	2	11	17;
+% 0	18	0	4	24;
+% 0	22	0	4	20;
+% 0	23	0	0	23;
+% 0	26	0	0	20;
+% 1	24	0	0	21;
+% 0	20	0	0	26;
+% 1	22	0	0	23;
+% 0	25	0	0	20;
+% ];
+yMATLAB = [12 5 0 0 19; %FlowAsVelocity
+11 6 0 0 20;
+11 6 0 0 20;
+10 6 0 0 20;
+11 7 0 0 20;
+10 6 0 0 20;
+10 7 0 0 20;
+12 5 1 0 21;
+9 10 0 0 21;
+11 6 0 0 21;
+13 6 0 0 22;
+11 5 0 0 22];
+
+% yMATLAB = [16 12 0 0 22 %slowdown 15
+% 3 0 0 12 35
+% 2 3 0 20 25
+% 0 7 0 13 30
+% 0 10 0 7 33
+% 0 11 0 3 33;
+% 0 0 0 0 0;
+% 0 0 0 0 0;
+% 0 0 0 0 0;
+% 0 0 0 0 0;
+% 0 0 0 0 0;
+% 0 0 0 0 0;];
 % %yStartDist1OLD = [97.2, 89.2, 81.8];
 % yStartDist = [97.6, 95.2, 94.2, 89.6; 
 %     98.4, 97.6, 96.2, 93.2; 
@@ -60,7 +122,12 @@ figure1 = figure;
 axes1 = axes('Parent',figure1);
 hold(axes1,'on');
 
-plot1 = plot(x,y, '.-','MarkerSize',4,'MarkerFaceColor','#ff3300');
+plot1 = plot(x,yMATLAB, '.-','MarkerSize',4,'MarkerFaceColor','#ff3300');
+%barPlot1 = bar(axes1, x, yCOMSOL);%,"stacked");
+%barPlot2 = bar(axes1, x, yMATLAB);%,"stacked");
+
+
+
 
 set(plot1(1),'DisplayName','Goal 1');
 set(plot1(2),'DisplayName','Goal 2');
@@ -69,11 +136,11 @@ set(plot1(4),'DisplayName','Goal 4');
 set(plot1(5),'DisplayName','Goal 5');
 xlabel(axes1,"Maximum Fluid Velocity (m/s)");
 ylabel(axes1, 'Number of particles reaching each goal state');
-ylim(axes1,[0,30]);
+ylim(axes1,[0,40]);
 title(axes1,'Number of particles reaching each goal state for different fluid velocities');
 box(axes1,'on');
 grid(axes1,'on');
-legend(axes1,'show','Location','northeast');
+legend(axes1,'show','Location','southeast');
 
 
 
