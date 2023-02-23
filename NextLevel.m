@@ -48,84 +48,84 @@ function NextLevel(app)
             app.FluidFlowmsEditField.Value = 1;
             app.goalIndex = 4;
             app.slowDown = 1;
-            minTimeToTravel = 180;
+            minTimeToTravel = 80;
         case(1)
             app.fd = FlowData10();
             app.polygon = app.polygon.change(4,app.fd);
             app.FluidFlowmsEditField.Value = 1;
             app.goalIndex = 4;
             app.slowDown = 1;
-            minTimeToTravel = 180;
+            minTimeToTravel = 80;
         case(2)
             app.fd = FlowData15();
             app.polygon = app.polygon.change(4,app.fd);
             app.FluidFlowmsEditField.Value = 1;
             app.goalIndex = 4;
             app.slowDown = 1;
-            minTimeToTravel = 170;
+            minTimeToTravel = 70;
         case(3)
             app.fd = FlowData20();
             app.polygon = app.polygon.change(4,app.fd);
             app.FluidFlowmsEditField.Value = 1;
             app.goalIndex = 4;
             app.slowDown = 1;
-            minTimeToTravel = 170;
+            minTimeToTravel = 70;
         case(4)
             app.fd = FlowData25();
             app.polygon = app.polygon.change(4,app.fd);
             app.FluidFlowmsEditField.Value = 1;
             app.goalIndex = 4;
             app.slowDown = 1;
-            minTimeToTravel = 160;
+            minTimeToTravel = 60;
         case(5)
             app.fd = FlowData30();
             app.polygon = app.polygon.change(4,app.fd);
             app.FluidFlowmsEditField.Value = 1;
             app.goalIndex = 4;
             app.slowDown = 1;
-            minTimeToTravel = 160;
+            minTimeToTravel = 60;
         case(6)
             app.fd = FlowData35();
             app.polygon = app.polygon.change(4,app.fd);
             app.FluidFlowmsEditField.Value = 1;
             app.goalIndex = 4;
             app.slowDown = 1;
-            minTimeToTravel = 150;
+            minTimeToTravel = 50;
         case(7)
             app.fd = FlowData40();
             app.polygon = app.polygon.change(4,app.fd);
             app.FluidFlowmsEditField.Value = 1;
             app.goalIndex = 4;
             app.slowDown = 1;
-            minTimeToTravel = 150;
+            minTimeToTravel = 50;
         case(8)
             app.fd = FlowData45();
             app.polygon = app.polygon.change(4,app.fd);
             app.FluidFlowmsEditField.Value = 1;
             app.goalIndex = 4;
             app.slowDown = 1;
-            minTimeToTravel = 140;
+            minTimeToTravel = 40;
         case(9)
             app.fd = FlowData50();
             app.polygon = app.polygon.change(4,app.fd);
             app.FluidFlowmsEditField.Value = 1;
             app.goalIndex = 4;
             app.slowDown = 1;
-            minTimeToTravel = 140;
+            minTimeToTravel = 40;
         case(10)
             app.fd = FlowData55();
             app.polygon = app.polygon.change(4,app.fd);
             app.FluidFlowmsEditField.Value = 1;
             app.goalIndex = 4;
             app.slowDown = 1;
-            minTimeToTravel = 130;
+            minTimeToTravel = 30;
         case(11)
             app.fd = FlowData60();
             app.polygon = app.polygon.change(4,app.fd);
             app.FluidFlowmsEditField.Value = 1;
             app.goalIndex = 4;
             app.slowDown = 1;
-            minTimeToTravel = 120;
+            minTimeToTravel = 30;
         otherwise
             fprintf("The experiment has now ended, thank you for your participation. Please close this window.\r\n");
             app.polygon = app.polygon.change(1,app.fd);
@@ -137,7 +137,7 @@ function NextLevel(app)
 %             app.currentFlowValues = app.fd.FlowValues{1};
     end    
 
-
+    app.slowDown = 2;
      app.TimeRemainingsEditField.Value = minTimeToTravel;% .* 5;%2.5;TODO RESET ME
     app.timeLimit = app.TimeRemainingsEditField.Value;
     app.numParticles = app.NumberofParticlesEditField.Value;

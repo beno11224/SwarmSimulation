@@ -35,7 +35,7 @@ classdef ParticleFunctions
                 -0.00949, -0.00397;
                 -0.00949, -0.00395;
                 -0.00949, -0.00393;
-                -0.00949, -0.00391;
+                -0.00949, -0.00391
                 -0.00949, -0.00389;
                 -0.00949, -0.00387;
                 -0.00949, -0.00385;
@@ -228,7 +228,7 @@ classdef ParticleFunctions
             for i = 1:length(velocity)
                 if(any(~isnan(wallContact(i,:))))
                     velocity(i,:) = obj.vectorProjection(velocity(i,:),wallContact(i,:));
-                end
+                end 
             end
             %prevent these particles from moving
             velocity = velocity .* ~haltTheseParticles;
@@ -262,17 +262,17 @@ classdef ParticleFunctions
             rateOfChange(isnan(rateOfChange)) = 0;
             %yes, this is aboslutely required, otherwise we IMMEDIATELY get
             %lots of errors
-%             if(any(any(abs(rateOfChange) > capRateofChangeAt)))
-%                 cappedRateOfChange = rateOfChange;
-%                 cappedRateOfChange(abs(rateOfChange) > capRateofChangeAt) = capRateofChangeAt(abs(rateOfChange) > capRateofChangeAt); %cap it
-%                 cappedRateOfChange(rateOfChange < 0) = ((capRateofChangeAt(rateOfChange < 0))./2) .* -1; %replace any negative signs, halve negative rate of change
-%                 %set the capped deltaVelocity
-%                 hypotheticalDeltaVelocity = obj.realNum((cappedRateOfChange./rateOfChange) .* hypotheticalDeltaVelocity);
-%                 %set the capped acceleration
-%                 acceleration = hypotheticalDeltaVelocity / timeSinceLastUpdate;
-%             else
+            if(any(any(abs(rateOfChange) > capRateofChangeAt)))
+                cappedRateOfChange = rateOfChange;
+                cappedRateOfChange(abs(rateOfChange) > capRateofChangeAt) = capRateofChangeAt(abs(rateOfChange) > capRateofChangeAt); %cap it
+                cappedRateOfChange(rateOfChange < 0) = ((capRateofChangeAt(rateOfChange < 0))./2) .* -1; %replace any negative signs, halve negative rate of change
+                %set the capped deltaVelocity
+                hypotheticalDeltaVelocity = obj.realNum((cappedRateOfChange./rateOfChange) .* hypotheticalDeltaVelocity);
+                %set the capped acceleration
+                acceleration = hypotheticalDeltaVelocity / timeSinceLastUpdate; 
+            else
                 acceleration = currentAcceleration;
-%             end
+            end
             velocity = (previousVelocity + hypotheticalDeltaVelocity);% .* ~haltTheseParticles;
         end
         
