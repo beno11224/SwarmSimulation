@@ -115,35 +115,32 @@ yCOMSOL = [15	5	3	2	25;
 
 
 % % %flowAsVeloxity 6
-yMATLAB = [17 1 0 0 25;
-2 0 0 23 25;
-0 1 4 19 26;
-0 8 3 11 28;
-0 10 0 15 25;
-0 3 0 13 30;
-0 17 1 2 30;
-0 16 0 6 27;
+% yMATLAB = [17 1 0 0 25;
+% 2 0 0 23 25;
+% 0 1 4 19 26;
+% 0 8 3 11 28;
+% 0 10 0 15 25;
+% 0 3 0 13 30;
+% 0 17 1 2 30;
+% 0 16 0 6 27;
+% 0 22 0 0 28;
+% 0 20 0 1 29;
+% 0 23 0 0 27;
+% 0 21 0 0 29];
+
+% % %flowAsVeloxity 7
+yMATLAB = [16 13 0 0 21;
+3 0 0 29 18;
+3 1 0 26 20;
+1 5 3 17 23;
+0 2 0 23 21;
+1 2 0 25 22;
+0 15 0 10 25;
+0 23 0 4 21;
 0 22 0 0 28;
-0 20 0 1 29;
-0 23 0 0 27;
-0 21 0 0 29];
-
-% %flowAsVeloxity 7
-% yMATLAB = [16 13 0 0 21;
-% 3 0 0 29 18;
-% 3 1 0 26 20;
-% 1 5 3 17 23;
-% 0 2 0 23 21;
-% 1 2 0 25 22;
-% 0 15 0 10 25;
-% 0 23 0 4 21;
-% 0 22 0 0 28;
-% 0 22 0 0 28;
-% 0 21 0 0 29;
-% 0 23 0 0 27];
-
-
-
+0 22 0 0 28;
+0 21 0 0 29;
+0 23 0 0 27];
 
 % yMATLAB = [16 12 0 0 22 %slowdown 15
 % 3 0 0 12 35
@@ -157,6 +154,51 @@ yMATLAB = [17 1 0 0 25;
 % 0 0 0 0 0;
 % 0 0 0 0 0;
 % 0 0 0 0 0;];
+
+ybar = [15	5	3	2   25];
+% ybar = [25  15	5	3	2];
+
+yMATLABShifted = [14 6 1 4 25;
+14 6 1 4 25;
+14 6 1 4 25;
+13 7 1 4 25;
+12 8 1 3 26;
+13 7 1 4 25;
+12 8 1 4 25;
+11 9 1 4 25;
+11 8 2 4 25;
+11 8 2 4 25;
+10 9 2 4 25;
+11 6 3 5 25];
+% %3
+% yMATLABShifted = [25 14 6 1 4;
+% 25 14 6 1 4;
+% 25 14 6 1 4;
+% 25 13 7 1 4;
+% 26 12 8 1 3;
+% 25 13 7 1 4;
+% 25 12 8 1 4;
+% 25 11 9 1 4;
+% 25 11 8 2 4;
+% 25 11 8 2 4;
+% 25 10 9 2 4;
+% 25 11 6 3 5];
+
+% % 7
+% yMATLABShifted = [21 16 13 0 0;
+% 18 3 0 0 29;
+% 20 3 1 0 26;
+% 23 1 5 3 17;
+% 21 0 2 0 23;
+% 22 1 2 0 25;
+% 25 0 15 0 10;
+% 21 0 23 0 4;
+% 28 0 22 0 0;
+% 28 0 22 0 0;
+% 29 0 21 0 0;
+% 27 0 23 0 0];
+
+
 % %yStartDist1OLD = [97.2, 89.2, 81.8];
 % yStartDist = [97.6, 95.2, 94.2, 89.6; 
 %     98.4, 97.6, 96.2, 93.2; 
@@ -191,15 +233,30 @@ yMATLAB = [17 1 0 0 25;
 
 % Create figure
 figure1 = figure;
+figure2 = figure;
 
 % Create axes
 axes1 = axes('Parent',figure1);
 hold(axes1,'on');
+axes2= axes('Parent',figure2);
+hold(axes2,'on');
 
-plot1 = plot(x,yMATLAB, '.-','MarkerSize',4,'MarkerFaceColor','#ff3300');
+ybarError = [0 0 0 0 0; abs(yMATLABShifted - ybar) .* 2];
+ybarErrorAvg = zeros(5,13);
+ybarErrorAvg(:,13) = sum(ybarError)./13;
+ybarErrorAvg = ybarErrorAvg';
+ybar = [ybar; yMATLABShifted].*2; %now in percentages
+
+plot1 = plot(axes1,x,yMATLAB, '.-','MarkerSize',4,'MarkerFaceColor','#ff3300');
+ab = ["Comsol",x];
+plot2 = bar(ybar,'stacked');
+set(gca,'XTick',1:13);
+set(gca,'xticklabel',ab)
+errorbar(cumsum(ybar')',ybarErrorAvg,'.k');
+% errorbar(cumsum(ybar')',ybarError,'.k');
 %barPlot1 = bar(axes1, x, yCOMSOL);%,"stacked");
 %barPlot2 = bar(axes1, x, yMATLAB);%,"stacked");
-sumAll = sum(yMATLAB,2);
+%sumAll = sum(axes1,yMATLAB,2);
 
 
 
@@ -215,6 +272,19 @@ title(axes1,'Number of particles reaching each goal state for different fluid ve
 box(axes1,'on');
 grid(axes1,'on');
 legend(axes1,'show','Location','southeast');
+
+set(plot2(1),'DisplayName','Goal 1');
+set(plot2(2),'DisplayName','Goal 2');
+set(plot2(3),'DisplayName','Goal 3');
+set(plot2(4),'DisplayName','Goal 4');
+set(plot2(5),'DisplayName','Goal 5');
+xlabel(axes2,"Maximum Fluid Velocity (m/s)");
+ylabel(axes2, 'Percentage of total particles reaching each goal state');
+ylim(axes2,[0,100]);
+title(axes2,'Percentage of total particles reaching each goal state for different fluid velocities');
+box(axes2,'on');
+grid(axes2,'on');
+legend(axes2,["Goal 1", "Goal 2", "Goal 3", "Goal 4", "Goal 5"],'Location','northwest');
 
 
 

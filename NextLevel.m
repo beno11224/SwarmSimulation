@@ -16,7 +16,15 @@ function NextLevel(app)
     minTimeToTravel = 10;
 %   minTimeToTravel = 4 * (0.005 ./ app.FluidFlowmsEditField.Value); %4 paths, length, velocity
    % meshLocations = app.fd.FlowLocations{1};
-    switch(floor((app.testOrder(app.testNumber)-1)/1)) %Do n of each
+    switch(floor((app.testOrder(app.testNumber)-1)/10)) %Do n of each
+
+
+%%%% FOR THE SYSTEM TO REPRESENT ALI's, 2T/m means that the user can impart
+%%%% around 1.6MA/m maximum - drop by 1MA/m basically.
+
+
+
+
         
 %         case(0)
 %             app.polygon = app.polygon.change(3,app.fd);
