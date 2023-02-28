@@ -13,7 +13,7 @@ function NextLevel(app)
     app.goalIndex = 2;
     app.HapticForceSlider.Enable = false;
     minTimeToTravel = 10;
-    app.maxForce = 0.16;% 0.32; %0.16 - too low for high flow, 1.6 too high for all flows
+    app.maxForce = 0.32; %0.16 - too low for high flow, 1.6 too high for all flows
     switch(floor((app.testOrder(app.testNumber)-1)/15)) %Do n of each
 
 
@@ -113,8 +113,7 @@ function NextLevel(app)
             app.MagForceRestrictMAM2EditField.Value = 0;
     end    
 
-   % app.slowDown = 2;
-     app.TimeRemainingsEditField.Value = minTimeToTravel;% .* 5;%2.5;TODO RESET ME
+    app.TimeRemainingsEditField.Value = minTimeToTravel;% .* 5;%2.5;TODO RESET ME
     app.timeLimit = app.TimeRemainingsEditField.Value;
     app.numParticles = app.NumberofParticlesEditField.Value;
     app.previousMagforce = 0;
@@ -197,6 +196,8 @@ function NextLevel(app)
     %set(app.UIAxes,'padded')
     app.UIAxes.XLim = [min(app.polygon.currentPoly(:,1)) + (min(app.polygon.currentPoly(:,1))/20), max(app.polygon.currentPoly(:,1)) + (max(app.polygon.currentPoly(:,1))/20)];
     app.UIAxes.YLim = [min(app.polygon.currentPoly(:,2)) + (min(app.polygon.currentPoly(:,2))/20), max(app.polygon.currentPoly(:,2)) + (max(app.polygon.currentPoly(:,2))/20)];
+
+    pause(2);
 
     import java.awt.*;
     import java.awt.event.*;
