@@ -4,7 +4,7 @@ function NextLevel(app)
     app.ScenarioEditField.Value = "Test " + app.testNumber;
     app.polygon = app.polygon.change(2,app.fd);
     app.rotation = 0;
-    app.NumberofParticlesEditField.Value = 50;
+    app.NumberofParticlesEditField.Value = 500;
     app.FluidFlowmsEditField.Value = 0.005;
     app.MagForceRestrictMAM2EditField.Value = 0;
     generateNewParticles = true;
@@ -13,7 +13,7 @@ function NextLevel(app)
     app.goalIndex = 2;
     app.HapticForceSlider.Enable = false;
     minTimeToTravel = 10;
-    app.maxForce = 0.32; %0.16 - too low for high flow, 1.6 too high for all flows
+    %app.maxForce = 0.32; %0.16 - too low for high flow, 1.6 too high for all flows
     switch(floor((app.testOrder(app.testNumber)-1)/15)) %Do n of each
 
 
@@ -23,7 +23,7 @@ function NextLevel(app)
         case(0)
             app.fd = FlowData05();
             app.polygon = app.polygon.change(4,app.fd);
-            app.FluidFlowmsEditField.Value = 1;
+            app.FluidFlowmsEditField.Value = 3;
             app.goalIndex = 4;
             app.slowDown = 1;
             minTimeToTravel = 26;
