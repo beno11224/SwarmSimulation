@@ -84,7 +84,8 @@ classdef ParticleFunctions
         end
         
         %public functions
-        function force = calculateMagneticForce(obj, aCoils,joyStick, h, v, controlMethod, mouseLocation, magForceRestrict, rotation, maxUserForce)
+        function force = calculateMagneticForce(obj, aCoils,joyStick, h, v, controlMethod, mouseLocation, magForceRestrict, rotation)
+            maxUserForce = 2.25;
             switch(controlMethod)      
                 case("Keyboard")
                     totalForce = aCoils.* 10^6;
@@ -92,16 +93,16 @@ classdef ParticleFunctions
                     totalForce = mouseLocation .* maxuserForce*10^8; %Mouse Force is a bit lower than the others
                 case("Controller")                    
                     %newHapticValues = (HapticSpoofTest() + 0.05) .* 25;
-                    newHapticValues = ReadHaptic() .* (1/0.077);% .* 30; %30 was for 2.25 max
+                    newHapticValues = ReadHaptic() .* 30;
                     if magForceRestrict ~= 0
-                        newHapticValues = newHapticValues .* (magForceRestrict/maxUserForce);
+                        newHapticValues = newHapticValues .* (magForceRestrict/2.25);
                     end
                     totalForce = [newHapticValues(1)*10^6, newHapticValues(2)*10^6];                    
                 otherwise
                     totalForce = [0 0];
             end
-            if(norm(totalForce) > maxUserForce*10^6)
-                totalForce = totalForce ./ norm(totalForce) .* maxUserForce*10^6;
+            if(norm(totalForce) > 2.25*10^6)
+                totalForce = totalForce ./ norm(totalForce) .* 2.25*10^6;
             end
             force = ([cosd(-rotation), sind(-rotation); -sind(-rotation), cos(-rotation)] * (obj.magneticForceConstant .* totalForce)')' ;
         end

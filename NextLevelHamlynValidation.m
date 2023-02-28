@@ -12,13 +12,43 @@ function NextLevel(app)
     app.slowDown = 1;
     app.goalIndex = 2;
     app.HapticForceSlider.Enable = false;
+ %   minTimeToTravel = 1.7;
     minTimeToTravel = 10;
-    app.maxForce = 0.16;% 0.32; %0.16 - too low for high flow, 1.6 too high for all flows
-    switch(floor((app.testOrder(app.testNumber)-1)/15)) %Do n of each
+%   minTimeToTravel = 4 * (0.005 ./ app.FluidFlowmsEditField.Value); %4 paths, length, velocity
+   % meshLocations = app.fd.FlowLocations{1};
+    switch(floor((app.testOrder(app.testNumber)-1)/10)) %Do n of each
 
 
 %%%% FOR THE SYSTEM TO REPRESENT ALI's, 2T/m means that the user can impart
 %%%% around 1.6MA/m maximum - drop by 1MA/m basically.
+
+
+
+
+        
+%         case(0)
+%             app.polygon = app.polygon.change(3,app.fd);
+% %             app.polygon = app.polygon.change(4,app.fd);
+%             app.FluidFlowmsEditField.Value = 1;
+%            % app.FluidFlowmsEditField.Value = 0.001;
+%             app.slowDown = 1;
+% %             app.goalIndex = 3;
+%             app.goalIndex = 1;
+%          %   minTimeToTravel = 3;
+%         %    meshLocations = app.fd.FlowLocations{4};
+%         %    app.currentFlowValues = app.fd.FlowValues{4};
+
+        
+%         case(1)
+%             app.polygon = app.polygon.change(4,app.fd);
+%             app.FluidFlowmsEditField.Value = 1;
+%            % app.FluidFlowmsEditField.Value = 0.001;
+%             app.slowDown = 1;
+%             app.goalIndex = 3;
+%          %   minTimeToTravel = 3;
+%         %    meshLocations = app.fd.FlowLocations{4};
+%         %    app.currentFlowValues = app.fd.FlowValues{4};
+
 
         case(0)
             app.fd = FlowData05();
@@ -26,84 +56,84 @@ function NextLevel(app)
             app.FluidFlowmsEditField.Value = 1;
             app.goalIndex = 4;
             app.slowDown = 1;
-            minTimeToTravel = 26;
+            minTimeToTravel = 80;
         case(1)
             app.fd = FlowData10();
             app.polygon = app.polygon.change(4,app.fd);
             app.FluidFlowmsEditField.Value = 1;
             app.goalIndex = 4;
             app.slowDown = 1;
-            minTimeToTravel = 26;
+            minTimeToTravel = 80;
         case(2)
             app.fd = FlowData15();
             app.polygon = app.polygon.change(4,app.fd);
             app.FluidFlowmsEditField.Value = 1;
             app.goalIndex = 4;
             app.slowDown = 1;
-            minTimeToTravel = 25;
+            minTimeToTravel = 70;
         case(3)
             app.fd = FlowData20();
             app.polygon = app.polygon.change(4,app.fd);
             app.FluidFlowmsEditField.Value = 1;
             app.goalIndex = 4;
             app.slowDown = 1;
-            minTimeToTravel = 24;
+            minTimeToTravel = 70;
         case(4)
             app.fd = FlowData25();
             app.polygon = app.polygon.change(4,app.fd);
             app.FluidFlowmsEditField.Value = 1;
             app.goalIndex = 4;
             app.slowDown = 1;
-            minTimeToTravel = 23;
+            minTimeToTravel = 60;
         case(5)
             app.fd = FlowData30();
             app.polygon = app.polygon.change(4,app.fd);
             app.FluidFlowmsEditField.Value = 1;
             app.goalIndex = 4;
             app.slowDown = 1;
-            minTimeToTravel = 22;
+            minTimeToTravel = 60;
         case(6)
             app.fd = FlowData35();
             app.polygon = app.polygon.change(4,app.fd);
             app.FluidFlowmsEditField.Value = 1;
             app.goalIndex = 4;
             app.slowDown = 1;
-            minTimeToTravel = 21;
+            minTimeToTravel = 50;
         case(7)
             app.fd = FlowData40();
             app.polygon = app.polygon.change(4,app.fd);
             app.FluidFlowmsEditField.Value = 1;
             app.goalIndex = 4;
             app.slowDown = 1;
-            minTimeToTravel = 20;
+            minTimeToTravel = 50;
         case(8)
             app.fd = FlowData45();
             app.polygon = app.polygon.change(4,app.fd);
             app.FluidFlowmsEditField.Value = 1;
             app.goalIndex = 4;
             app.slowDown = 1;
-            minTimeToTravel = 19;
+            minTimeToTravel = 40;
         case(9)
             app.fd = FlowData50();
             app.polygon = app.polygon.change(4,app.fd);
             app.FluidFlowmsEditField.Value = 1;
             app.goalIndex = 4;
             app.slowDown = 1;
-            minTimeToTravel = 18;
+            minTimeToTravel = 40;
         case(10)
             app.fd = FlowData55();
             app.polygon = app.polygon.change(4,app.fd);
             app.FluidFlowmsEditField.Value = 1;
             app.goalIndex = 4;
             app.slowDown = 1;
-            minTimeToTravel = 17;
+            minTimeToTravel = 30;
         case(11)
             app.fd = FlowData60();
             app.polygon = app.polygon.change(4,app.fd);
             app.FluidFlowmsEditField.Value = 1;
             app.goalIndex = 4;
             app.slowDown = 1;
-            minTimeToTravel = 16;
+            minTimeToTravel = 30;
         otherwise
             fprintf("The experiment has now ended, thank you for your participation. Please close this window.\r\n");
             app.polygon = app.polygon.change(1,app.fd);
@@ -111,9 +141,11 @@ function NextLevel(app)
             app.FluidFlowmsEditField.Value = 0;
             app.TimeRemainingsEditField.Value = 1200;
             app.MagForceRestrictMAM2EditField.Value = 0;
+%             meshLocations = app.fd.FlowLocations{1};
+%             app.currentFlowValues = app.fd.FlowValues{1};
     end    
 
-   % app.slowDown = 2;
+    app.slowDown = 2;
      app.TimeRemainingsEditField.Value = minTimeToTravel;% .* 5;%2.5;TODO RESET ME
     app.timeLimit = app.TimeRemainingsEditField.Value;
     app.numParticles = app.NumberofParticlesEditField.Value;
@@ -126,6 +158,9 @@ function NextLevel(app)
     app.tMax = 1;
 
 
+
+ %   app.mesh = alphaShape(meshLocations(:,1),meshLocations(:,2));
+%     app.mesh = delaunayTriangulation(meshLocations);
     app.mesh = delaunayTriangulation(app.polygon.currentFlowLocations);
     if(generateNewParticles)
         app.particleArrayLocation = app.particleFunctions.generateParticleLocations(app.polygon.currentStartZone, app.numParticles);

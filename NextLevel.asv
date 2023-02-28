@@ -13,8 +13,8 @@ function NextLevel(app)
     app.goalIndex = 2;
     app.HapticForceSlider.Enable = false;
     minTimeToTravel = 10;
-    app.maxForce = 0.16;% 0.32; %0.16 - too low for high flow, 1.6 too high for all flows
-    switch(floor((app.testOrder(app.testNumber)-1)/15)) %Do n of each
+    app.maxForce = 1.6;
+    switch(floor((app.testOrder(app.testNumber)-1)/10)) %Do n of each
 
 
 %%%% FOR THE SYSTEM TO REPRESENT ALI's, 2T/m means that the user can impart
@@ -26,84 +26,84 @@ function NextLevel(app)
             app.FluidFlowmsEditField.Value = 1;
             app.goalIndex = 4;
             app.slowDown = 1;
-            minTimeToTravel = 26;
+            minTimeToTravel = 20;
         case(1)
             app.fd = FlowData10();
             app.polygon = app.polygon.change(4,app.fd);
             app.FluidFlowmsEditField.Value = 1;
             app.goalIndex = 4;
             app.slowDown = 1;
-            minTimeToTravel = 26;
+            minTimeToTravel = 20;
         case(2)
             app.fd = FlowData15();
             app.polygon = app.polygon.change(4,app.fd);
             app.FluidFlowmsEditField.Value = 1;
             app.goalIndex = 4;
             app.slowDown = 1;
-            minTimeToTravel = 25;
+            minTimeToTravel = 19;
         case(3)
             app.fd = FlowData20();
             app.polygon = app.polygon.change(4,app.fd);
             app.FluidFlowmsEditField.Value = 1;
             app.goalIndex = 4;
             app.slowDown = 1;
-            minTimeToTravel = 24;
+            minTimeToTravel = 19;
         case(4)
             app.fd = FlowData25();
             app.polygon = app.polygon.change(4,app.fd);
             app.FluidFlowmsEditField.Value = 1;
             app.goalIndex = 4;
             app.slowDown = 1;
-            minTimeToTravel = 23;
+            minTimeToTravel = 60;
         case(5)
             app.fd = FlowData30();
             app.polygon = app.polygon.change(4,app.fd);
             app.FluidFlowmsEditField.Value = 1;
             app.goalIndex = 4;
             app.slowDown = 1;
-            minTimeToTravel = 22;
+            minTimeToTravel = 18;
         case(6)
             app.fd = FlowData35();
             app.polygon = app.polygon.change(4,app.fd);
             app.FluidFlowmsEditField.Value = 1;
             app.goalIndex = 4;
             app.slowDown = 1;
-            minTimeToTravel = 21;
+            minTimeToTravel = 50;
         case(7)
             app.fd = FlowData40();
             app.polygon = app.polygon.change(4,app.fd);
             app.FluidFlowmsEditField.Value = 1;
             app.goalIndex = 4;
             app.slowDown = 1;
-            minTimeToTravel = 20;
+            minTimeToTravel = 50;
         case(8)
             app.fd = FlowData45();
             app.polygon = app.polygon.change(4,app.fd);
             app.FluidFlowmsEditField.Value = 1;
             app.goalIndex = 4;
             app.slowDown = 1;
-            minTimeToTravel = 19;
+            minTimeToTravel = 40;
         case(9)
             app.fd = FlowData50();
             app.polygon = app.polygon.change(4,app.fd);
             app.FluidFlowmsEditField.Value = 1;
             app.goalIndex = 4;
             app.slowDown = 1;
-            minTimeToTravel = 18;
+            minTimeToTravel = 17;
         case(10)
             app.fd = FlowData55();
             app.polygon = app.polygon.change(4,app.fd);
             app.FluidFlowmsEditField.Value = 1;
             app.goalIndex = 4;
             app.slowDown = 1;
-            minTimeToTravel = 17;
+            minTimeToTravel = 16;
         case(11)
             app.fd = FlowData60();
             app.polygon = app.polygon.change(4,app.fd);
             app.FluidFlowmsEditField.Value = 1;
             app.goalIndex = 4;
             app.slowDown = 1;
-            minTimeToTravel = 16;
+            minTimeToTravel = 15;
         otherwise
             fprintf("The experiment has now ended, thank you for your participation. Please close this window.\r\n");
             app.polygon = app.polygon.change(1,app.fd);
