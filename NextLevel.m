@@ -21,12 +21,12 @@ function NextLevel(app)
 %%%% around 1.6MA/m maximum - drop by 1MA/m basically.
 
         case(0)
-            app.fd = FlowData60(); %start at 30?
+            app.fd = FlowData05(); %start at 30?
             app.polygon = app.polygon.change(4,app.fd);
             app.FluidFlowmsEditField.Value = 3;
             app.goalIndex = 4;
             app.slowDown = 1;
-            minTimeToTravel = 20;
+            minTimeToTravel = 27;
         case(1)
             app.fd = FlowData10();
             app.polygon = app.polygon.change(4,app.fd);

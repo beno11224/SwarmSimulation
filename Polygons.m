@@ -184,21 +184,33 @@ classdef Polygons
                -0.0022 -0.0013;%%
                -0.0038 -0.0034];
             
-           obj.allStartZones{2} = allStartZones3bif;
+            obj.allStartZones{2} = allStartZones3bif;
 
                
-           obj.allStartZones{3} = [-0.0095 -0.004;
+            obj.allStartZones{3} = [-0.0095 -0.004;
                -0.0094 -0.004;
                -0.0094 -0.003;
                -0.0095 -0.003;
                -0.0095 -0.004];  
            
-           obj.allStartZones{4} = [-0.0095 -0.004;
-               -0.0094 -0.004;
-               -0.0094 -0.003;
+            allstartZones4bif(1,:,:) = [-0.0095 -0.004;
+               -0.009499 -0.004;
+               -0.009499 -0.003;
                -0.0095 -0.003;
                -0.0095 -0.004];
-           
+            allstartZones4bif(2,:,:) = [-0.003633975 -0.0035;
+                -0.0045 -0.003;
+                -0.004499 -0.00299;
+                -0.003634 -0.003499
+                -0.003633975 -0.0035];
+
+            obj.allStartZones{4} = allstartZones4bif;
+%             obj.allStartZones{4} = [-0.0095 -0.004;
+%                -0.0094 -0.004;
+%                -0.0094 -0.003;
+%                -0.0095 -0.003;
+%                -0.0095 -0.004];
+%            
            %Comment out these tests and replace with new start/goals - Use with the original scenario, they
            %might not fit on new ones.
            %obj.allStartZones(3,:,:) = [-len -len*0.25; %Flow Test
