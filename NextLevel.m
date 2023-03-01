@@ -21,12 +21,12 @@ function NextLevel(app)
 %%%% around 1.6MA/m maximum - drop by 1MA/m basically.
 
         case(0)
-            app.fd = FlowData05();
+            app.fd = FlowData60(); %start at 30?
             app.polygon = app.polygon.change(4,app.fd);
             app.FluidFlowmsEditField.Value = 3;
             app.goalIndex = 4;
             app.slowDown = 1;
-            minTimeToTravel = 26;
+            minTimeToTravel = 20;
         case(1)
             app.fd = FlowData10();
             app.polygon = app.polygon.change(4,app.fd);
@@ -197,23 +197,24 @@ function NextLevel(app)
     app.UIAxes.XLim = [min(app.polygon.currentPoly(:,1)) + (min(app.polygon.currentPoly(:,1))/20), max(app.polygon.currentPoly(:,1)) + (max(app.polygon.currentPoly(:,1))/20)];
     app.UIAxes.YLim = [min(app.polygon.currentPoly(:,2)) + (min(app.polygon.currentPoly(:,2))/20), max(app.polygon.currentPoly(:,2)) + (max(app.polygon.currentPoly(:,2))/20)];
 
-    pause(2);
+    pause(1);
 
-    import java.awt.*;
-    import java.awt.event.*;
-    %Create a Robot-object to do the key-pressing
-    rob=Robot;
-    %Commands for pressing keys:
-    % If the text cursor isn't in the edit box allready, then it
-    % needs to be placed there for ctrl+a to select the text.
-    % Therefore, we make sure the cursor is in the edit box by
-    % forcing a mouse button press:
-    rob.mousePress(InputEvent.BUTTON1_MASK );
-    rob.mouseRelease(InputEvent.BUTTON1_MASK );
-    % CONTROL + A : 
-    rob.keyPress(KeyEvent.VK_SPACE)
-    rob.keyRelease(KeyEvent.VK_SPACE)
-
+    if(true)
+        import java.awt.*;
+        import java.awt.event.*;
+        %Create a Robot-object to do the key-pressing
+        rob=Robot;
+        %Commands for pressing keys:
+        % If the text cursor isn't in the edit box allready, then it
+        % needs to be placed there for ctrl+a to select the text.
+        % Therefore, we make sure the cursor is in the edit box by
+        % forcing a mouse button press:
+        rob.mousePress(InputEvent.BUTTON1_MASK );
+        rob.mouseRelease(InputEvent.BUTTON1_MASK );
+        % CONTROL + A : 
+        rob.keyPress(KeyEvent.VK_SPACE)
+        rob.keyRelease(KeyEvent.VK_SPACE)
+    end
 %    tr = triangulation(polyshape(app.polygon.currentPoly(:,1),app.polygon.currentPoly(:,2)));
 %    model = createpde(1);
 %    tnodes = tr.Points';

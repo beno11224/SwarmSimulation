@@ -302,7 +302,7 @@ classdef ParticleFunctions
         end
         
         function particleLocations = generateParticleLocations(obj, poly, particleLocationsLength)
-            if(true)
+            if(false)
                 particleLocations = obj.fiftyParticleStartLocations;
             else
                 [xlim ylim] = boundingbox(polyshape(poly));
