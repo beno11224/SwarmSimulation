@@ -14,96 +14,96 @@ function NextLevel(app)
     app.HapticForceSlider.Enable = false;
     minTimeToTravel = 10;
     %app.maxForce = 0.32; %0.16 - too low for high flow, 1.6 too high for all flows
-    switch(floor((app.testOrder(app.testNumber)-1)/15)) %Do n of each
+    switch(floor((app.testOrder(app.testNumber)-1)/3)) %Do n of each
 
 
 %%%% FOR THE SYSTEM TO REPRESENT ALI's, 2T/m means that the user can impart
 %%%% around 1.6MA/m maximum - drop by 1MA/m basically.
 
         case(0)
-            app.fd = FlowData05(); %start at 30?
+            app.fd = FlowData60(); %start at 30?
             app.polygon = app.polygon.change(4,app.fd);
             app.FluidFlowmsEditField.Value = 3;
             app.goalIndex = 4;
             app.slowDown = 1;
             minTimeToTravel = 27;
         case(1)
-            app.fd = FlowData10();
+            app.fd = FlowData60();
             app.polygon = app.polygon.change(4,app.fd);
-            app.FluidFlowmsEditField.Value = 1;
+            app.FluidFlowmsEditField.Value = 1.5;
             app.goalIndex = 4;
             app.slowDown = 1;
             minTimeToTravel = 26;
         case(2)
-            app.fd = FlowData15();
+            app.fd = FlowData60();
             app.polygon = app.polygon.change(4,app.fd);
-            app.FluidFlowmsEditField.Value = 1;
+            app.FluidFlowmsEditField.Value = 2;
             app.goalIndex = 4;
             app.slowDown = 1;
             minTimeToTravel = 25;
         case(3)
-            app.fd = FlowData20();
+            app.fd = FlowData60();
             app.polygon = app.polygon.change(4,app.fd);
-            app.FluidFlowmsEditField.Value = 1;
+            app.FluidFlowmsEditField.Value = 2.5;
             app.goalIndex = 4;
             app.slowDown = 1;
             minTimeToTravel = 24;
         case(4)
-            app.fd = FlowData25();
+            app.fd = FlowData60();
             app.polygon = app.polygon.change(4,app.fd);
-            app.FluidFlowmsEditField.Value = 1;
+            app.FluidFlowmsEditField.Value = 3;
             app.goalIndex = 4;
             app.slowDown = 1;
             minTimeToTravel = 23;
-        case(5)
-            app.fd = FlowData30();
-            app.polygon = app.polygon.change(4,app.fd);
-            app.FluidFlowmsEditField.Value = 1;
-            app.goalIndex = 4;
-            app.slowDown = 1;
-            minTimeToTravel = 22;
-        case(6)
-            app.fd = FlowData35();
-            app.polygon = app.polygon.change(4,app.fd);
-            app.FluidFlowmsEditField.Value = 1;
-            app.goalIndex = 4;
-            app.slowDown = 1;
-            minTimeToTravel = 21;
-        case(7)
-            app.fd = FlowData40();
-            app.polygon = app.polygon.change(4,app.fd);
-            app.FluidFlowmsEditField.Value = 1;
-            app.goalIndex = 4;
-            app.slowDown = 1;
-            minTimeToTravel = 20;
-        case(8)
-            app.fd = FlowData45();
-            app.polygon = app.polygon.change(4,app.fd);
-            app.FluidFlowmsEditField.Value = 1;
-            app.goalIndex = 4;
-            app.slowDown = 1;
-            minTimeToTravel = 19;
-        case(9)
-            app.fd = FlowData50();
-            app.polygon = app.polygon.change(4,app.fd);
-            app.FluidFlowmsEditField.Value = 1;
-            app.goalIndex = 4;
-            app.slowDown = 1;
-            minTimeToTravel = 18;
-        case(10)
-            app.fd = FlowData55();
-            app.polygon = app.polygon.change(4,app.fd);
-            app.FluidFlowmsEditField.Value = 1;
-            app.goalIndex = 4;
-            app.slowDown = 1;
-            minTimeToTravel = 17;
-        case(11)
-            app.fd = FlowData60();
-            app.polygon = app.polygon.change(4,app.fd);
-            app.FluidFlowmsEditField.Value = 1;
-            app.goalIndex = 4;
-            app.slowDown = 1;
-            minTimeToTravel = 16;
+%         case(5)
+%             app.fd = FlowData30();
+%             app.polygon = app.polygon.change(4,app.fd);
+%             app.FluidFlowmsEditField.Value = 1;
+%             app.goalIndex = 4;
+%             app.slowDown = 1;
+%             minTimeToTravel = 22;
+%         case(6)
+%             app.fd = FlowData35();
+%             app.polygon = app.polygon.change(4,app.fd);
+%             app.FluidFlowmsEditField.Value = 1;
+%             app.goalIndex = 4;
+%             app.slowDown = 1;
+%             minTimeToTravel = 21;
+%         case(7)
+%             app.fd = FlowData40();
+%             app.polygon = app.polygon.change(4,app.fd);
+%             app.FluidFlowmsEditField.Value = 1;
+%             app.goalIndex = 4;
+%             app.slowDown = 1;
+%             minTimeToTravel = 20;
+%         case(8)
+%             app.fd = FlowData45();
+%             app.polygon = app.polygon.change(4,app.fd);
+%             app.FluidFlowmsEditField.Value = 1;
+%             app.goalIndex = 4;
+%             app.slowDown = 1;
+%             minTimeToTravel = 19;
+%         case(9)
+%             app.fd = FlowData50();
+%             app.polygon = app.polygon.change(4,app.fd);
+%             app.FluidFlowmsEditField.Value = 1;
+%             app.goalIndex = 4;
+%             app.slowDown = 1;
+%             minTimeToTravel = 18;
+%         case(10)
+%             app.fd = FlowData55();
+%             app.polygon = app.polygon.change(4,app.fd);
+%             app.FluidFlowmsEditField.Value = 1;
+%             app.goalIndex = 4;
+%             app.slowDown = 1;
+%             minTimeToTravel = 17;
+%         case(11)
+%             app.fd = FlowData60();
+%             app.polygon = app.polygon.change(4,app.fd);
+%             app.FluidFlowmsEditField.Value = 1;
+%             app.goalIndex = 4;
+%             app.slowDown = 1;
+%             minTimeToTravel = 16;
         otherwise
             fprintf("The experiment has now ended, thank you for your participation. Please close this window.\r\n");
             app.polygon = app.polygon.change(1,app.fd);
@@ -128,7 +128,7 @@ function NextLevel(app)
     app.mesh = delaunayTriangulation(app.polygon.currentFlowLocations);
     if(generateNewParticles)
         app.particleArrayLocation = app.particleFunctions.generateParticleLocations(app.polygon.currentStartZone, app.numParticles);
-    end
+     end
     app.particleArrayVelocity = app.particleFunctions.calculateFlow(app.particleArrayLocation,app.polygon.currentFlowValues,app.mesh);% zeros(app.numParticles, 2);
     
     app.particleArrayForce = zeros(app.numParticles, 2);
@@ -197,9 +197,9 @@ function NextLevel(app)
     app.UIAxes.XLim = [min(app.polygon.currentPoly(:,1)) + (min(app.polygon.currentPoly(:,1))/20), max(app.polygon.currentPoly(:,1)) + (max(app.polygon.currentPoly(:,1))/20)];
     app.UIAxes.YLim = [min(app.polygon.currentPoly(:,2)) + (min(app.polygon.currentPoly(:,2))/20), max(app.polygon.currentPoly(:,2)) + (max(app.polygon.currentPoly(:,2))/20)];
 
-    pause(1);
 
     if(true)
+        pause(1);
         import java.awt.*;
         import java.awt.event.*;
         %Create a Robot-object to do the key-pressing

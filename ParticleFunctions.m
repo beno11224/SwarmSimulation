@@ -305,16 +305,38 @@ classdef ParticleFunctions
             if(false)
                 particleLocations = obj.fiftyParticleStartLocations;
             else
-                [xlim ylim] = boundingbox(polyshape(poly));
-                particleLocationIndex = 1;
+                loopMax = ndims(poly);
+                if(loopMax > 2)
+                    loopMax = size(poly,1);
+                else
+                    loopMax = 1;
+                end
+                outerIndex = 1;
                 particleLocations = zeros(length(particleLocationsLength), 2);
-                %init return value
-                while(particleLocationIndex <= particleLocationsLength)
-                    particleLocations(particleLocationIndex,:) = real([xlim(1), ylim(1)] + [xlim(2)-xlim(1),ylim(2)-ylim(1)] .* rand(1, 2));
-                    particleLocationXValue = particleLocations(particleLocationIndex,1);
-                    particleLocationYValue = particleLocations(particleLocationIndex,2);
-                    if(inpolygon(particleLocationXValue,particleLocationYValue,poly(:,1), poly(:,2)))
-                        particleLocationIndex = particleLocationIndex + 1;
+                for(loopCount = 1:loopMax)
+                    innerIndex = 1;
+                    if(loopMax == 1)
+                        innerpoly = poly;
+                    else
+                        innerpoly = squeeze(poly(loopCount,:,:));
+                    end
+                    [xlim ylim] = boundingbox(polyshape(innerpoly));
+                    %init return value
+                    while(outerIndex <= particleLocationsLength)
+                        particleLocations(outerIndex,:) = real([xlim(1), ylim(1)] + [xlim(2)-xlim(1),ylim(2)-ylim(1)] .* rand(1, 2));
+                        particleLocationXValue = particleLocations(outerIndex,1);
+                        particleLocationYValue = particleLocations(outerIndex,2);
+                        if(inpolygon(particleLocationXValue,particleLocationYValue,innerpoly(:,1), innerpoly(:,2)))
+                           % particleLocationIndex = particleLocationIndex + 1;
+                            outerIndex = outerIndex + 1;
+                            innerIndex = innerIndex + 1;
+                        end
+                        %If we have around enough particles in this
+                        %partition then jump out so we can do the rest.
+                        %Includes checking last one fills properly.
+                        if((innerIndex > (particleLocationsLength/loopMax) && loopCount < loopMax) || outerIndex > particleLocationsLength)
+                            break;
+                        end
                     end
                 end
             end

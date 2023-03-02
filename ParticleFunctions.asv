@@ -84,8 +84,7 @@ classdef ParticleFunctions
         end
         
         %public functions
-        function force = calculateMagneticForce(obj, aCoils,joyStick, h, v, controlMethod, mouseLocation, magForceRestrict, rotation)
-            maxUserForce = 2.25;
+        function force = calculateMagneticForce(obj, aCoils,joyStick, h, v, controlMethod, mouseLocation, magForceRestrict, rotation, maxUserForce)
             switch(controlMethod)      
                 case("Keyboard")
                     totalForce = aCoils.* 10^6;
@@ -93,16 +92,16 @@ classdef ParticleFunctions
                     totalForce = mouseLocation .* maxuserForce*10^8; %Mouse Force is a bit lower than the others
                 case("Controller")                    
                     %newHapticValues = (HapticSpoofTest() + 0.05) .* 25;
-                    newHapticValues = ReadHaptic() .* 30;
+                    newHapticValues = ReadHaptic() .* (1/0.077);% .* 30; %30 was for 2.25 max
                     if magForceRestrict ~= 0
-                        newHapticValues = newHapticValues .* (magForceRestrict/2.25);
+                        newHapticValues = newHapticValues .* (magForceRestrict/maxUserForce);
                     end
                     totalForce = [newHapticValues(1)*10^6, newHapticValues(2)*10^6];                    
                 otherwise
                     totalForce = [0 0];
             end
-            if(norm(totalForce) > 2.25*10^6)
-                totalForce = totalForce ./ norm(totalForce) .* 2.25*10^6;
+            if(norm(totalForce) > maxUserForce*10^6)
+                totalForce = totalForce ./ norm(totalForce) .* maxUserForce*10^6;
             end
             force = ([cosd(-rotation), sind(-rotation); -sind(-rotation), cos(-rotation)] * (obj.magneticForceConstant .* totalForce)')' ;
         end
@@ -303,19 +302,39 @@ classdef ParticleFunctions
         end
         
         function particleLocations = generateParticleLocations(obj, poly, particleLocationsLength)
-            if(true)
+            if(false)
                 particleLocations = obj.fiftyParticleStartLocations;
             else
-                [xlim ylim] = boundingbox(polyshape(poly));
-                particleLocationIndex = 1;
-                particleLocations = zeros(length(particleLocationsLength), 2);
-                %init return value
-                while(particleLocationIndex <= particleLocationsLength)
-                    particleLocations(particleLocationIndex,:) = real([xlim(1), ylim(1)] + [xlim(2)-xlim(1),ylim(2)-ylim(1)] .* rand(1, 2));
-                    particleLocationXValue = particleLocations(particleLocationIndex,1);
-                    particleLocationYValue = particleLocations(particleLocationIndex,2);
-                    if(inpolygon(particleLocationXValue,particleLocationYValue,poly(:,1), poly(:,2)))
-                        particleLocationIndex = particleLocationIndex + 1;
+                loopMax = ndims(poly);
+                if(loopMax > 2)
+                    loopMax = size(poly,1);
+                else
+                    loopMax = 1;
+                end
+                outerIndex = 1;
+                for(loopCount = 1:loopMax)
+                    innerIndex = 1;
+                    if(loopMax == 1)
+                        innerpoly = poly;
+                    else
+                        innerpoly = squeeze(poly(loopCount,:,:));
+                    end
+                    [xlim ylim] = boundingbox(polyshape(innerpoly));
+                    %particleLocationIndex = 1;
+                    particleLocations = zeros(length(particleLocationsLength), 2);
+                    %init return value
+                    while(outerIndex <= particleLocationsLength)
+                        particleLocations(particleLocationIndex,:) = real([xlim(1), ylim(1)] + [xlim(2)-xlim(1),ylim(2)-ylim(1)] .* rand(1, 2));
+                        particleLocationXValue = particleLocations(particleLocationIndex,1);
+                        particleLocationYValue = particleLocations(particleLocationIndex,2);
+                        if(inpolygon(particleLocationXValue,particleLocationYValue,innerpoly(:,1), innerpoly(:,2)))
+                           % particleLocationIndex = particleLocationIndex + 1;
+                            outerIndex = outerIndex + 1;
+                            innerIndex = innerIndex + 1;
+                        end
+                        if(innerIndex > particleLocationsLength) %
+                            break;
+                        end
                     end
                 end
             end
