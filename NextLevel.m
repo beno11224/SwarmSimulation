@@ -14,7 +14,7 @@ function NextLevel(app)
     app.HapticForceSlider.Enable = false;
     minTimeToTravel = 10;
     %app.maxForce = 0.32; %0.16 - too low for high flow, 1.6 too high for all flows
-    switch(floor((app.testOrder(app.testNumber)-1)/3)) %Do n of each
+    switch(floor((app.testOrder(app.testNumber)-1)/2)) %Do n of each
 
 
 %%%% FOR THE SYSTEM TO REPRESENT ALI's, 2T/m means that the user can impart
@@ -24,6 +24,9 @@ function NextLevel(app)
             app.fd = FlowData60(); %start at 30?
             app.polygon = app.polygon.change(4,app.fd);
             app.FluidFlowmsEditField.Value = 3;
+            if(ndims(app.polygon.currentStartZone) > 2)
+                app.polygon.currentStartZone = squeeze(app.polygon.currentStartZone(1,:,:));
+            end
             app.goalIndex = 4;
             app.slowDown = 1;
             minTimeToTravel = 27;
