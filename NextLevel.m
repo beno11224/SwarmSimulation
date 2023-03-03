@@ -24,95 +24,114 @@ function NextLevel(app)
 %%%% FOR THE SYSTEM TO REPRESENT ALI's, 2T/m means that the user can impart
 %%%% around 1.6MA/m maximum - drop by 1MA/m basically.
 
+%1, 2.4, 3.8, 5.2, 6.6, 8
+
         case(0)
             app.fd = FlowData60(); %start at 30?
             app.polygon = app.polygon.change(4,app.fd);
-            flowMultiplier = 1 + ((7/5)* (app.testNumber-1))
-            app.FluidFlowmsEditField.Value = 1 + ((7/5)*(app.testNumber-1));
+        %    flowMultiplier = 1 + ((7/5)* (app.testNumber-1))
+        %    app.FluidFlowmsEditField.Value = 1 + ((7/5)*(app.testNumber-1));
+            app.FluidFlowmsEditField.Value = 1;
             if(ndims(app.polygon.currentStartZone) > 2)
                 app.polygon.currentStartZone = squeeze(app.polygon.currentStartZone(1,:,:));
             end
             app.goalIndex = 4;
             app.slowDown = 1;
-            minTimeToTravel = 27;
+            minTimeToTravel = 15;
         case(1)
             app.fd = FlowData60();
             app.polygon = app.polygon.change(4,app.fd);
-            flowMultiplier = 1 + ((7/5)*(app.testNumber-7)) %-6 if the prev is uncommented
-            app.FluidFlowmsEditField.Value = 1 + ((7/5)*(app.testNumber-7));
+         %   flowMultiplier = 1 + ((7/5)*(app.testNumber-7)) %-6 if the prev is uncommented
+         %   app.FluidFlowmsEditField.Value = 1 + ((7/5)*(app.testNumber-7));
+            app.FluidFlowmsEditField.Value = 1;
             app.goalIndex = 4;
             app.slowDown = 1;
-            minTimeToTravel = 26;
+            minTimeToTravel = 15;
         case(2)
             app.fd = FlowData60();
             app.polygon = app.polygon.change(4,app.fd);
-            app.FluidFlowmsEditField.Value = 2;
+            app.FluidFlowmsEditField.Value = 2.4;
+            if(ndims(app.polygon.currentStartZone) > 2)
+                app.polygon.currentStartZone = squeeze(app.polygon.currentStartZone(1,:,:));
+            end
             app.goalIndex = 4;
             app.slowDown = 1;
-            minTimeToTravel = 25;
+            minTimeToTravel = 15;
         case(3)
             app.fd = FlowData60();
             app.polygon = app.polygon.change(4,app.fd);
-            app.FluidFlowmsEditField.Value = 2.5;
+            app.FluidFlowmsEditField.Value = 2.4;
             app.goalIndex = 4;
             app.slowDown = 1;
-            minTimeToTravel = 24;
+            minTimeToTravel = 15;
         case(4)
             app.fd = FlowData60();
             app.polygon = app.polygon.change(4,app.fd);
-            app.FluidFlowmsEditField.Value = 3;
+            app.FluidFlowmsEditField.Value = 3.8;
+            if(ndims(app.polygon.currentStartZone) > 2)
+                app.polygon.currentStartZone = squeeze(app.polygon.currentStartZone(1,:,:));
+            end
             app.goalIndex = 4;
             app.slowDown = 1;
-            minTimeToTravel = 23;
-%         case(5)
-%             app.fd = FlowData30();
-%             app.polygon = app.polygon.change(4,app.fd);
-%             app.FluidFlowmsEditField.Value = 1;
-%             app.goalIndex = 4;
-%             app.slowDown = 1;
-%             minTimeToTravel = 22;
-%         case(6)
-%             app.fd = FlowData35();
-%             app.polygon = app.polygon.change(4,app.fd);
-%             app.FluidFlowmsEditField.Value = 1;
-%             app.goalIndex = 4;
-%             app.slowDown = 1;
-%             minTimeToTravel = 21;
-%         case(7)
-%             app.fd = FlowData40();
-%             app.polygon = app.polygon.change(4,app.fd);
-%             app.FluidFlowmsEditField.Value = 1;
-%             app.goalIndex = 4;
-%             app.slowDown = 1;
-%             minTimeToTravel = 20;
-%         case(8)
-%             app.fd = FlowData45();
-%             app.polygon = app.polygon.change(4,app.fd);
-%             app.FluidFlowmsEditField.Value = 1;
-%             app.goalIndex = 4;
-%             app.slowDown = 1;
-%             minTimeToTravel = 19;
-%         case(9)
-%             app.fd = FlowData50();
-%             app.polygon = app.polygon.change(4,app.fd);
-%             app.FluidFlowmsEditField.Value = 1;
-%             app.goalIndex = 4;
-%             app.slowDown = 1;
-%             minTimeToTravel = 18;
-%         case(10)
-%             app.fd = FlowData55();
-%             app.polygon = app.polygon.change(4,app.fd);
-%             app.FluidFlowmsEditField.Value = 1;
-%             app.goalIndex = 4;
-%             app.slowDown = 1;
-%             minTimeToTravel = 17;
-%         case(11)
-%             app.fd = FlowData60();
-%             app.polygon = app.polygon.change(4,app.fd);
-%             app.FluidFlowmsEditField.Value = 1;
-%             app.goalIndex = 4;
-%             app.slowDown = 1;
-%             minTimeToTravel = 16;
+            minTimeToTravel = 15;
+        case(5)
+            app.fd = FlowData60();
+            app.polygon = app.polygon.change(4,app.fd);
+            app.FluidFlowmsEditField.Value = 3.8;
+            app.goalIndex = 4;
+            app.slowDown = 1;
+            minTimeToTravel = 15;
+        case(6)
+            app.fd = FlowData60();
+            app.polygon = app.polygon.change(4,app.fd);
+            app.FluidFlowmsEditField.Value = 5.2;
+            if(ndims(app.polygon.currentStartZone) > 2)
+                app.polygon.currentStartZone = squeeze(app.polygon.currentStartZone(1,:,:));
+            end
+            app.goalIndex = 4;
+            app.slowDown = 1;
+            minTimeToTravel = 15;
+        case(7)
+            app.fd = FlowData60();
+            app.polygon = app.polygon.change(4,app.fd);
+            app.FluidFlowmsEditField.Value = 5.2;
+            app.goalIndex = 4;
+            app.slowDown = 1;
+            minTimeToTravel = 15;
+        case(8)
+            app.fd = FlowData60();
+            app.polygon = app.polygon.change(4,app.fd);
+            app.FluidFlowmsEditField.Value = 6.6;
+            if(ndims(app.polygon.currentStartZone) > 2)
+                app.polygon.currentStartZone = squeeze(app.polygon.currentStartZone(1,:,:));
+            end
+            app.goalIndex = 4;
+            app.slowDown = 1;
+            minTimeToTravel = 15;
+        case(9)
+            app.fd = FlowData60();
+            app.polygon = app.polygon.change(4,app.fd);
+            app.FluidFlowmsEditField.Value = 6.6;
+            app.goalIndex = 4;
+            app.slowDown = 1;
+            minTimeToTravel = 15;
+        case(10)
+            app.fd = FlowData60();
+            app.polygon = app.polygon.change(4,app.fd);
+            app.FluidFlowmsEditField.Value = 8;
+            if(ndims(app.polygon.currentStartZone) > 2)
+                app.polygon.currentStartZone = squeeze(app.polygon.currentStartZone(1,:,:));
+            end
+            app.goalIndex = 4;
+            app.slowDown = 1;
+            minTimeToTravel = 15;
+        case(11)
+            app.fd = FlowData60();
+            app.polygon = app.polygon.change(4,app.fd);
+            app.FluidFlowmsEditField.Value = 8;
+            app.goalIndex = 4;
+            app.slowDown = 1;
+            minTimeToTravel = 15;
         otherwise
             fprintf("The experiment has now ended, thank you for your participation. Please close this window.\r\n");
             app.polygon = app.polygon.change(1,app.fd);
