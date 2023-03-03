@@ -18,7 +18,7 @@ function NextLevel(app)
 %     if(ndims(app.polygon.currentStartZone) > 2)
 %         app.polygon.currentStartZone = squeeze(app.polygon.currentStartZone(1,:,:));
 %     end
-    switch(floor((app.testOrder(app.testNumber)-1)/6)) %Do n of each
+    switch(floor((app.testOrder(app.testNumber)-1)/1)) %Do n of each
 
 
 %%%% FOR THE SYSTEM TO REPRESENT ALI's, 2T/m means that the user can impart
@@ -72,14 +72,14 @@ function NextLevel(app)
                 app.polygon.currentStartZone = squeeze(app.polygon.currentStartZone(1,:,:));
             end
             app.goalIndex = 4;
-            app.slowDown = 1;
+            app.slowDown = 2;
             minTimeToTravel = 15;
         case(5)
             app.fd = FlowData60();
             app.polygon = app.polygon.change(4,app.fd);
             app.FluidFlowmsEditField.Value = 3.8;
             app.goalIndex = 4;
-            app.slowDown = 1;
+            app.slowDown = 2;
             minTimeToTravel = 15;
         case(6)
             app.fd = FlowData60();
@@ -89,14 +89,14 @@ function NextLevel(app)
                 app.polygon.currentStartZone = squeeze(app.polygon.currentStartZone(1,:,:));
             end
             app.goalIndex = 4;
-            app.slowDown = 1;
+            app.slowDown = 2;
             minTimeToTravel = 15;
         case(7)
             app.fd = FlowData60();
             app.polygon = app.polygon.change(4,app.fd);
             app.FluidFlowmsEditField.Value = 5.2;
             app.goalIndex = 4;
-            app.slowDown = 1;
+            app.slowDown = 2;
             minTimeToTravel = 15;
         case(8)
             app.fd = FlowData60();
@@ -106,14 +106,14 @@ function NextLevel(app)
                 app.polygon.currentStartZone = squeeze(app.polygon.currentStartZone(1,:,:));
             end
             app.goalIndex = 4;
-            app.slowDown = 1;
+            app.slowDown = 4;
             minTimeToTravel = 15;
         case(9)
             app.fd = FlowData60();
             app.polygon = app.polygon.change(4,app.fd);
             app.FluidFlowmsEditField.Value = 6.6;
             app.goalIndex = 4;
-            app.slowDown = 1;
+            app.slowDown = 4;
             minTimeToTravel = 15;
         case(10)
             app.fd = FlowData60();
@@ -123,14 +123,14 @@ function NextLevel(app)
                 app.polygon.currentStartZone = squeeze(app.polygon.currentStartZone(1,:,:));
             end
             app.goalIndex = 4;
-            app.slowDown = 1;
+            app.slowDown = 4;
             minTimeToTravel = 15;
         case(11)
             app.fd = FlowData60();
             app.polygon = app.polygon.change(4,app.fd);
             app.FluidFlowmsEditField.Value = 8;
             app.goalIndex = 4;
-            app.slowDown = 1;
+            app.slowDown = 4;
             minTimeToTravel = 15;
         otherwise
             fprintf("The experiment has now ended, thank you for your participation. Please close this window.\r\n");
