@@ -13,8 +13,12 @@ function NextLevel(app)
     app.goalIndex = 2;
     app.HapticForceSlider.Enable = false;
     minTimeToTravel = 10;
-    %app.maxForce = 0.32; %0.16 - too low for high flow, 1.6 too high for all flows
-    switch(floor((app.testOrder(app.testNumber)-1)/2)) %Do n of each
+   % app.maxForce = 1.6;%0.32; %0.16 - too low for high flow, 1.6 too high for all flows
+
+%     if(ndims(app.polygon.currentStartZone) > 2)
+%         app.polygon.currentStartZone = squeeze(app.polygon.currentStartZone(1,:,:));
+%     end
+    switch(floor((app.testOrder(app.testNumber)-1)/6)) %Do n of each
 
 
 %%%% FOR THE SYSTEM TO REPRESENT ALI's, 2T/m means that the user can impart
@@ -23,7 +27,8 @@ function NextLevel(app)
         case(0)
             app.fd = FlowData60(); %start at 30?
             app.polygon = app.polygon.change(4,app.fd);
-            app.FluidFlowmsEditField.Value = 3;
+            flowMultiplier = 1 + ((7/5)*(app.testNumber-1))
+            app.FluidFlowmsEditField.Value = 1 + ((7/5)*(app.testNumber-1));
             if(ndims(app.polygon.currentStartZone) > 2)
                 app.polygon.currentStartZone = squeeze(app.polygon.currentStartZone(1,:,:));
             end
@@ -33,7 +38,8 @@ function NextLevel(app)
         case(1)
             app.fd = FlowData60();
             app.polygon = app.polygon.change(4,app.fd);
-            app.FluidFlowmsEditField.Value = 1.5;
+            flowMultiplier = 1 + ((7/5)*(app.testNumber-7)) %-6 if the prev is uncommented
+            app.FluidFlowmsEditField.Value = 1 + ((7/5)*(app.testNumber-7));
             app.goalIndex = 4;
             app.slowDown = 1;
             minTimeToTravel = 26;
