@@ -27,7 +27,7 @@ function NextLevel(app)
         case(0)
             app.fd = FlowData60(); %start at 30?
             app.polygon = app.polygon.change(4,app.fd);
-            flowMultiplier = 1 + ((7/5)*(app.testNumber-1))
+            flowMultiplier = 1 + ((7/5)* (app.testNumber-1))
             app.FluidFlowmsEditField.Value = 1 + ((7/5)*(app.testNumber-1));
             if(ndims(app.polygon.currentStartZone) > 2)
                 app.polygon.currentStartZone = squeeze(app.polygon.currentStartZone(1,:,:));
@@ -146,6 +146,8 @@ function NextLevel(app)
     app.particleArrayBaseVelocityStartTime = clock;
     app.particleArrayPreviousDragForce = zeros(app.numParticles, 2);
     app.particleArrayPreviousAcceleration = zeros(app.numParticles, 2);
+    app.bouncedLastLoop = zeros(app.numParticles,1);
+    
     hold (app.UIAxes, 'on');
     delete(app.polyLine);
     delete(app.endLine);

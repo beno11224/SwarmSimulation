@@ -115,13 +115,13 @@ classdef ParticleFunctions
             sumOfAllDipoleMoments = obj.dipoleForceConstant .* sum(normalisedDipoleMoment,2); %sum along '2'axis to make it 5x1
             %now convert back to 5x2, x & y for the final result
             distanceMultiplier = permute(sum(xYdistanceBetweenAllParticles,1),[3,2,1]);
-            force = sumOfAllDipoleMoments .* distanceMultiplier;
+            force = sumOfAllDipoleMoments .* distanceMultiplier; 
         end
         function force = calculateDragForce(obj, particleVelocity, flowVelocity)
             force = ((particleVelocity - flowVelocity) .* obj.dragForceConstant); %Stokes Drag Equation
         end
 
-        function [wallContact, orthogonalWallContact, particleLocation, particleVelocity] = isParticleOnWallPIP(obj, particleLocation, particleVelocity, particleForce, polygon, tMax,app)
+        function [wallContact, orthogonalWallContact, particleLocation, particleVelocity, bouncedLastLoop] = isParticleOnWallPIP(obj, particleLocation, particleVelocity, particleForce, polygon, tMax,app, bouncedLastLoop)
             %this just returns anything INSIDE the polygon, not anything on the walls
             in = inpolygon(particleLocation(:,1), particleLocation(:,2), polygon.currentPoly(:,1), polygon.currentPoly(:,2));
 
@@ -129,7 +129,7 @@ classdef ParticleFunctions
             orthogonalWallContact = wallContact;
             %If no particles are outside the shape, we can skip all this.
             if(any(~in))
-                distMove = particleVelocity .* 0;
+                distMove = particleVelocity .*  0;
                 dists = zeros(length(wallContact),1);
                 for outOfBoundsCount = 1:size(polygon.currentOutOfBoundsPolys,1)
                     [inOOB,onOOB] = inpolygon(particleLocation(:,1), particleLocation(:,2), polygon.currentOutOfBoundsPolys(outOfBoundsCount,:,1), polygon.currentOutOfBoundsPolys(outOfBoundsCount,:,2));
@@ -155,10 +155,12 @@ classdef ParticleFunctions
                 perpendicularVelocity(~in,:) = obj.vectorProjection(particleVelocity(~in,:),orthogonalWallContact(~in,:));
                 testForSign(~in,:) = perpendicularVelocity(~in,:) .* orthogonalWallContact(~in,:);
                 perpendicularVelocity(testForSign < 0) = perpendicularVelocity(testForSign < 0).*-1;  %bounce particles off wall by inverting any momentum into the wall.
-%                perpendicularVelocity(testForSign < 0) = 0;% perpendicularVelocity(testForSign < 0).*-1;  %bounce particles off wall by inverting any momentum into the wall.
+                perpendicularVelocity(bouncedLastLoop == 1,:) = 0;
+                %                perpendicularVelocity(testForSign < 0) = 0;% perpendicularVelocity(testForSign < 0).*-1;  %bounce particles off wall by inverting any momentum into the wall.
                    
-                particleVelocity = particleVelocity .* in + parallelVelocity + perpendicularVelocity;                
+                particleVelocity = particleVelocity .* in + parallelVelocity + perpendicularVelocity;            
             end
+            bouncedLastLoop = ~in;    
         end
         
         function velocity = calculateFlow(obj, particleLocation, flowMatrix, mesh)%, axes) 

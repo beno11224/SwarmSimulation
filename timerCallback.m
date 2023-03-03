@@ -19,8 +19,8 @@ function timerCallback(app)
         app.Y1MAGauge.Value = currentDial(2);
     end 
 
-%     vFlow = app.particleFunctions.calculateFlow(real(app.particleArrayLocation), app.polygon.currentFlowValues, app.mesh);
-%     vFlow = vFlow .* app.FluidFlowmsEditField.Value;
+    vFlow = app.particleFunctions.calculateFlow(real(app.particleArrayLocation), app.polygon.currentFlowValues, app.mesh);
+    vFlow = vFlow .* app.FluidFlowmsEditField.Value;
  
     magForceAlpha = 0.05;
     magForce = app.previousMagforce;
@@ -28,8 +28,8 @@ function timerCallback(app)
     smallerTMaxStep = app.simTimerPeriod / smallerTMaxTotalSteps;
     smallerTMaxStepReduced = smallerTMaxStep / app.slowDown;
     for smallerTMaxIndex = 1:smallerTMaxTotalSteps 
-        vFlow = app.particleFunctions.calculateFlow(real(app.particleArrayLocation), app.polygon.currentFlowValues, app.mesh);
-        vFlow = vFlow .* app.FluidFlowmsEditField.Value;
+%         vFlow = app.particleFunctions.calculateFlow(real(app.particleArrayLocation), app.polygon.currentFlowValues, app.mesh);
+%         vFlow = vFlow .* app.FluidFlowmsEditField.Value;
         
         magForce = magForce .* (1-magForceAlpha) + currentMagforce.* magForceAlpha;
         app.particleArrayForce = magForce;
@@ -41,7 +41,7 @@ function timerCallback(app)
 %         app.particleArrayPreviousAcceleration = 0;%(vFlow - app.particleArrayVelocity) ./ smallerTMaxStepReduced;
 %         app.particleArrayVelocity = vFlow;
 
-        [wallContact, orthogonalWallContact, app.particleArrayLocation, app.particleArrayVelocity] = app.particleFunctions.isParticleOnWallPIP(app.particleArrayLocation, app.particleArrayVelocity, app.particleArrayForce, app.polygon, smallerTMaxStepReduced,app);
+        [wallContact, orthogonalWallContact, app.particleArrayLocation, app.particleArrayVelocity, app.bouncedLastLoop] = app.particleFunctions.isParticleOnWallPIP(app.particleArrayLocation, app.particleArrayVelocity, app.particleArrayForce, app.polygon, smallerTMaxStepReduced,app,app.bouncedLastLoop);
 
         %drag (using last iterations velocity)
          dragForce = app.particleFunctions.calculateDragForce(app.particleArrayVelocity, vFlow);
