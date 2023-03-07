@@ -1,4 +1,8 @@
 function NextLevel(app)
+
+    NUMOFEACH = 1;
+    waitEvery = 3;
+
     delete(app.particlePoints);
     fclose(app.fileID);
     app.ScenarioEditField.Value = "Test " + app.testNumber;
@@ -18,7 +22,7 @@ function NextLevel(app)
 %     if(ndims(app.polygon.currentStartZone) > 2)
 %         app.polygon.currentStartZone = squeeze(app.polygon.currentStartZone(1,:,:));
 %     end
-    switch(floor((app.testOrder(app.testNumber)-1)/1)) %Do n of each
+    switch(floor((app.testOrder(app.testNumber)-1)/NUMOFEACH)) %Do n of each
 
 
 %%%% FOR THE SYSTEM TO REPRESENT ALI's, 2T/m means that the user can impart
@@ -133,6 +137,7 @@ function NextLevel(app)
             app.slowDown = 4;
             minTimeToTravel = 15;
         otherwise
+            msgbox("The experiment has now ended, thank you for your participation. Please close this window.");
             fprintf("The experiment has now ended, thank you for your participation. Please close this window.\r\n");
             app.polygon = app.polygon.change(1,app.fd);
             app.NumberofParticlesEditField.Value = 10;
@@ -227,8 +232,65 @@ function NextLevel(app)
     app.UIAxes.XLim = [min(app.polygon.currentPoly(:,1)) + (min(app.polygon.currentPoly(:,1))/20), max(app.polygon.currentPoly(:,1)) + (max(app.polygon.currentPoly(:,1))/20)];
     app.UIAxes.YLim = [min(app.polygon.currentPoly(:,2)) + (min(app.polygon.currentPoly(:,2))/20), max(app.polygon.currentPoly(:,2)) + (max(app.polygon.currentPoly(:,2))/20)];
 
+    if(app.testNumber > 1 && mod(floor(app.testOrder(app.testNumber)-1),waitEvery) == 0)
+        switch(floor((app.testOrder(app.testNumber)-1)/NUMOFEACH)) %Do n of each
+            case(0)
+                msgbox("Time to take a break. When ready to start again press the spacebar twice. Next Level difficulty 1/6","Information");
+            case(1) 
+                msgbox("Time to take a break. When ready to start again press the spacebar twice. Next Level difficulty 1/6","Information");
+            case(2)
+                msgbox("Time to take a break. When ready to start again press the spacebar twice. Next Level difficulty 2/6","Information");
+            case(3) 
+                msgbox("Time to take a break. When ready to start again press the spacebar twice. Next Level difficulty 2/6","Information");
+            case(4)
+                msgbox("Time to take a break. When ready to start again press the spacebar twice. Next Level difficulty 3/6","Information");
+            case(5) 
+                msgbox("Time to take a break. When ready to start again press the spacebar twice. Next Level difficulty 3/6","Information");
+            case(6)
+                msgbox("Time to take a break. When ready to start again press the spacebar twice. Next Level difficulty 4/6","Information");
+            case(7) 
+                msgbox("Time to take a break. When ready to start again press the spacebar twice. Next Level difficulty 4/6","Information");
+            case(8)
+                msgbox("Time to take a break. When ready to start again press the spacebar twice. Next Level difficulty 5/6","Information");
+            case(9) 
+                msgbox("Time to take a break. When ready to start again press the spacebar twice. Next Level difficulty 5/6","Information");
+            case(10)
+                msgbox("Time to take a break. When ready to start again press the spacebar twice. Next Level difficulty 6/6","Information");
+            case(11) 
+                msgbox("Time to take a break. When ready to start again press the spacebar twice. Next Level difficulty 6/6","Information");
+        end
+    else
+        switch(floor((app.testOrder(app.testNumber)-1)/NUMOFEACH)) %Do n of each
+            case(0)
+                messageToUser = msgbox("Difficulty 1/6","Information");
+            case(1) 
+                messageToUser = msgbox("Difficulty 1/6","Information");
+            case(2)
+                messageToUser = msgbox("Difficulty 2/6","Information");
+            case(3) 
+                messageToUser = msgbox("Difficulty 2/6","Information");
+            case(4)
+                messageToUser = msgbox("Difficulty 3/6","Information");
+            case(5) 
+                messageToUser = msgbox("Difficulty 3/6","Information");
+            case(6)
+                messageToUser = msgbox("Difficulty 4/6","Information");
+            case(7) 
+                messageToUser = msgbox("Difficulty 4/6","Information");
+            case(8)
+                messageToUser = msgbox("Difficulty 5/6","Information");
+            case(9) 
+                messageToUser = msgbox("Difficulty 5/6","Information");
+            case(10)
+                messageToUser = msgbox("Difficulty 6/6","Information");
+            case(11) 
+                messageToUser = msgbox("Difficulty 6/6","Information");
+        end
+        if(app.testNumber >= 1)
+            pause(2);
+            close(messageToUser);
+        end
 
-    if(true)
         pause(1);
         import java.awt.*;
         import java.awt.event.*;
