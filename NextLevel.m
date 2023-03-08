@@ -1,7 +1,7 @@
 function NextLevel(app)
 
-    NUMOFEACH = 1;
-    waitEvery = 3;
+    NUMOFEACH = 20; %240 total
+    waitEvery = 40;
 
     delete(app.particlePoints);
     fclose(app.fileID);
@@ -34,7 +34,7 @@ function NextLevel(app)
             app.fd = FlowData60(); %start at 30?
             app.polygon = app.polygon.change(4,app.fd);
         %    flowMultiplier = 1 + ((7/5)* (app.testNumber-1))
-        %    app.FluidFlowmsEditField.Value = 1 + ((7/5)*(app.testNumber-1));
+        %    app.FluidFlowmsEditField.Value = 1  + ((7/5)*(app.testNumber-1));
             app.FluidFlowmsEditField.Value = 1;
             if(ndims(app.polygon.currentStartZone) > 2)
                 app.polygon.currentStartZone = squeeze(app.polygon.currentStartZone(1,:,:));
