@@ -1,14 +1,14 @@
 function NextLevel(app)
 
-    NUMOFEACH = 20; %240 total
-    waitEvery = 40;
+    NUMOFEACH = 10; %120 total
+    waitEvery = 25;
 
     delete(app.particlePoints);
     fclose(app.fileID);
     app.ScenarioEditField.Value = "Test " + app.testNumber;
     app.polygon = app.polygon.change(2,app.fd);
     app.rotation = 0;
-    app.NumberofParticlesEditField.Value = 500;
+    app.NumberofParticlesEditField.Value = 5;
     app.FluidFlowmsEditField.Value = 0.005;
     app.MagForceRestrictMAM2EditField.Value = 0;
     generateNewParticles = true;
@@ -77,14 +77,14 @@ function NextLevel(app)
             end
             app.goalIndex = 4;
             app.slowDown = 2;
-            minTimeToTravel = 15;
+            minTimeToTravel = 12;
         case(5)
             app.fd = FlowData60();
             app.polygon = app.polygon.change(4,app.fd);
             app.FluidFlowmsEditField.Value = 3.8;
             app.goalIndex = 4;
             app.slowDown = 2;
-            minTimeToTravel = 15;
+            minTimeToTravel = 12;
         case(6)
             app.fd = FlowData60();
             app.polygon = app.polygon.change(4,app.fd);
@@ -94,14 +94,14 @@ function NextLevel(app)
             end
             app.goalIndex = 4;
             app.slowDown = 2;
-            minTimeToTravel = 15;
+            minTimeToTravel = 12;
         case(7)
             app.fd = FlowData60();
             app.polygon = app.polygon.change(4,app.fd);
             app.FluidFlowmsEditField.Value = 5.2;
             app.goalIndex = 4;
             app.slowDown = 2;
-            minTimeToTravel = 15;
+            minTimeToTravel = 12;
         case(8)
             app.fd = FlowData60();
             app.polygon = app.polygon.change(4,app.fd);
@@ -111,14 +111,14 @@ function NextLevel(app)
             end
             app.goalIndex = 4;
             app.slowDown = 4;
-            minTimeToTravel = 15;
+            minTimeToTravel = 10;
         case(9)
             app.fd = FlowData60();
             app.polygon = app.polygon.change(4,app.fd);
             app.FluidFlowmsEditField.Value = 6.6;
             app.goalIndex = 4;
             app.slowDown = 4;
-            minTimeToTravel = 15;
+            minTimeToTravel = 10;
         case(10)
             app.fd = FlowData60();
             app.polygon = app.polygon.change(4,app.fd);
@@ -128,14 +128,14 @@ function NextLevel(app)
             end
             app.goalIndex = 4;
             app.slowDown = 4;
-            minTimeToTravel = 15;
+            minTimeToTravel = 10;
         case(11)
             app.fd = FlowData60();
             app.polygon = app.polygon.change(4,app.fd);
             app.FluidFlowmsEditField.Value = 8;
             app.goalIndex = 4;
             app.slowDown = 4;
-            minTimeToTravel = 15;
+            minTimeToTravel = 10;
         otherwise
             msgbox("The experiment has now ended, thank you for your participation. Please close this window.");
             fprintf("The experiment has now ended, thank you for your participation. Please close this window.\r\n");
@@ -232,8 +232,8 @@ function NextLevel(app)
     app.UIAxes.XLim = [min(app.polygon.currentPoly(:,1)) + (min(app.polygon.currentPoly(:,1))/20), max(app.polygon.currentPoly(:,1)) + (max(app.polygon.currentPoly(:,1))/20)];
     app.UIAxes.YLim = [min(app.polygon.currentPoly(:,2)) + (min(app.polygon.currentPoly(:,2))/20), max(app.polygon.currentPoly(:,2)) + (max(app.polygon.currentPoly(:,2))/20)];
 
-    if(app.testNumber > 1 && mod(floor(app.testOrder(app.testNumber)-1),waitEvery) == 0)
-        switch(floor((app.testOrder(app.testNumber)-1)/NUMOFEACH)) %Do n of each
+    if(app.testNumber > 1 && mod(app.testNumber,waitEvery) == 0)
+        switch(floor(app.testNumber/NUMOFEACH)) %Do n of each
             case(0)
                 msgbox("Time to take a break. When ready to start again press the spacebar twice. Next Level difficulty 1/6","Information");
             case(1) 
@@ -260,7 +260,7 @@ function NextLevel(app)
                 msgbox("Time to take a break. When ready to start again press the spacebar twice. Next Level difficulty 6/6","Information");
         end
     else
-        switch(floor((app.testOrder(app.testNumber)-1)/NUMOFEACH)) %Do n of each
+        switch(floor(app.testNumber/NUMOFEACH)) %Do n of each
             case(0)
                 messageToUser = msgbox("Difficulty 1/6","Information");
             case(1) 
@@ -291,7 +291,7 @@ function NextLevel(app)
             close(messageToUser);
         end
 
-        pause(1);
+        pause(0.3);
         import java.awt.*;
         import java.awt.event.*;
         %Create a Robot-object to do the key-pressing
