@@ -1,6 +1,7 @@
 function NextLevel(app)
 
     NUMOFEACH = 10; %120 total
+%     NUMOFEACH = 1;
     waitEvery = 25;
 
     delete(app.particlePoints);
@@ -8,7 +9,7 @@ function NextLevel(app)
     app.ScenarioEditField.Value = "Test " + app.testNumber;
     app.polygon = app.polygon.change(2,app.fd);
     app.rotation = 0;
-    app.NumberofParticlesEditField.Value = 5;
+    app.NumberofParticlesEditField.Value = 500;
     app.FluidFlowmsEditField.Value = 0.005;
     app.MagForceRestrictMAM2EditField.Value = 0;
     generateNewParticles = true;
@@ -233,7 +234,7 @@ function NextLevel(app)
     app.UIAxes.YLim = [min(app.polygon.currentPoly(:,2)) + (min(app.polygon.currentPoly(:,2))/20), max(app.polygon.currentPoly(:,2)) + (max(app.polygon.currentPoly(:,2))/20)];
 
     if(app.testNumber > 1 && mod(app.testNumber,waitEvery) == 0)
-        switch(floor(app.testNumber/NUMOFEACH)) %Do n of each
+        switch(floor((app.testOrder(app.testNumber)-1)/NUMOFEACH)) %Do n of each
             case(0)
                 msgbox("Time to take a break. When ready to start again press the spacebar twice. Next Level difficulty 1/6","Information");
             case(1) 
@@ -260,7 +261,7 @@ function NextLevel(app)
                 msgbox("Time to take a break. When ready to start again press the spacebar twice. Next Level difficulty 6/6","Information");
         end
     else
-        switch(floor(app.testNumber/NUMOFEACH)) %Do n of each
+        switch(floor((app.testOrder(app.testNumber)-1)/NUMOFEACH)) %Do n of each
             case(0)
                 messageToUser = msgbox("Difficulty 1/6","Information");
             case(1) 
