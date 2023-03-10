@@ -1,7 +1,7 @@
 function NextLevel(app)
 
     NUMOFEACH = 10; %120 total
-%     NUMOFEACH = 1;
+    NUMOFEACH = 1;
     waitEvery = 25;
 
     delete(app.particlePoints);
