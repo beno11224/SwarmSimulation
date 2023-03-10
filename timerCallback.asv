@@ -40,7 +40,7 @@ function timerCallback(app)
         
 %         app.particleArrayPreviousAcceleration = 0;%(vFlow - app.particleArrayVelocity) ./ smallerTMaxStepReduced;
 %         app.particleArrayVelocity = vFlow;
-        app.bouncedVisualLastLoop = app.bouncedLastLoop;
+        app.app.bouncedVisualLastLoop = app.bouncedLastLoop;
         [wallContact, orthogonalWallContact, app.particleArrayLocation, app.particleArrayVelocity, app.bouncedLastLoop] = app.particleFunctions.isParticleOnWallPIP(app.particleArrayLocation, app.particleArrayVelocity, app.particleArrayForce, app.polygon, smallerTMaxStepReduced,app,app.bouncedLastLoop);
 
         %drag (using last iterations velocity)
