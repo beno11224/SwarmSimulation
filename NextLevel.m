@@ -152,7 +152,8 @@ function NextLevel(app)
     app.numParticles = app.NumberofParticlesEditField.Value;
     app.previousMagforce = 0;
     app.lastUpdate = clock;
-    newFileName = "Test" + app.testNumber + "_" + app.lastUpdate(4) + "_" + app.lastUpdate(5) + "_results.csv";
+    paddedTestNumber = sprintf( '%03d', app.testNumber);
+    newFileName = "Test" + paddedTestNumber + "_" + app.lastUpdate(4) + "_" + app.lastUpdate(5) + "_results.csv";
     app.fileID = fopen(newFileName,'w');
     app.loopComplete = true;            
     app.particlePoints = plot(app.UIAxes,0,0);
