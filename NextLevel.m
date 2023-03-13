@@ -152,7 +152,7 @@ function NextLevel(app)
     app.numParticles = app.NumberofParticlesEditField.Value;
     app.previousMagforce = 0;
     app.lastUpdate = clock;
-    paddedTestNumber = sprintf( '%03d', app.testNumber);
+    paddedTestNumber = sprintf( '%04d', app.testNumber);
     newFileName = "Test" + paddedTestNumber + "_" + app.lastUpdate(4) + "_" + app.lastUpdate(5) + "_results.csv";
     app.fileID = fopen(newFileName,'w');
     app.loopComplete = true;            
