@@ -294,12 +294,14 @@ ybarErrorAvg(:,13) = sum(ybarError)./13;
 ybarErrorAvg = ybarErrorAvg';
 ybar = [ybar; yMATLABShifted].*2; %now in percentages
 
-plot1 = plot(axes1,x,yMATLAB, '.-','MarkerSize',4,'MarkerFaceColor','#ff3300');
-ab = ["Comsol",x];
-plot2 = bar(ybar,'stacked');
-set(gca,'XTick',1:13);
-set(gca,'xticklabel',ab)
-errorbar(cumsum(ybar')',ybarErrorAvg,'.k');
+plot1 = plot(axes1,[1,2,3,4,5,6],yExperimentClump, '.-','MarkerSize',4,'MarkerFaceColor','#ff3300');
+
+plot2 = plot(axes2,[1,2,3,4,5,6],yExperimentSplit, '.-','MarkerSize',4,'MarkerFaceColor','green');
+%ab = ["Comsol",x];
+%plot2 = bar(ybar,'stacked');
+%set(gca,'XTick',1:13);
+%set(gca,'xticklabel',ab)
+%errorbar(cumsum(ybar')',ybarErrorAvg,'.k');
 % errorbar(cumsum(ybar')',ybarError,'.k');
 %barPlot1 = bar(axes1, x, yCOMSOL);%,"stacked");
 %barPlot2 = bar(axes1, x, yMATLAB);%,"stacked");
@@ -314,7 +316,7 @@ set(plot1(4),'DisplayName','Goal 4');
 set(plot1(5),'DisplayName','Goal 5');
 xlabel(axes1,"Maximum Fluid Velocity (m/s)");
 ylabel(axes1, 'Number of particles reaching each goal state');
-ylim(axes1,[0,40]);
+%ylim(axes1,[0,40]);
 title(axes1,'Number of particles reaching each goal state for different fluid velocities');
 box(axes1,'on');
 grid(axes1,'on');
@@ -327,7 +329,7 @@ set(plot2(4),'DisplayName','Goal 4');
 set(plot2(5),'DisplayName','Goal 5');
 xlabel(axes2,"Maximum Fluid Velocity (m/s)");
 ylabel(axes2, 'Percentage of total particles reaching each goal state');
-ylim(axes2,[0,100]);
+%ylim(axes2,[0,100]);
 title(axes2,'Percentage of total particles reaching each goal state for different fluid velocities');
 box(axes2,'on');
 grid(axes2,'on');
