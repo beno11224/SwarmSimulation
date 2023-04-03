@@ -1,13 +1,20 @@
 function ParticlePathData = ReadAllResults(readAllFiles, poly, goalOutlet)
+    minGoalPercentage = 55;
+
     addpath 'E:\SwarmSimulation' %TODO remove
     if ~exist('readAllFiles','var')
      % third parameter does not exist, so default it to something
       readAllFiles = true;
     end
     if ~exist('goalOutlet','var') || ~exist('poly','var')
-        poly = Polygons(0.0096);
-        poly = poly.change(2); 
-        goalOutlet = 2; %for legacy reasons
+        %poly = Polygons(0.0096);
+        %poly = poly.change(2); 
+        %goalOutlet = 2; %for legacy reasons
+
+        %updated
+        poly = Polygons(0.0096, FlowData05());
+        poly = poly.change(4,FlowData60); %updated
+        goalOutlet = 4;
     end
     folderPath = uigetdir();
     allFiles = dir(fullfile(folderPath, '*.csv'));
