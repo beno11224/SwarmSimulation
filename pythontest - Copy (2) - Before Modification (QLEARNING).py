@@ -13,7 +13,7 @@ class QLearning:
         self.episodes = episodes
         self.timestep = timestep
         
-        self.env = gym.make('CartPole-v0') # - use my sim
+#        self.env = gym.make('CartPole-v0') # - use my sim
 
         self.episode = 0
         self.steps = 0
@@ -21,15 +21,21 @@ class QLearning:
         self.solved = False 
         self.runs = [0]
         self.data = {'max' : [0], 'avg' : [0]}
-        self.bin_size = 30
+        self.bin_size = 500
         self.score = 0
-        self.bins = [np.linspace(-4.8,4.8,self.bin_size),
-                np.linspace(-4,4,self.bin_size),
-                np.linspace(-0.418,0.418,self.bin_size),
-                np.linspace(-4,4,self.bin_size)]        
+        self.bins = [np.linspace(-1,1,self.bin_size), #minmax velocity #check for min/max velocity.
+                np.linspace(-1,1,self.bin_size),
+                np.linspace(-0.01,0.015,self.bin_size), #minmax location
+                np.linspace(-0.01,0.01,self.bin_size)]
+#        self.bins = [np.linspace(-4.8,4.8,self.bin_size), #THIS is the setup - min and max for each STATE, actions here are discrete (e.g. left/right)
+#                np.linspace(-4,4,self.bin_size),
+#                np.linspace(-0.418,0.418,self.bin_size),
+#                np.linspace(-4,4,self.bin_size)]
         self.q_table = np.random.uniform(low=-1,high=1,size=([self.bin_size] * self.n_states + [self.n_actions]))
         self.prev_state = 0;
         self.prev_action = 0;
+
+
         
     def Discrete(self, state):
         index = []
@@ -81,9 +87,34 @@ class QLearning:
                 self.prev_action = np.argmax(self.q_table[self.prev_state])
             return False
 
+#States - very large discrete, so can use bins as above to provide a sensible level of accuracy:
+        #Velocity x
+        #Velocity y
+        #Location x
+        #Location y
+
+        #Start with above, then need to do tie it to play space:
+        #this should arguably be a visual layer (confluithingy layer in NN speak) this would then be the only inputs.
+        
+#Actions - arguably continuous:(Force x/Force y) discretise to 8 (clockwise)(up/upright/right/downright/down/downleft/left/upleft) to start with, increase action space accordingly.
+
+#Recorded values:
+        #Time ,1 value discrete. not sure how to use this - might be best to remove for training?
+        ##Force x (action), 1 value
+        ##Force y (action), 1 value
+        #GoalPercentage (success metric)/ discrete, 1 value
+        #Velocity x - per particle(500)
+        #Velocity y - per particle(500)
+        #Location x - per particle(500)
+        #Location y - per particle(500)
+        #end zones -  different success metric, 5 per particle (2,500)
+
 
 # TRANING
-obj1 = QLearning()
+#obj1 = QLearning(4,2)
+nparticles = 500
+states = 4
+obj1 = QLearning(nparticles*states*,8)
 episodeEnd = False
 obs = obj1.env.reset()
 obj1.prev_state = obj1.Discrete(obs[0])

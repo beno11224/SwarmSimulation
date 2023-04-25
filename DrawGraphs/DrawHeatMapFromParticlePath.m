@@ -45,7 +45,7 @@ function DrawHeatMapFromParticlePath(particlePaths, stopDrawAtGoal, drawCorrectO
 
     for(fileIndex = 1:size(particlePaths,1))
         for(pIndex = 1:size(particlePaths,2))
-            if(~ particlePaths(fileIndex,pIndex).ValidRun)
+            if(~ particlePaths(fileIndex,pIndex).ValidRun || particlePaths(fileIndex,pIndex).overallPercentage < 50)
                 continue;
             end
             if(drawCorrectOutlet && particlePaths(fileIndex,pIndex).CorrectOutlet) || (drawIncorrectOutlet && ~particlePaths(fileIndex,pIndex).CorrectOutlet)

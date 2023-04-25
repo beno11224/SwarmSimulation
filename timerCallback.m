@@ -27,6 +27,8 @@ function timerCallback(app)
     smallerTMaxTotalSteps = 25; %Any more speed comes from making the sim more efficient or slowing it down (not real time) %150
     smallerTMaxStep = app.simTimerPeriod / smallerTMaxTotalSteps;
     smallerTMaxStepReduced = smallerTMaxStep / app.slowDown;
+ %   if(app.controlMethod == "TrainingModel")
+ %       smallerTMaxStepReduced = 0.05
     for smallerTMaxIndex = 1:smallerTMaxTotalSteps 
 %         vFlow = app.particleFunctions.calculateFlow(real(app.particleArrayLocation), app.polygon.currentFlowValues, app.mesh);
 %         vFlow = vFlow .* app.FluidFlowmsEditField.Value;
@@ -95,16 +97,18 @@ function timerCallback(app)
         app.PercentageinGoalEditField.Value = round(goalPercentage .* 100);
     else
         if(app.timeLimit > 0)
-            stop(app.simulationTimerProperty);
-            stop(app.drawTimerProperty);
-            app.StartTrainingButton.Enable = true;
-            set(app.StartTrainingButton,'Text',"Start Next Level");
-            set(app.StartTrainingButton,'BackgroundColor',[1,0.7,0.7]);
-            fprintf("Time Up! You got: " + goalPercentage .* 100 + "/%% of the particles in the goal outlet\r\n");
-            delete(app.magLine);
-            app.testNumber = app.testNumber + 1;
-            NextLevel(app);
-            start(app.hapticFeedbackIdleProperty);
+            if(app.controlMethod ~= "TrainingModel")
+                stop(app.simulationTimerProperty);
+                stop(app.drawTimerProperty);
+                app.StartTrainingButton.Enable = true;
+                set(app.StartTrainingButton,'Text',"Start Next Level");
+                set(app.StartTrainingButton,'BackgroundColor',[1,0.7,0.7]);
+                fprintf("Time Up! You got: " + goalPercentage .* 100 + "/%% of the particles in the goal outlet\r\n");
+                delete(app.magLine);
+                app.testNumber = app.testNumber + 1;
+                NextLevel(app);
+                start(app.hapticFeedbackIdleProperty);
+            end
         else
             app.timeLimit = 1;
         end
