@@ -82,7 +82,7 @@ classdef ParticleFunctions
                 -0.00949, -0.00303;
                -0.00949, -0.00302];
         end
-        
+
         %public functions
         function force = calculateMagneticForce(obj, aCoils,joyStick, h, v, controlMethod, mouseLocation, magForceRestrict, rotation, maxUserForce)
             switch(controlMethod)      
