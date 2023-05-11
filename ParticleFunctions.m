@@ -98,7 +98,7 @@ classdef ParticleFunctions
                     end
                     totalForce = [newHapticValues(1)*10^6, newHapticValues(2)*10^6];
                 case("TrainingModel")
-                    totalForce = aCoils .* 2.25;%(2.25/maxUserForce);
+                    totalForce = aCoils .* 2.25*10^6;%(2.25/maxUserForce);
                 otherwise
                     totalForce = [0 0];
             end
