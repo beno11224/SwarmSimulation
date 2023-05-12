@@ -14,7 +14,7 @@ from keras.layers.core import Dense, Activation, Dropout
 from keras.optimizers import RMSprop
 #Thanks this guy:https://github.com/jangirrishabh/toyCarIRL/tree/a5f76ab162740905269d8b9f7bd24eb161276cad
 
-class IRLClass:    
+class FFClass:    
     
     def ConstructNetwork(self, n_states, n_actions, params):
         print("Constructing...")
