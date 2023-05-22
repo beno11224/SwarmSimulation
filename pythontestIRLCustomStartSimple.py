@@ -31,7 +31,7 @@ class IRLClass:
         model.add(Activation('linear'))
 
         rms = RMSprop()
-        model.compile(loss='mse', optimizer=rms)
+        model.compile(loss='mse', optimizer=rms,metrics=['accuracy'])
         print("Done")
         return model
 
