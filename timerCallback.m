@@ -86,12 +86,10 @@ function timerCallback(app)
     rotVel = (rotMat * app.particleArrayPreviousAcceleration')';
     rotLoc = (rotMat * app.particleArrayLocation')';
  
-%     if(app.printCounter >= app.slowDown)
+    if(app.writeToFile)
         fprintf(app.fileID, app.timePassed + "," + mat2str(rotForce) + "," + goalPercentage + "," + mat2str(rotVel)+ "," + mat2str(rotLoc) + "," + mat2str(particlesInEndZone) + "\r\n");
-%         app.printCounter = 1;
-%     else
          app.printCounter = app.printCounter + 1;
-%     end
+    end
     if(app.timeLimit > 0 && app.timePassed <= app.timeLimit)
         app.TimeRemainingsEditField.Value = round(app.timeLimit - app.timePassed);
         app.PercentageinGoalEditField.Value = round(goalPercentage .* 100);

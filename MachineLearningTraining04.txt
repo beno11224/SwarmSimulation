@@ -19,3 +19,9 @@
 19-05-23 01, n_states = 3, n_actions = 2, h_Layers = 80  160, e_psilon = 0.05 l_rate = 0.05 Gamma = 0.9 flow_rate = 1 totalSteps = 4 trainingLoops = 1
 2.4598     0.41899      3.2869     0.71186
 
+19-05-23 01, n_states = 3, n_actions = 2, h_Layers = 80  160, e_psilon = 0.05 l_rate = 0.05 Gamma = 0.9 flow_rate = 1 totalSteps = 4 trainingLoops = 1
+1.8316     0.27733      4.1078      3.1457
+
+19-05-23 01, n_states = 3, n_actions = 2, h_Layers = 80  160, e_psilon = 0.05 l_rate = 0.05 Gamma = 0.9 flow_rate = 1 totalSteps = 4 trainingLoops = 1
+2.3592      1.3648       1.091      1.2421
+
