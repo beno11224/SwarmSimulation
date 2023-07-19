@@ -7,6 +7,14 @@ function timerCallback(app)
   %  currentMagforce = [0 0]; 
     currentDial = currentMagforce ./10^6 ./ app.particleFunctions.magneticForceConstant;
     if(app.controlMethod == "Controller")
+        useNetwork = false;
+        if(exist(app.UseNetworkForHaptic,"var"))
+            useNetwork = app.UseNetworkForHaptic;
+        end
+
+        if(useNetwork)%Try this - might go very weird, idk
+            currentDial = double(pyrun("pred = irl.model.predict(np.array([state]),verbose=0, batch_size=1)","pred", state=getState(app,flowRate,t,goalLocation)));
+        end
         hapticSpring = app.HapticForceSlider.Value;
         hapticViscocity = 0.3;
         hapticVelocity = [1,currentDial(1),currentDial(2)] - app.hapticFeedback;
