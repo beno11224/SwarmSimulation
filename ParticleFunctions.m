@@ -83,6 +83,18 @@ classdef ParticleFunctions
                -0.00949, -0.00302];
         end
 
+        function matState = getState(obj,particleArrayLocation,FlowRate)%,t,goalPoint)
+            % distancex = sqrt((app.particleArrayLocation(:,1)-goalPoint(1)).^2);
+            % distancey = sqrt((app.particleArrayLocation(:,2)-goalPoint(2)).^2);
+            % matState = [app.particleArrayLocation(1,1).*100,app.particleArrayLocation(1,2).*100];
+            %matState = [distancex(1), distancey(1), app.particleArrayLocation(1,1).*100,app.particleArrayLocation(1,2).*100,t./100];
+            xLoc = particleArrayLocation(:,1).*100;%Can't forget to multiply by 100 to make it roughly 0-1
+            yLoc = particleArrayLocation(:,2).*100;
+            covar = cov(xLoc,yLoc);
+            covar = covar(1,2);
+            matState = [std(xLoc), std(yLoc),covar, sum(xLoc)./size(xLoc,1), sum(yLoc)./size(yLoc,1), FlowRate];
+        end
+
         %public functions
         function force = calculateMagneticForce(obj, aCoils,joyStick, h, v, controlMethod, mouseLocation, magForceRestrict, rotation, maxUserForce)
             switch(controlMethod)      

@@ -2,6 +2,7 @@ import gym
 import numpy as np
 import time
 import random
+import keras
 from cvxopt import matrix 
 from cvxopt import solvers #convex optimization library
 #from learning import IRL_helper
