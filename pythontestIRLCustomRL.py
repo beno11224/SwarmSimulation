@@ -24,8 +24,8 @@ class IRLClass:
         model.add(Activation('tanh'))
         #model.add(Dropout(0.2))
         # Second layer.
-        model.add(Dense(params[1], bias_initializer='lecun_uniform'))
-        model.add(Activation('tanh'))
+      #  model.add(Dense(params[1], bias_initializer='lecun_uniform'))
+      #  model.add(Activation('tanh'))
        # model.add(Dropout(0.2))
         # Output layer.
         model.add(Dense(n_actions, bias_initializer='lecun_uniform'))#, input_shape=(n_states,)))
