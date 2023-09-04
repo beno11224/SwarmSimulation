@@ -83,12 +83,7 @@ classdef ParticleFunctions
                -0.00949, -0.00302];
         end
 
-        function matState = getState(obj,particleArrayLocation,FlowRate)%,t,goalPoint)
-            % distancex = sqrt((app.particleArrayLocation(:,1)-goalPoint(1)).^2);
-            % distancey = sqrt((app.particleArrayLocation(:,2)-goalPoint(2)).^2);
-            % matState = [app.particleArrayLocation(1,1).*100,app.particleArrayLocation(1,2).*100];
-            %matState = [distancex(1), distancey(1), app.particleArrayLocation(1,1).*100,app.particleArrayLocation(1,2).*100,t./100];
-            xLoc = particleArrayLocation(:,1).*100;%Can't forget to multiply by 100 to make it roughly 0-1
+        function matState = getState(obj,particleArrayLocation,FlowRate)
             yLoc = particleArrayLocation(:,2).*100;
             covar = cov(xLoc,yLoc);
             covar = covar(1,2);
@@ -97,28 +92,34 @@ classdef ParticleFunctions
 
         %public functions
         function force = calculateMagneticForce(obj, aCoils,joyStick, h, v, controlMethod, mouseLocation, magForceRestrict, rotation, maxUserForce)
+            %Fetch the input - how it's fetched is determined by the
+            %'controlMethod' variable, changed in NextLevel or in the UI
+            %before runtime.
             switch(controlMethod)      
                 case("Keyboard")
                     totalForce = aCoils.* 10^6;
                 case("Mouse")
                     totalForce = mouseLocation .* maxuserForce*10^8; %Mouse Force is a bit lower than the others
-                case("Controller")                    
-                    %newHapticValues = (HapticSpoofTest() + 0.05) .* 25;
-                    newHapticValues = ReadHaptic() .* (1/0.077);% .* 30; %30 was for 2.25 max
+                case("Controller")
+                    newHapticValues = ReadHaptic() .* (1/0.077);
                     if magForceRestrict ~= 0
                         newHapticValues = newHapticValues .* (magForceRestrict/maxUserForce);
                     end
                     totalForce = [newHapticValues(1)*10^6, newHapticValues(2)*10^6];
                 case("TrainingModel")
-                    totalForce = aCoils .* 2.25*10^6;%(2.25/maxUserForce);
+                    totalForce = aCoils .* 2.25*10^6;
                 otherwise
                     totalForce = [0 0];
             end
+            %If the force is too big then limit it
             if(norm(totalForce) > maxUserForce*10^6)
                 totalForce = totalForce ./ norm(totalForce) .* maxUserForce*10^6;
             end
+            %rotate the force after multiplying by the constant determined
+            %in construction.
             force = ([cosd(-rotation), sind(-rotation); -sind(-rotation), cos(-rotation)] * (obj.magneticForceConstant .* totalForce)')' ;
         end
+        
         function force = calculateDipoleForce(obj, particleLocation, particleTorque)
             xYdistanceBetweenAllParticles = particleLocation - permute(particleLocation,[3,2,1]);
             distanceBetweenAllParticles = permute(sqrt(abs(xYdistanceBetweenAllParticles(:,1,:).^2 + xYdistanceBetweenAllParticles(:,2,:).^2)),[1,3,2]);

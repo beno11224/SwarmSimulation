@@ -18,9 +18,7 @@ function NextLevel(app)
     app.hapticFeedback = [0,0,0];
     app.slowDown = 1;
     app.goalIndex = 2;
- %   app.HapticForceSlider.Enable = false;
     minTimeToTravel = 10;
-   % app.maxForce = 1.6;%0.32; %0.16 - too low for high flow, 1.6 too high for all flows
 
    %replace switch with this
             app.fd = FlowData60(); %start at 30?

@@ -1,13 +1,9 @@
 function timerCallback(app)
-    %if(~app.currentlyDoingWorkSemaphore)
-    %   app.currentlyDoingWorkSemaphore = true; %let the earlier tasks complete first, try and force other to leave things alone        
-        
-
     currentMagforce = app.particleFunctions.calculateMagneticForce([app.X1MAGauge.Value app.Y1MAGauge.Value],app.joyStick, 1, 3, app.controlMethod, app.mousePosition, app.MagForceRestrictMAM2EditField.Value, app.rotation, app.maxForce);
-  %  currentMagforce = [0 0]; 
     currentDial = currentMagforce ./10^6 ./ app.particleFunctions.magneticForceConstant;
     if(app.controlMethod == "Controller")
-        if(app.UseNetworkForHaptic)%Try this - might go very weird, idk
+        %For shared control/Neural Network control
+        if(app.UseNetworkForHaptic)
             currentDial = -1 .* double(pyrun("pred = NNet.predict(np.array([state]),verbose=0, batch_size=1)","pred", state = app.particleFunctions.getState(app.particleArrayLocation, app.FluidFlowmsEditField.Value./6)));%,t,goalLocation)));
         end
         hapticSpring = app.HapticForceSlider.Value;
@@ -27,47 +23,39 @@ function timerCallback(app)
  
     magForceAlpha = 0.05;
     magForce = app.previousMagforce;
-    smallerTMaxTotalSteps = 25; %Any more speed comes from making the sim more efficient or slowing it down (not real time) %150
+
+    % Each time timerCallback is called, this loop runs
+    % 'smallerTMaxTotalSteps' number of times.
+    smallerTMaxTotalSteps = 25; %Any more speed comes from making the sim more efficient or slowing it down (not real time)
     smallerTMaxStep = app.simTimerPeriod / smallerTMaxTotalSteps;
     smallerTMaxStepReduced = smallerTMaxStep / app.slowDown;
- %   if(app.controlMethod == "TrainingModel")
- %       smallerTMaxStepReduced = 0.05
-    for smallerTMaxIndex = 1:smallerTMaxTotalSteps 
-%         vFlow = app.particleFunctions.calculateFlow(real(app.particleArrayLocation), app.polygon.currentFlowValues, app.mesh);
-%         vFlow = vFlow .* app.FluidFlowmsEditField.Value;
-        
+    for smallerTMaxIndex = 1:smallerTMaxTotalSteps         
         magForce = magForce .* (1-magForceAlpha) + currentMagforce.* magForceAlpha;
         app.particleArrayForce = magForce;
 
-        %determine if particles are in collision with the wall - particles
-        %are inelastic - no bouncing.NO! Now they're elastic as it makes more sense
-
-        
-%         app.particleArrayPreviousAcceleration = 0;%(vFlow - app.particleArrayVelocity) ./ smallerTMaxStepReduced;
-%         app.particleArrayVelocity = vFlow;
+        %Check if particle is on wall. Store if it bounced last loop as
+        %this is used to determine wether to draw the particle or not.
         app.bouncedVisualLastLoop = app.bouncedLastLoop;
         [wallContact, orthogonalWallContact, app.particleArrayLocation, app.particleArrayVelocity, app.bouncedLastLoop] = app.particleFunctions.isParticleOnWallPIP(app.particleArrayLocation, app.particleArrayVelocity, app.particleArrayForce, app.polygon, smallerTMaxStepReduced,app,app.bouncedLastLoop);
 
         %drag (using last iterations velocity)
-         dragForce = app.particleFunctions.calculateDragForce(app.particleArrayVelocity, vFlow);
-         app.particleArrayForce = app.particleArrayForce - dragForce;
+        dragForce = app.particleFunctions.calculateDragForce(app.particleArrayVelocity, vFlow);
+        app.particleArrayForce = app.particleArrayForce - dragForce;
         %friction
-         ffric = app.particleFunctions.calculateFrictionForce(app.particleArrayVelocity, app.particleArrayForce, orthogonalWallContact);
-         app.particleArrayForce = app.particleArrayForce - ffric;%app.particleFunctions.calculateFrictionForce(app.particleArrayVelocity, app.particleArrayForce, orthogonalWallContact);
-%         
+        ffric = app.particleFunctions.calculateFrictionForce(app.particleArrayVelocity, app.particleArrayForce, orthogonalWallContact);
+        app.particleArrayForce = app.particleArrayForce - ffric;
 
+        %Prevent movement of particles that have reached the end of any of
+        %the bifurcations
         app.particleArrayForce = app.particleArrayForce .* ~app.haltParticlesInEndZone;
         app.particleArrayVelocity = app.particleArrayVelocity .* ~app.haltParticlesInEndZone;
-        temporaryVelocity = app.particleArrayVelocity;
-       % temporaryLocation = app.particleArrayLocation;
-        
+        temporaryVelocity = app.particleArrayVelocity;        
            
         %calculate the new locations 
         app.particleArrayLocation = app.particleFunctions.calculateCurrentLocationCD(app.particleArrayLocation, app.particleArrayVelocity, app.particleArrayPreviousAcceleration, smallerTMaxStepReduced);
         %Make sure that we have the correct data stored for the next loop.        
         %calculate the new velocity
         [app.particleArrayVelocity,app.particleArrayPreviousAcceleration] = app.particleFunctions.calculateCurrentVelocityCD(orthogonalWallContact, wallContact, temporaryVelocity, app.particleArrayPreviousAcceleration, app.particleArrayForce, app.particleFunctions.particleMass, smallerTMaxStepReduced);
-       % app.particleArrayPreviousLocation = temporaryLocation;
 
         particlesInEndZone = app.particleFunctions.isParticleInEndZone(app.polygon.currentEndZone,app.particleArrayLocation);
         app.haltParticlesInEndZone = any(particlesInEndZone,2);
@@ -81,22 +69,23 @@ function timerCallback(app)
         end
 
     end
-    %fprintf(app.fileID, app.timePassed + "," + app.timeLag + "," + mat2str(magForce) + "," + mat2str(dragForce)+ "," + goalPercentage + "," + mat2str(app.particleArrayVelocity)+ "," + mat2str(app.particleArrayLocation) + "\r\n");
-    %Now rotate location values:
+    %Perform any rotation maths needed.
     rotMat = [cosd(app.rotation), sind(app.rotation); -sind(app.rotation), cos(app.rotation)];
     rotForce = (rotMat * [app.X1MAGauge.Value ; app.Y1MAGauge.Value])';
-%     rotVel = (rotMat * app.particleArrayVelocity')';
-    rotVel = (rotMat * app.particleArrayPreviousAcceleration')';
+    rotVel = (rotMat * app.particleArrayVelocity')';
     rotLoc = (rotMat * app.particleArrayLocation')';
  
     if(app.writeToFile)
         fprintf(app.fileID, app.timePassed + "," + mat2str(rotForce) + "," + goalPercentage + "," + mat2str(rotVel)+ "," + mat2str(rotLoc) + "," + mat2str(particlesInEndZone) + "\r\n");
          app.printCounter = app.printCounter + 1;
     end
+
+    %Update fields for user
     if(app.timeLimit > 0 && app.timePassed <= app.timeLimit)
         app.TimeRemainingsEditField.Value = round(app.timeLimit - app.timePassed);
         app.PercentageinGoalEditField.Value = round(goalPercentage .* 100);
     else
+        %Out of time, so perform a reset
         if(app.timeLimit > 0)
             if(app.controlMethod ~= "TrainingModel")
                 stop(app.simulationTimerProperty);
