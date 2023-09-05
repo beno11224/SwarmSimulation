@@ -1,4 +1,7 @@
 function idleHapticCallback(app)
+    %This keeps the haptic device awake and applying force when the
+    %simulator isn't actually running, for example during loading of each
+    %level.
     if(app.controlMethod == "Controller")
         newHapticValues = ReadHaptic() .* 30;
         if app.MagForceRestrictMAM2EditField.Value ~= 0
