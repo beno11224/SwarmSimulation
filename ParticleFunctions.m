@@ -83,6 +83,9 @@ classdef ParticleFunctions
                -0.00949, -0.00302];
         end
 
+        %public functions
+
+        %Only used for NN control, the state needs to be known.
         function matState = getState(obj,particleArrayLocation,FlowRate)
             yLoc = particleArrayLocation(:,2).*100;
             covar = cov(xLoc,yLoc);
@@ -90,7 +93,6 @@ classdef ParticleFunctions
             matState = [std(xLoc), std(yLoc),covar, sum(xLoc)./size(xLoc,1), sum(yLoc)./size(yLoc,1), FlowRate];
         end
 
-        %public functions
         function force = calculateMagneticForce(obj, aCoils,joyStick, h, v, controlMethod, mouseLocation, magForceRestrict, rotation, maxUserForce)
             %Fetch the input - how it's fetched is determined by the
             %'controlMethod' variable, changed in NextLevel or in the UI
@@ -120,7 +122,10 @@ classdef ParticleFunctions
             force = ([cosd(-rotation), sind(-rotation); -sind(-rotation), cos(-rotation)] * (obj.magneticForceConstant .* totalForce)')' ;
         end
         
+        %not in use - 
+        % provides the force on each particle from other particles
         function force = calculateDipoleForce(obj, particleLocation, particleTorque)
+
             xYdistanceBetweenAllParticles = particleLocation - permute(particleLocation,[3,2,1]);
             distanceBetweenAllParticles = permute(sqrt(abs(xYdistanceBetweenAllParticles(:,1,:).^2 + xYdistanceBetweenAllParticles(:,2,:).^2)),[1,3,2]);
             distanceBetweenAllParticles(isnan(distanceBetweenAllParticles)) = 0;
@@ -132,10 +137,13 @@ classdef ParticleFunctions
             distanceMultiplier = permute(sum(xYdistanceBetweenAllParticles,1),[3,2,1]);
             force = sumOfAllDipoleMoments .* distanceMultiplier; 
         end
+
         function force = calculateDragForce(obj, particleVelocity, flowVelocity)
             force = ((particleVelocity - flowVelocity) .* obj.dragForceConstant); %Stokes Drag Equation
         end
 
+        %used to keep particles within the polygon. Does not include
+        %friction, that is separate but is also based on location.
         function [wallContact, orthogonalWallContact, particleLocation, particleVelocity, bouncedLastLoop] = isParticleOnWallPIP(obj, particleLocation, particleVelocity, particleForce, polygon, tMax,app, bouncedLastLoop)
             %this just returns anything INSIDE the polygon, not anything on the walls
             in = inpolygon(particleLocation(:,1), particleLocation(:,2), polygon.currentPoly(:,1), polygon.currentPoly(:,2));
@@ -150,6 +158,9 @@ classdef ParticleFunctions
                     [inOOB,onOOB] = inpolygon(particleLocation(:,1), particleLocation(:,2), polygon.currentOutOfBoundsPolys(outOfBoundsCount,:,1), polygon.currentOutOfBoundsPolys(outOfBoundsCount,:,2));
                     inOnOOB = (inOOB|onOOB); %Or together to get anything that is in or on the polygon
                     if(any(inOnOOB))
+                        %determine, for any particles outside the polygon
+                        %play space, the orthogonal distance to the nearest
+                        % line, which should be the one jumped over
                         repmatLength = length(inOnOOB);
                         wallContactVector = repmat(polygon.currentPolyVector(outOfBoundsCount,:),repmatLength,1);
                         orthogonalWallContactVector = repmat(polygon.currentHardCodedOrthogonalWallContacts(outOfBoundsCount,:),repmatLength,1);
@@ -158,6 +169,8 @@ classdef ParticleFunctions
                         dists(inOnOOB == 1,:) = obj.distPointToLine(particleLocation(inOnOOB == 1,:), polygon.currentPoly(outOfBoundsCount,:), polygon.currentPoly(outOfBoundsCount + 1,:));
                     end
                 end
+                %Move the particles to where they should be from their
+                %velocities
                 distMove = dists .* orthogonalWallContact;
                 distMove(isnan(distMove)) = 0;
                 particleLocation = particleLocation + distMove;
@@ -166,91 +179,62 @@ classdef ParticleFunctions
                 perpendicularVelocity = parallelVelocity;
                 testForSign = parallelVelocity;
 
+                %now determine which particles should bounce
                 parallelVelocity(~in,:) = obj.vectorProjection(particleVelocity(~in,:),wallContact(~in,:));
                 perpendicularVelocity(~in,:) = obj.vectorProjection(particleVelocity(~in,:),orthogonalWallContact(~in,:));
                 testForSign(~in,:) = perpendicularVelocity(~in,:) .* orthogonalWallContact(~in,:);
-                perpendicularVelocity(testForSign < 0) = perpendicularVelocity(testForSign < 0).*-1;  %bounce particles off wall by inverting any momentum into the wall.
+                %bounce particles off wall by inverting any momentum into the wall.                
+                perpendicularVelocity(testForSign < 0) = perpendicularVelocity(testForSign < 0).*-1;  
+                %If particles have bounced too many times then they are
+                %halted to prevent explosive velocities
                 perpendicularVelocity(bouncedLastLoop == 1,:) = 0;
-                %                perpendicularVelocity(testForSign < 0) = 0;% perpendicularVelocity(testForSign < 0).*-1;  %bounce particles off wall by inverting any momentum into the wall.
-                   
                 particleVelocity = particleVelocity .* in + parallelVelocity + perpendicularVelocity;            
             end
-            bouncedLastLoop = ~in;    
+            %store if the particles bounced off the wall - this is
+            %considered when drawing the particles
+            bouncedLastLoop = ~in;
         end
         
-        function velocity = calculateFlow(obj, particleLocation, flowMatrix, mesh)%, axes) 
-            %{    
-                plot(axes, mesh.Nodes(1,:), mesh.Nodes(2,:), '.','markerSize', 5 , 'color', 'red'); %visualise nodes
-                
-                flowMatrix = flowMatrix .* 3000;
-    
-                for i = 1:size(mesh.Nodes,2)
-                    ab = plot(axes, mesh.Nodes(1,i), mesh.Nodes(2,i), '.', 'markerSize', 23, 'color', 'yellow');
-                    abz = plot(axes,[mesh.Nodes(1,i); mesh.Nodes(1,i) + flowMatrix(i,1)], [mesh.Nodes(2,i); mesh.Nodes(2,i) + flowMatrix(i,2)], 'color', 'red');
-                    flowVel = flowMatrix(i,:)
-                    abc(1,:) = [i i+11];
-                    abc(2,:) = flowMatrix(i,:);
-                    delete(ab);
-                    delete(abz);
-                end
-            %}
+        %Find the closest node in the flow mesh, then use that value as the
+        %flow velocity
+        function velocity = calculateFlow(obj, particleLocation, flowMatrix, mesh)
             if(size(mesh.Points,1) == size(flowMatrix,1))
-              %  closestNode = findNodes(mesh, 'nearest', particleLocation');
                 closestNode = nearestNeighbor(mesh,particleLocation);
                 velocity(:,1) = flowMatrix(closestNode,1);
                 velocity(:,2) = flowMatrix(closestNode,2);
             else
+                %can't find a node - best to just set flow to 0 so the
+                %program can run
                 velocity = [0 0];
             end
         end
-       
-        function writeMeshToFile(obj,polygon)
-            tr = triangulation(polyshape(polygon.currentPoly(:,1),polygon.currentPoly(:,2)));
-            model = createpde(1);
-            tnodes = tr.Points';
-            telements = tr.ConnectivityList';
-            model.geometryFromMesh(tnodes, telements);
-            mesh = generateMesh(model, 'Hmax', 0.001);
-            fileidone = fopen('MeshAndPolygon.csv','w');
-            for i = 1:length(mesh.Nodes)
-                fprintf(fileidone, mesh.Nodes(1,i) + "," + mesh.Nodes(2,i) + "\r");
-            end            
-            fprintf(fileidone, "Poylgon" + "," + "Below" + "\r");
-            for i = 1: length(polygon.currentPoly)
-                fprintf(fileidone, polygon.currentPoly(i,1) + "," + polygon.currentPoly(i,2) + "\r");
-            end                        
-            fclose(fileidone);
-        end
-        
+               
+        %Determine the fricitonal force on any particles that are at the
+        %boundary. This is sped up by using matrices
         function force = calculateFrictionForce(obj, particleVelocity, particleForce, orthogonalWallContact)
+            %which particles are moving
             trueParticleVelocity = sum(abs(particleVelocity),2);
             movingParticles = trueParticleVelocity > 0;
+
+            %setup coefficients
             coefficient = particleVelocity(:,1) .* 0;
             coefficient(movingParticles == 1) = obj.movingFrictionCoefficient;
             coefficient(coefficient == 0) = obj.staticFrictionCoefficient;
+            %Now apply those coeffificients to particles that are near the
+            %wall
             force = obj.matrixVectorProjection(particleForce, orthogonalWallContact) .* coefficient;
+            testForSign = force .* orthogonalWallContact;
 
-            testForSign = force .* orthogonalWallContact; %TODO need to check this...
+            %double check the signs
             force(testForSign > 0) = 0;
             force(particleForce < 0 & force > 0) = force(particleForce < 0 & force > 0) .* -1; %Make  sign match force to allow it to be negated later
-            force(particleForce > 0 & force < 0) = force(particleForce > 0 & force < 0) .* -1; %Make  sign match force to allow it to be negated late
+            force(particleForce > 0 & force < 0) = force(particleForce > 0 & force < 0) .* -1; %Make  sign match force to allow it to be negated later
             %Using the normal force, must convert to correct dimension
             tempForce = force(:,1);
             force(:,1) = force(:,2);
             force(:,2) = tempForce;
         end
-        
-        function velocity = calculateCumulativeParticleVelocityComponentFromForce(obj, particleForce, oldVelocity, haltTheseParticles, wallContact, timeSinceLastUpdate)
-            velocity = oldVelocity + calculatePointVelocityUpdate(obj,particleForce, obj.particleMass, timeSinceLastUpdate);
-            for i = 1:length(velocity)
-                if(any(~isnan(wallContact(i,:))))
-                    velocity(i,:) = obj.vectorProjection(velocity(i,:),wallContact(i,:));
-                end 
-            end
-            %prevent these particles from moving
-            velocity = velocity .* ~haltTheseParticles;
-        end   
-        
+                
         function acceleration = calculateAcceleration(obj,particleForce, particleMass)
             acceleration = particleForce ./ particleMass;
         end
@@ -259,26 +243,28 @@ classdef ParticleFunctions
             velocity = obj.calculateAcceleration(particleForce, particleMass) ./ timeSinceLastUpdate;
         end
         
+        %Turn the forces applied into a velocity
         function [velocity,acceleration] = calculateCurrentVelocityCD(obj, orthogonalWallContact, wallContact, previousVelocity, previousAcceleration, particleForce, particleMass, timeSinceLastUpdate)            
+            %using acceleration, give a velocity change
             currentAcceleration = obj.calculateAcceleration(particleForce, particleMass);
-            hypotheticalDeltaVelocity = currentAcceleration .* timeSinceLastUpdate; 
-%             hypotheticalDeltaVelocity = 0.5.*(currentAcceleration + previousAcceleration).* timeSinceLastUpdate; %timeSinceLastUpdate must be fairly constant for this to work - maybe avg time?
-                                                                                                                    %This is v = u+at : the 0.5 is _averaging_ the accelerations.
-            
+            hypotheticalDeltaVelocity = currentAcceleration .* timeSinceLastUpdate;
+
+            %Now make sure that any particles that go out of bounds are
+            %bounced back into the play area
             velocityOrthogonalToWallContact = obj.matrixVectorProjection(hypotheticalDeltaVelocity,orthogonalWallContact);
             testForSign = velocityOrthogonalToWallContact .* orthogonalWallContact;
             velocityOrthogonalToWallContact(testForSign < 0) = 0;
             wallContactVelocity = obj.matrixVectorProjection(hypotheticalDeltaVelocity,wallContact) + velocityOrthogonalToWallContact;
             hypotheticalDeltaVelocity = hypotheticalDeltaVelocity .* isnan(wallContact) + wallContactVelocity;
-
             
+            %determine the rate of change, it's useful in a second
             rateOfChange = (hypotheticalDeltaVelocity - previousVelocity) ./ previousVelocity; 
             capRateofChangeAt = (1*10e3 .* abs(previousVelocity./10) + 0.1).^-2;
             capRateofChangeAt(capRateofChangeAt < 0.1) = 0.1; %limit the lower end.
             rateOfChange(isinf(rateOfChange)) = intmax;
             rateOfChange(isnan(rateOfChange)) = 0;
-            %yes, this is aboslutely required, otherwise we IMMEDIATELY get
-            %lots of errors
+            %yes, this is aboslutely required, otherwise errors
+            %Use a rate of change cap to damp any big oscillations.
             if(any(any(abs(rateOfChange) > capRateofChangeAt)))
                 cappedRateOfChange = rateOfChange;
                 cappedRateOfChange(abs(rateOfChange) > capRateofChangeAt) = capRateofChangeAt(abs(rateOfChange) > capRateofChangeAt); %cap it
@@ -290,35 +276,55 @@ classdef ParticleFunctions
             else
                 acceleration = currentAcceleration;
             end
-            velocity = (previousVelocity + hypotheticalDeltaVelocity);% .* ~haltTheseParticles;
+            velocity = (previousVelocity + hypotheticalDeltaVelocity);
         end
         
+        %using a variant of suvat, determine th new location: 
+        % s= ut + 1/2(at^2)
         function location = calculateCurrentLocationCD(obj,previousLocation, previousVelocity, previousAcceleration, timeSinceLastUpdate)
             location = previousLocation + previousVelocity .* timeSinceLastUpdate + 0.5.*previousAcceleration.*timeSinceLastUpdate^2;
         end
         
-        function [newLocations, newVelocity] = calculateCollisionsAfter(obj, oldParticleLocation, newParticleLocation, particleVelocity, timeModifier)
-            positionsOfAnyParticleCollisions = obj.multiplierOfLineVectorOfIntersectionOfTwoLines(oldParticleLocation, particleVelocity, newParticleLocation, particleVelocity.*-1);
-            positionsOfAnyParticleCollisions = positionsOfAnyParticleCollisions(:,:,3);
-            positionsOfAnyParticleCollisions(isnan(positionsOfAnyParticleCollisions)) = 0;
-            %set limits for back-movement of particle (-1<=x<0)
-            positionsOfAnyParticleCollisions(positionsOfAnyParticleCollisions >= 0) = 0;
-            positionsOfAnyParticleCollisions(positionsOfAnyParticleCollisions < -1) = 0;
-            vectoredResetParticlesToCorrectLocations = particleVelocity .* -1 .* obj.realNum(positionsOfAnyParticleCollisions);
-            newLocations = newParticleLocation + obj.realNum(vectoredResetParticlesToCorrectLocations);            
-            %Now allow only velocity perpendicular to the contact                       
-            newVelocity = particleVelocity;
-        end
-        function [location, newVelocity] = moveParticle(obj, particleLocation, particleVelocity, timeModifier)
-            %TODO THIS DOESN'T WORK!
-          %  unCheckedLocation = particleLocation + obj.realNum(particleVelocity .* timeModifier);
-          %  [location,newVelocity] = calculateCollisionsAfter(obj, particleLocation, unCheckedLocation, particleVelocity, timeModifier);
-            %Comment above and Uncomment below to prevent particleCollisions
-            location = particleLocation + obj.realNum(particleVelocity);
-            newVelocity = particleVelocity;
-        end
+        % function velocity = calculateCumulativeParticleVelocityComponentFromForce(obj, particleForce, oldVelocity, haltTheseParticles, wallContact, timeSinceLastUpdate)
+        %     velocity = oldVelocity + calculatePointVelocityUpdate(obj,particleForce, obj.particleMass, timeSinceLastUpdate);
+        %     for i = 1:length(velocity)
+        %         if(any(~isnan(wallContact(i,:))))
+        %             velocity(i,:) = obj.vectorProjection(velocity(i,:),wallContact(i,:));
+        %         end 
+        %     end
+        %     %prevent these particles from moving
+        %     velocity = velocity .* ~haltTheseParticles;
+        % end   
+
+        % function [newLocations, newVelocity] = calculateCollisionsAfter(obj, oldParticleLocation, newParticleLocation, particleVelocity, timeModifier)
+        %     positionsOfAnyParticleCollisions = obj.multiplierOfLineVectorOfIntersectionOfTwoLines(oldParticleLocation, particleVelocity, newParticleLocation, particleVelocity.*-1);
+        %     positionsOfAnyParticleCollisions = positionsOfAnyParticleCollisions(:,:,3);
+        %     positionsOfAnyParticleCollisions(isnan(positionsOfAnyParticleCollisions)) = 0;
+        %     %set limits for back-movement of particle (-1<=x<0)
+        %     positionsOfAnyParticleCollisions(positionsOfAnyParticleCollisions >= 0) = 0;
+        %     positionsOfAnyParticleCollisions(positionsOfAnyParticleCollisions < -1) = 0;
+        %     vectoredResetParticlesToCorrectLocations = particleVelocity .* -1 .* obj.realNum(positionsOfAnyParticleCollisions);
+        %     newLocations = newParticleLocation + obj.realNum(vectoredResetParticlesToCorrectLocations);            
+        %     %Now allow only velocity perpendicular to the contact                       
+        %     newVelocity = particleVelocity;
+        % end
+
+        % function [location, newVelocity] = moveParticle(obj, particleLocation, particleVelocity, timeModifier)
+        %     %TODO THIS DOESN'T WORK!
+        %   %  unCheckedLocation = particleLocation + obj.realNum(particleVelocity .* timeModifier);
+        %   %  [location,newVelocity] = calculateCollisionsAfter(obj, particleLocation, unCheckedLocation, particleVelocity, timeModifier);
+        %     %Comment above and Uncomment below to prevent particleCollisions
+        %     location = particleLocation + obj.realNum(particleVelocity);
+        %     newVelocity = particleVelocity;
+        % end
         
+        %Random generation in the start zone for particle locations.
+        %locations are generated in a bounding box, and then tested to see
+        %if the location is in the start zone.
         function particleLocations = generateParticleLocations(obj, poly, particleLocationsLength)
+            %set to true to not generate the locations, instead use the
+            %locations stored at the top of this file. NumParticles MUST be
+            %set to 50 or this will cause errors. Mainly used for testing.
             if(false)
                 particleLocations = obj.fiftyParticleStartLocations;
             else
@@ -359,6 +365,11 @@ classdef ParticleFunctions
             end
         end
         
+        %Work out which of the denoted 'goal zones' the particles are in,
+        %then return an array [NumParticles, NumGoals] detailing those
+        %locations - if a particle is in a goal, that is represented by 1.
+        %If it isn't, that's represented by 0. If there are no 1's in a
+        %row, that particle is not in any goal.
         function inGoalZone = isParticleInEndZone(obj, goalZones, particleLocations)
             inGoalZone = zeros(size(particleLocations,1),size(goalZones,2));
             for goalZoneIndex = 1:size(goalZones,1)
@@ -378,6 +389,26 @@ classdef ParticleFunctions
             startDistanceLine2VectorCrossProductQPR = obj.crossProduct(startDistanceQP(:,1,:), startDistanceQP(:,2,:), line2VectorR(:,1,:), line2VectorR(:,2,:));
             vectorCrossProductRS = obj.crossProduct(line2VectorR(:,1,:), line2VectorR(:,2,:), line1VectorS(:,1,:), line1VectorS(:,2,:));
             line1Multiplier = obj.realNum(startDistanceLine2VectorCrossProductQPR./vectorCrossProductRS);
+        end
+
+        %A helper function to create a mesh of the playspace, then write
+        %those locations to a csv file for data manipulation.
+        function writeMeshToFile(obj,polygon)
+            tr = triangulation(polyshape(polygon.currentPoly(:,1),polygon.currentPoly(:,2)));
+            model = createpde(1);
+            tnodes = tr.Points';
+            telements = tr.ConnectivityList';
+            model.geometryFromMesh(tnodes, telements);
+            mesh = generateMesh(model, 'Hmax', 0.001);
+            fileidone = fopen('MeshAndPolygon.csv','w');
+            for i = 1:length(mesh.Nodes)
+                fprintf(fileidone, mesh.Nodes(1,i) + "," + mesh.Nodes(2,i) + "\r");
+            end            
+            fprintf(fileidone, "Poylgon" + "," + "Below" + "\r");
+            for i = 1: length(polygon.currentPoly)
+                fprintf(fileidone, polygon.currentPoly(i,1) + "," + polygon.currentPoly(i,2) + "\r");
+            end                        
+            fclose(fileidone);
         end
         
         %parameters are the x and y values as vectors corresponding to the cross product of matricies A and B

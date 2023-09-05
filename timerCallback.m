@@ -1,10 +1,11 @@
 function timerCallback(app)
+    %start by getting the magnetic force - this is the user input
     currentMagforce = app.particleFunctions.calculateMagneticForce([app.X1MAGauge.Value app.Y1MAGauge.Value],app.joyStick, 1, 3, app.controlMethod, app.mousePosition, app.MagForceRestrictMAM2EditField.Value, app.rotation, app.maxForce);
     currentDial = currentMagforce ./10^6 ./ app.particleFunctions.magneticForceConstant;
     if(app.controlMethod == "Controller")
         %For shared control/Neural Network control
         if(app.UseNetworkForHaptic)
-            currentDial = -1 .* double(pyrun("pred = NNet.predict(np.array([state]),verbose=0, batch_size=1)","pred", state = app.particleFunctions.getState(app.particleArrayLocation, app.FluidFlowmsEditField.Value./6)));%,t,goalLocation)));
+            currentDial = -1 .* double(pyrun("pred = NNet.predict(np.array([state]),verbose=0, batch_size=1)","pred", state = app.particleFunctions.getState(app.particleArrayLocation, app.FluidFlowmsEdimoveParticltField.Value./6)));%,t,goalLocation)));
         end
         hapticSpring = app.HapticForceSlider.Value;
         hapticViscocity = 0.3;
