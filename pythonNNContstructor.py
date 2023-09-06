@@ -14,11 +14,20 @@ class NNClass:
         model = Sequential()
         #Used in building layers - for keras each layer needs to know the number of inputs, the outputs are generated automatically.
         previous_layer_size = n_states
+        print(params)
+        try:
+            num_layers = len(params)
+        except:
+            num_layers = 1
         #Hidden layers
-        for h_layer_index in range(len(params)):
-          #Add a new (hidden) layer - each layer has a size dictated by params, has the tanh activation function, and has the biases initialised using the lecun distribution.
-          model.add(Dense(params[h_layer_index], activation='tanh', bias_initializer='lecun_uniform', input_shape=(previous_layer_size,)))
-          previous_layer_size = params[h_layer_index]
+        if(num_layers > 1):
+            for h_layer_index in range(num_layers):
+              #Add a new (hidden) layer - each layer has a size dictated by params, has the tanh activation function, and has the biases initialised using the lecun distribution.
+              model.add(Dense(params[h_layer_index], activation='tanh', bias_initializer='lecun_uniform', input_shape=(previous_layer_size,)))
+              previous_layer_size = params[h_layer_index]
+        else:
+            #else there's only one hidden layer and the [] cause errors
+            model.add(Dense(params, activation='tanh', bias_initializer='lecun_uniform', input_shape=(previous_layer_size,)))
         # Output layer.
         model.add(Dense(n_actions, bias_initializer='lecun_uniform'))
         #Choose the optimiser and compile the model

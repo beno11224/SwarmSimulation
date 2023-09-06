@@ -86,7 +86,7 @@ classdef ParticleFunctions
         %public functions
 
         %Only used for NN control, the state needs to be known.
-        function matState = getState(obj, particleArrayLocation, FlowRate, xOffset, yOffset)
+        function matState = getState(obj,particleArrayLocation,FlowRate,t, xOffset, yOffset)
             xLoc = (particleArrayLocation(:,1) + xOffset).*100;
             yLoc = (particleArrayLocation(:,2) + yOffset).*100;
             covar = cov(xLoc,yLoc);
