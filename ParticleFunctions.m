@@ -86,11 +86,12 @@ classdef ParticleFunctions
         %public functions
 
         %Only used for NN control, the state needs to be known.
-        function matState = getState(obj,particleArrayLocation,FlowRate)
+        function matState = getState(obj,particleArrayLocation,FlowRate, xOffset, yOffset)
+            xLoc = (app.particleArrayLocation(:,1) + xOffset).*100;
             yLoc = particleArrayLocation(:,2).*100;
             covar = cov(xLoc,yLoc);
             covar = covar(1,2);
-            matState = [std(xLoc), std(yLoc),covar, sum(xLoc)./size(xLoc,1), sum(yLoc)./size(yLoc,1), FlowRate];
+            matState = [std(xLoc), std(yLoc),covar, sum(xLoc)./size(xLoc,1), sum(yLoc)./size(yLoc,1), FlowRate, xOffset, yOffset];
         end
 
         function force = calculateMagneticForce(obj, aCoils,joyStick, h, v, controlMethod, mouseLocation, magForceRestrict, rotation, maxUserForce)
