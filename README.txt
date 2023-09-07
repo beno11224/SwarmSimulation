@@ -4,8 +4,6 @@ It is written in Matlab, but uses other languages where appropriate:
  - C/C++ interfacing to Novint Falcon Haptic device
  - Python for NN integration (pythonNNConstructor)
 
-The simulator is made up of many files.
-
 The entry point for the simulator is a .mlapp file. There are a few of these to each perform certain tasks, 
 for example _particleSimulationParticipant_ is used for data collection, and _particleSimulationValidation_ 
 is used to run parametric studies
