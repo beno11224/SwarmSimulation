@@ -23,13 +23,13 @@ class NNClass:
         if(num_layers > 1):
             for h_layer_index in range(num_layers):
               #Add a new (hidden) layer - each layer has a size dictated by params, has the tanh activation function, and has the biases initialised using the lecun distribution.
-              model.add(Dense(params[h_layer_index], activation='tanh', bias_initializer='lecun_uniform', input_shape=(previous_layer_size,)))
+              model.add(Dense(params[h_layer_index], activation='tanh', bias_initializer='lecun_uniform', kernel_initializer='lecun_uniform', input_shape=(previous_layer_size,)))
               previous_layer_size = params[h_layer_index]
         else:
             #else there's only one hidden layer and the [] cause errors
-            model.add(Dense(params, activation='tanh', bias_initializer='lecun_uniform', input_shape=(previous_layer_size,)))
+            model.add(Dense(params, activation='tanh', bias_initializer='lecun_uniform', kernel_initializer='lecun_uniform', input_shape=(previous_layer_size,)))
         # Output layer.
-        model.add(Dense(n_actions, bias_initializer='lecun_uniform'))
+        model.add(Dense(n_actions, bias_initializer='lecun_uniform', kernel_initializer='lecun_uniform'))
         #Choose the optimiser and compile the model
         #metrics allow us to graph the statistical performance of the network later - loss is recorded automatically, accuracy is used as an example and is not required.
         rms=Adam(lr=0.00001)
