@@ -11,7 +11,7 @@ function NextLevel(app)
     app.ScenarioEditField.Value = "Test " + app.testNumber;
     app.polygon = app.polygon.change(2,app.fd);
     app.rotation = 0;
-    app.NumberofParticlesEditField.Value = 10;
+    app.NumberofParticlesEditField.Value = 500;
     app.FluidFlowmsEditField.Value = 0.005;
     app.MagForceRestrictMAM2EditField.Value = 0;
     generateNewParticles = true;
