@@ -2,8 +2,9 @@
 %polygon.currentPoly is then a collection of points
 
 %this should set it up...
-polygon = Polygons(0.01);
-polygon.change(2);
+fd = FlowData05();
+polygon = Polygons(0.01, fd);
+polygon.change(2, fd);
 
 %mesh generation
 tr = triangulation(polyshape(polygon.currentPoly(:,1),polygon.currentPoly(:,2)));
