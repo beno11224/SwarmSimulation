@@ -91,8 +91,8 @@
    %C = squeeze(polygon.allPolys(2,:,:));
 constraints = [(1:length(poly))',((1:length(poly))+1)'];
 constraints(length(constraints),2) = 1;
-%    tri = delaunayTriangulation([poly;[locX',locY']],constraints);%,C);
-    tri = delaunayTriangulation([locX',locY'],constraints);%,C);
+   tri = delaunayTriangulation([poly;[locX',locY']],constraints);%,C);
+  %  tri = delaunayTriangulation([locX',locY'],constraints);%,C);
     IO = isInterior(tri);
     triInt = tri(IO,:);
    % triplot(tri(IO,:),tri.Points(:,1),tri.Points(:,2),[flowX',flowY']);
@@ -100,15 +100,18 @@ constraints(length(constraints),2) = 1;
 
    AverageColours = zeros(size(triInt,1),1);
    for(i = 1:size(triInt,1))
-        x1 = triInt(i,:)%-length(poly)
-        if~(any(x1>length(flowX)))
-            AverageColours(i) = [sum(flowX(x1)) .* sum(flowY(x1))];
+        x1 = triInt(i,:)-length(poly)
+        if~(any(x1 < 1))
+            AverageColours(i) = [sum(abs(flowX(x1))) .* sum(abs(flowY(x1)))];
         end
    end
 
+   AverageColours = AverageColours + abs(min(AverageColours));
+   AverageColours = AverageColours./max(AverageColours);
+
    ab = tri(IO,:);
    colurs = [flowX'.*flowY'];
-   patch('Faces',triInt,'Vertices',tri.Points,'FaceVertexCData',AverageColours); %draw like this
+   patch('Faces',triInt,'Vertices',tri.Points,'FaceVertexCData',AverageColours,'FaceColor','flat'); %draw like this
    %patch(triInt,tri.Points,AverageColours); %draw like this
 %    IO = isInterior(tri);
   %  triplot(tri(IO,:));
