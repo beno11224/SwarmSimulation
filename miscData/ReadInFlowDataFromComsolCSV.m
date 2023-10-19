@@ -110,7 +110,7 @@
     %     %pause(0.2)
     % end
     triInt([25;621],:) = []; %Remove individual faces (these two cross between two lowest branches)
-    patch('Faces',triInt,'Vertices',tri.Points,'FaceVertexCData',AverageColours,'FaceColor','interp');
+    patch('Faces',triInt,'Vertices',tri.Points,'FaceVertexCData',AverageColours,'FaceColor','interp','EdgeAlpha',0.25);
     colormap(turbo(256))
     cb = colorbar()
     ylabel(cb,"Example Fluid Flow (M/s)","FontSize",20);
