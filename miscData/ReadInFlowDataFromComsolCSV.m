@@ -94,7 +94,7 @@
     j = 1;
     for(i = 1:size(tri.Points,1))
         if(triInt(i) && j <= size(values,1))
-            AverageColours(i) = [abs(values(j,1)) + abs(values(j,2))];
+            AverageColours(i) = [sqrt(values(j,1)^2 + values(j,2)^2)];
             j = j + 1;
         else
             AverageColours(i) = 0;
@@ -112,6 +112,17 @@
     triInt([25;621],:) = []; %Remove individual faces (these two cross between two lowest branches)
     patch('Faces',triInt,'Vertices',tri.Points,'FaceVertexCData',AverageColours,'FaceColor','interp');
     colormap(turbo(256))
+    cb = colorbar()
+    ylabel(cb,"Example Fluid Flow (M/s)","FontSize",20);
     set(gca,'Visible','off')
     set(gca,'PlotBoxAspectRatio', [1.0000    0.7903    0.7903])
+    txt1 = "Inlet"
+    txt2 = "Goal Outlet"
+    txt3 = "Incorrect Outlet"
+    text(-0.0095,-0.0022,txt1,'HorizontalAlignment','left','FontSize',24)
+    text(0.0105,-0.00365,txt2,'HorizontalAlignment','right','FontSize',24)
+    text(-0.0026,-0.0088,txt3,'HorizontalAlignment','left','FontSize',16)
+    text(-0.0037,0.007,txt3,'HorizontalAlignment','right','FontSize',16)
+    text(0.0044,0.009,txt3,'HorizontalAlignment','left','FontSize',16)
+    text(0.013,0.004,txt3,'HorizontalAlignment','right','FontSize',16)
 end
