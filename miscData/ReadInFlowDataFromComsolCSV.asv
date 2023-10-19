@@ -64,6 +64,21 @@
 
 
 % %ASHAPE CODE WORKS, can't do colour though.
+%     ashape = alphaShape(locX',locY','HoleThreshold',0.05);
+%     ashape.Alpha = 0.00009;
+% %     [faces,nodes] = boundaryFacets(ashape)
+% %     for(i = 1:length(faces))
+% %         for(j = 1:length(locX))
+% %             if(nodes(i,:) == [locX(j),locY(j)])
+% %                 colorValues(i) = flowX(j).*flowY(j);
+% %             end
+% %         end
+% %     end
+% %     patch(nodes(:,1),nodes(:,2),1:length(nodes));
+% %     hold on;
+% %     patch(nodes(:,1),nodes(:,2),colorValues)
+%    % colortoUse = flowX.*flowY;
+%     aplot = plot(ashape,'FaceAlpha',0,'LineWidth',0.001);
     % ashape = alphaShape(locX',locY','HoleThreshold',0.05);
     % ashape.Alpha = 0.001;
     % aplot = plot(ashape,'FaceAlpha',0,'LineWidth',0.01);
@@ -84,8 +99,9 @@
     end
     close()
 
-    %constraints = [(1:length(poly))',((1:length(poly))+1)'];
-    %constraints(length(constraints),2) = 1;
+    constraints = [(1:length(poly))',((1:length(poly))+1)'];
+    constraints(length(constraints),2) = 1;
+    %tri = delaunayTriangulation([poly;locs])%,constraints);%,C);[poly;a]
     tri = delaunayTriangulation(locs(:,1),locs(:,2));%,constraints);
     IO = isinterior(polyshape(poly),incenter(tri));
    % IO2 =  isinterior(tri)
@@ -100,18 +116,10 @@
             AverageColours(i) = 0;
         end
     end
-    %%Use this loop to view individual faces for debugging
-    % for(iii = 1:size(tri.Points,1)) %25
-    %     iii
-    %     if(iii ~= 25 && iii ~= 621)
-    %         plot(tri.Points(triInt(iii,:)',1),tri.Points(triInt(iii,:)',2))
-    %         hold on
-    %     end
-    %     %pause(0.2)
-    % end
-    triInt([25;621],:) = []; %Remove individual faces (these two cross between two lowest branches)
     patch('Faces',triInt,'Vertices',tri.Points,'FaceVertexCData',AverageColours,'FaceColor','interp');
     colormap(turbo(256))
-    set(gca,'Visible','off')
+    set(gca,'xtick',[])
+    set(gca,'ytick',[])
+    %asfgsafg  = get(gca,'PlotBoxAspectRatio')
     set(gca,'PlotBoxAspectRatio', [1.0000    0.7903    0.7903])
 end
