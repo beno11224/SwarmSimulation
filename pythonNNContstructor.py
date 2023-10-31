@@ -9,6 +9,13 @@ from keras.optimizers import Adam
 class NNClass:    
     
     def ConstructNetwork(self,n_states, n_actions, params):
+        # use seed to make results re-producable
+        np.random.seed(1000)
+        random.seed(1000)
+        keras.utils.set_random_seed(1000)
+
+        print(random.random())
+        
         print("Constructing...")
         #Tells keras it's a feedforward (sequential) architecture
         model = Sequential()

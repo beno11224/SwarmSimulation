@@ -1,6 +1,31 @@
-function drawnFigure = DrawNetworkWeights(networkSize,networkWeights,networkBias)
-   % close allgrave
-    if(length(networkSize) > 1)
+function drawnFigure = DrawNetworkValues(networkSize, inputState)
+    try
+        pyrun("model.model.summary()");
+    catch 
+        networkSize = nan;
+    end
+    if(size(networkSize>0))
+        
+        % #create new model
+        % new_model= Sequential([
+        %     Dense(32, input_dim=784), # first number is output_dim
+        %     Activation('relu')])
+        % 
+        % #set weights of the first layer
+        % new_model.set_weights(model.layers[0].get_weights())
+        % 
+        % #compile it after setting the weights
+        % new_model.compile(optimizer='adam', loss='categorical_crossentropy')
+        % 
+        % #get output of the first dens layer
+        % output = new_model.predict(samples)
+        pyrun("new_model = Sequential([Dense(32, input_dim=784) Activation('relu')]"); 
+
+
+
+        pyrun("extractor = keras.Model(inputs=model.inputs, outputs=[layer.output for layer in model.layers])",model = network);
+        ff = pyrun("features = extractor(data)","features",data=inputState)
+
         drawnFigure = figure;
         currentBiases = cell2mat(networkBias(1));
         %Draw first layer
@@ -45,6 +70,6 @@ function drawnFigure = DrawNetworkWeights(networkSize,networkWeights,networkBias
             previousLayerCentres = currentLayerCentres;
         end  
     else
-        "Network size is invalid"
+        "Please initialise the network, and ensure the python variable is named 'model'"
     end
 end

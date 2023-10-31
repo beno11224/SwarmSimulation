@@ -2,22 +2,23 @@ function PlotTrainedDataResults(fileName)
 
     %--------Combine two files together:--------
 
-   %  Folder = cd;
-   %  Folder = fullfile(Folder, '..');
-   %  load(fullfile(Folder,"TrainedDataResults_RandSeed_HiddenLayer.mat"),"summed_reward_histories","loss_history","loss_history_val");
-   %  srh = summed_reward_histories;
-   %  lh = loss_history
-   %  lhv = loss_history_val
-   %  load(fullfile(Folder,"TrainedDataResults_RandSeed_SAVEME_HiddenLayer.mat"),"summed_reward_histories","loss_history","loss_history_val");
-   %  srh(:,:,1:3) = summed_reward_histories;
-   % % lh(1:3,:) = loss_history;
-   % % lhv(1:3,:) = loss_history_val;
-   % 
-   %  summed_reward_histories = srh;
-   %  loss_history = lh;
-   %  loss_history_val = lhv;
-   % 
-   %  save("TrainedDataResults_RandSeedCombined_HiddenLayer.mat","summed_reward_histories","loss_history","loss_history_val");
+    % Folder = cd;
+    % Folder = fullfile(Folder, '..');
+    % load(fullfile(Folder,"TrainedDataResults_HiddenLayer - ALLBUT4.mat"),"summed_reward_histories","loss_history","loss_history_val");
+    % srh = summed_reward_histories;
+    % lh = loss_history
+    % lhv = loss_history_val
+    % summed_reward_histories(4,:,:)
+    % load(fullfile(Folder,"TrainedDataResults_HiddenLayer.mat"),"summed_reward_histories","loss_history","loss_history_val");
+    % srh(4,:,:) = summed_reward_histories(4,:,:);
+    % lh(4,:) = loss_history(4,:);
+    % lhv(4,:) = loss_history_val(4,:);
+    % 
+    % summed_reward_histories = srh;
+    % loss_history = lh;
+    % loss_history_val = lhv;
+    % 
+    % save("TrainedDataResults_HiddenLayer.mat","summed_reward_histories","loss_history","loss_history_val");
     %--------------------------------------------
     
     close all
@@ -28,23 +29,16 @@ function PlotTrainedDataResults(fileName)
 
 %    plot(summed_reward_histories-1)
 
-    numPlots = 3;
-    %for(j = 1:numPlots)
-    for(i=1:size(summed_reward_histories,3))
+    numPlots = 4;
+    for(j = 1:4)
         figure;
-        %for(i=1:size(summed_reward_histories,3))
-        for(j = 1:numPlots)
+        for(i=1:size(summed_reward_histories,3))
             xlength = sum(squeeze(summed_reward_histories(:,:,i)),2);
             x = 4+(1:length(xlength));
            % plot(x,sum(squeeze(summed_reward_histories(:,:,i)),2)/10)
-            plot(x,squeeze(summed_reward_histories(:,2*j+(4),i)))
+            plot(x,squeeze(summed_reward_histories(:,j+7,i)))
             hold on
         end
-        title("Flow:" + i)
-        legend("train6","train8","train10",'location','southeast')%,"train8","train10")
-        xlabel("Nodes in hidden layer")
-        ylabel("Percentage in goal")
-        ylim([0,100])
     end
 
 

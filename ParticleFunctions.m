@@ -326,7 +326,7 @@ classdef ParticleFunctions
             %set to true to not generate the locations, instead use the
             %locations stored at the top of this file. NumParticles MUST be
             %set to 50 or this will cause errors. Mainly used for testing.
-            if(false)
+            if(true)
                 particleLocations = obj.fiftyParticleStartLocations;
             else
                 loopMax = ndims(poly);
