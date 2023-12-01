@@ -11,4 +11,4 @@ function drawTimerCallback(app)
     notBounced = app.particleArrayLocation((app.bouncedLastLoop&app.bouncedVisualLastLoop) == 0,:);
     rotatedPoints = ([cosd(app.rotation), sind(app.rotation); -sind(app.rotation), cos(app.rotation)] * notBounced')';
     app.particlePoints = plot(app.UIAxes, app.particleFunctions.realNum(rotatedPoints(:,1)), app.particleFunctions.realNum(rotatedPoints(:,2)),'r.', 'markerSize', 23);
-end
+ end
