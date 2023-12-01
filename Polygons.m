@@ -1,4 +1,7 @@
 classdef Polygons
+
+    %Store for the play space levels. Do not touch without ensuring a copy
+    %was made.
     
     properties (Access = public)
         allPolys;

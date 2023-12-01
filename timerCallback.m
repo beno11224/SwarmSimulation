@@ -12,6 +12,7 @@ function timerCallback(app)
         hapticVelocity = [1,currentDial(1),currentDial(2)] - app.hapticFeedback;
         app.hapticFeedback = [1,currentDial(1),currentDial(2)];
         hapticForce = app.hapticFeedback .* hapticSpring + hapticVelocity .* hapticViscocity;
+        %To make the (haptic) mex files use this format:
         %mex "drdms64.lib" "dhdms64.lib" WriteHaptic.cpp
         WriteHaptic(-hapticForce(1), -hapticForce(2), -hapticForce(3));
 
@@ -58,11 +59,16 @@ function timerCallback(app)
         %calculate the new velocity
         [app.particleArrayVelocity,app.particleArrayPreviousAcceleration] = app.particleFunctions.calculateCurrentVelocityCD(orthogonalWallContact, wallContact, temporaryVelocity, app.particleArrayPreviousAcceleration, app.particleArrayForce, app.particleFunctions.particleMass, smallerTMaxStepReduced);
 
+        %Determine the end zone the particles are in
         particlesInEndZone = app.particleFunctions.isParticleInEndZone(app.polygon.currentEndZone,app.particleArrayLocation);
         app.haltParticlesInEndZone = any(particlesInEndZone,2);
+        %Tell the user how well they're doing
         goalPercentage = sum(particlesInEndZone,1) ./ app.numParticles;
         goalPercentage = goalPercentage(app.goalIndex);
         
+        %increment time - if no lag occurs this should be a good indicator
+        %for how much time has passed. If lag occurs, this means that the
+        %particles don't move for extra time, and we just let the lag pass.
         if(app.timestep == 0)
             app.timePassed = app.timePassed + smallerTMaxStepReduced;
         else                
@@ -76,6 +82,8 @@ function timerCallback(app)
     rotVel = (rotMat * app.particleArrayVelocity')';
     rotLoc = (rotMat * app.particleArrayLocation')';
  
+    %print the data in a readable format - this is critical for retrieving
+    %data!
     if(app.writeToFile)
         fprintf(app.fileID, app.timePassed + "," + mat2str(rotForce) + "," + goalPercentage + "," + mat2str(rotVel)+ "," + mat2str(rotLoc) + "," + mat2str(particlesInEndZone) + "\r\n");
          app.printCounter = app.printCounter + 1;
