@@ -86,7 +86,7 @@ classdef ParticleFunctions
         %public functions
 
         %Only used for NN control, the state needs to be known.
-        function matState = getState(obj,particleArrayLocation,FlowRate,t, xOffset, yOffset)
+        function matState = getState(obj, particleArrayLocation, FlowRate, xOffset, yOffset)
             xLoc = (particleArrayLocation(:,1) + xOffset).*100;
             yLoc = (particleArrayLocation(:,2) + yOffset).*100;
             covar = cov(xLoc,yLoc);
@@ -100,7 +100,8 @@ classdef ParticleFunctions
             %before runtime.
             switch(controlMethod)      
                 case("Keyboard")
-                    totalForce = aCoils.* 10^6;
+                %    totalForce = aCoils.* 10^6;
+                    totalForce = aCoils;
                 case("Mouse")
                     totalForce = mouseLocation .* maxuserForce*10^8; %Mouse Force is a bit lower than the others
                 case("Controller")
@@ -139,8 +140,15 @@ classdef ParticleFunctions
             force = sumOfAllDipoleMoments .* distanceMultiplier; 
         end
 
-        function force = calculateDragForce(obj, particleVelocity, flowVelocity)
+        function force = calculateDragForce(obj, particleVelocity, flowVelocity, magForce, previousDelta)
+            checkSign = previousDelta .* magForce;
+            checkSign(checkSign<0) = -1;
+            checkSign(checkSign>=0) = 1;
+            adjustment = previousDelta./particleVelocity .* checkSign;
+            adjustment(isnan(adjustment)) = 0;
+            adjustment(isinf(adjustment)) = 0;
             force = ((particleVelocity - flowVelocity) .* obj.dragForceConstant); %Stokes Drag Equation
+            force = force + force.*adjustment;
         end
 
         %used to keep particles within the polygon. Does not include
@@ -245,7 +253,7 @@ classdef ParticleFunctions
         end
         
         %Turn the forces applied into a velocity
-        function [velocity,acceleration] = calculateCurrentVelocityCD(obj, orthogonalWallContact, wallContact, previousVelocity, previousAcceleration, particleForce, particleMass, timeSinceLastUpdate)            
+        function [velocity,acceleration,hypotheticalDeltaVelocity] = calculateCurrentVelocityCD(obj, orthogonalWallContact, wallContact, previousVelocity, previousAcceleration, particleForce, particleMass, timeSinceLastUpdate)            
             %using acceleration, give a velocity change
             currentAcceleration = obj.calculateAcceleration(particleForce, particleMass);
             hypotheticalDeltaVelocity = currentAcceleration .* timeSinceLastUpdate;
@@ -257,11 +265,15 @@ classdef ParticleFunctions
             velocityOrthogonalToWallContact(testForSign < 0) = 0;
             wallContactVelocity = obj.matrixVectorProjection(hypotheticalDeltaVelocity,wallContact) + velocityOrthogonalToWallContact;
             hypotheticalDeltaVelocity = hypotheticalDeltaVelocity .* isnan(wallContact) + wallContactVelocity;
-            
+             
+            %check sign...
+            checkForSign = (previousVelocity+hypotheticalDeltaVelocity).*previousVelocity;
+ 
             %determine the rate of change, it's useful in a second
-            rateOfChange = (hypotheticalDeltaVelocity - previousVelocity) ./ previousVelocity; 
-            capRateofChangeAt = (1*10e3 .* abs(previousVelocity./10) + 0.1).^-2;
-            capRateofChangeAt(capRateofChangeAt < 0.1) = 0.1; %limit the lower end.
+            rateOfChange = (hypotheticalDeltaVelocity - previousVelocity) ./ previousVelocity;  
+            capRateofChangeAt = (1000 .* abs(previousVelocity./10) + realmin);
+            capRateofChangeAt(checkForSign<0) = capRateofChangeAt(checkForSign<0)./1000; 
+           % capRateofChangeAt(capRateofChangeAt < 0.1) = 0.1; %limit the lower end.
             rateOfChange(isinf(rateOfChange)) = intmax;
             rateOfChange(isnan(rateOfChange)) = 0;
             %yes, this is aboslutely required, otherwise errors
@@ -277,6 +289,7 @@ classdef ParticleFunctions
             else
                 acceleration = currentAcceleration;
             end
+
             velocity = (previousVelocity + hypotheticalDeltaVelocity);
         end
         
@@ -326,7 +339,7 @@ classdef ParticleFunctions
             %set to true to not generate the locations, instead use the
             %locations stored at the top of this file. NumParticles MUST be
             %set to 50 or this will cause errors. Mainly used for testing.
-            if(false)
+            if(true && particleLocationsLength==50)
                 particleLocations = obj.fiftyParticleStartLocations;
             else
                 loopMax = ndims(poly);

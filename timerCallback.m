@@ -41,7 +41,7 @@ function timerCallback(app)
         [wallContact, orthogonalWallContact, app.particleArrayLocation, app.particleArrayVelocity, app.bouncedLastLoop] = app.particleFunctions.isParticleOnWallPIP(app.particleArrayLocation, app.particleArrayVelocity, app.particleArrayForce, app.polygon, smallerTMaxStepReduced,app,app.bouncedLastLoop);
 
         %drag (using last iterations velocity)
-        dragForce = app.particleFunctions.calculateDragForce(app.particleArrayVelocity, vFlow);
+        dragForce = app.particleFunctions.calculateDragForce(app.particleArrayVelocity, vFlow, magForce, app.previousDelta);
         app.particleArrayForce = app.particleArrayForce - dragForce;
         %friction
         ffric = app.particleFunctions.calculateFrictionForce(app.particleArrayVelocity, app.particleArrayForce, orthogonalWallContact);
@@ -57,7 +57,7 @@ function timerCallback(app)
         app.particleArrayLocation = app.particleFunctions.calculateCurrentLocationCD(app.particleArrayLocation, app.particleArrayVelocity, app.particleArrayPreviousAcceleration, smallerTMaxStepReduced);
         %Make sure that we have the correct data stored for the next loop.        
         %calculate the new velocity
-        [app.particleArrayVelocity,app.particleArrayPreviousAcceleration] = app.particleFunctions.calculateCurrentVelocityCD(orthogonalWallContact, wallContact, temporaryVelocity, app.particleArrayPreviousAcceleration, app.particleArrayForce, app.particleFunctions.particleMass, smallerTMaxStepReduced);
+        [app.particleArrayVelocity,app.particleArrayPreviousAcceleration, app.previousDelta] = app.particleFunctions.calculateCurrentVelocityCD(orthogonalWallContact, wallContact, temporaryVelocity, app.particleArrayPreviousAcceleration, app.particleArrayForce, app.particleFunctions.particleMass, smallerTMaxStepReduced);
 
         %Determine the end zone the particles are in
         particlesInEndZone = app.particleFunctions.isParticleInEndZone(app.polygon.currentEndZone,app.particleArrayLocation);
@@ -65,6 +65,7 @@ function timerCallback(app)
         %Tell the user how well they're doing
         goalPercentage = sum(particlesInEndZone,1) ./ app.numParticles;
         goalPercentage = goalPercentage(app.goalIndex);
+        
         
         %increment time - if no lag occurs this should be a good indicator
         %for how much time has passed. If lag occurs, this means that the
@@ -74,7 +75,9 @@ function timerCallback(app)
         else                
             app.timePassed = app.timePassed + app.timestep / smallerTMaxTotalSteps;        
         end
-
+        if(goalPercentage == 1)
+            break;
+        end
     end
     %Perform any rotation maths needed.
     rotMat = [cosd(app.rotation), sind(app.rotation); -sind(app.rotation), cos(app.rotation)];
@@ -86,11 +89,11 @@ function timerCallback(app)
     %data!
     if(app.writeToFile)
         fprintf(app.fileID, app.timePassed + "," + mat2str(rotForce) + "," + goalPercentage + "," + mat2str(rotVel)+ "," + mat2str(rotLoc) + "," + mat2str(particlesInEndZone) + "\r\n");
-         app.printCounter = app.printCounter + 1;
+          app.printCounter = app.printCounter + 1;
     end
 
     %Update fields for user
-    if(app.timeLimit > 0 && app.timePassed <= app.timeLimit)
+    if(app.timeLimit > 0 && app.timePassed <= app.timeLimit && (goalPercentage ~= 1))
         app.TimeRemainingsEditField.Value = round(app.timeLimit - app.timePassed);
         app.PercentageinGoalEditField.Value = round(goalPercentage .* 100);
     else
@@ -105,8 +108,8 @@ function timerCallback(app)
                 fprintf("Time Up! You got: " + goalPercentage .* 100 + "/%% of the particles in the goal outlet\r\n");
                 delete(app.magLine);
                 app.testNumber = app.testNumber + 1;
-                NextLevel(app);
-                start(app.hapticFeedbackIdleProperty);
+                 NextLevel(app);
+             %   start(app.hapticFeedbackIdleProperty);
             end
         else
             app.timeLimit = 1;
