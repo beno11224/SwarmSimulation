@@ -57,20 +57,20 @@ function NextLevel(app)
     particleMass = 4/3*pi*density * (particleDiameter/2)^3; %This is in kilograms
 
     %REMOVEME
-    permeabilityOfFreeSpace = 1.25663706e-6;
-    mSAT = 58;% + app.testNumber*5;
-    aggregateLength = 0;
-    individualDiameter= 800 *10^-9;
-    chainLength = 115;
-
-    if(aggregateLength~=0)
-        chainLength = aggregateLength/individualDiameter; 
-    end
-     
-    density = 2.25 * 1000; %density in g/cm3, change to kg/m3 with the 1000
-    %Equivalent Diameter = cubeRoot(3*chainLength) * individualDiameter
-    particleDiameter = (3*chainLength)^(1/3) * individualDiameter;
-    particleMass = 4/3*pi*density * (particleDiameter/2)^3; %This is in kilograms
+%     permeabilityOfFreeSpace = 1.25663706e-6;
+%     mSAT = 58;% + app.testNumber*5;
+%     aggregateLength = 0;
+%     individualDiameter= 800 *10^-9;
+%     chainLength = 115;
+% 
+%     if(aggregateLength~=0)
+%         chainLength = aggregateLength/individualDiameter; 
+%     end
+%      
+%     density = 2.25 * 1000; %density in g/cm3, change to kg/m3 with the 1000
+%     %Equivalent Diameter = cubeRoot(3*chainLength) * individualDiameter
+%     particleDiameter = (3*chainLength)^(1/3) * individualDiameter;
+%     particleMass = 4/3*pi*density * (particleDiameter/2)^3; %This is in kilograms
 
     app.FluidViscocityEditField.Value = 0.004; %water is 0.001
     app.ParticleDiametermEditField.Value = particleDiameter;
@@ -166,7 +166,7 @@ function NextLevel(app)
     app.magLine = plot(app.UIAxes,0,0);    
 
 
-    app.X1MAGauge.Value = 0.00001 .* 0.5+0.25*app.testNumber;
+    app.X1MAGauge.Value = 0.5+0.25*app.testNumber;
     app.Y1MAGauge.Value = 0;
 
 
