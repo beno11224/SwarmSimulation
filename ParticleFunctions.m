@@ -148,7 +148,7 @@ classdef ParticleFunctions
             adjustment(isnan(adjustment)) = 0;
             adjustment(isinf(adjustment)) = 0;
             force = ((particleVelocity - flowVelocity) .* obj.dragForceConstant); %Stokes Drag Equation
-            force = force + force.*adjustment .* 0.1;
+            force = force + force.*adjustment .* 1;
         end
 
         %used to keep particles within the polygon. Does not include
@@ -253,7 +253,7 @@ classdef ParticleFunctions
         end
         
         %Turn the forces applied into a velocity
-        function [velocity,acceleration,hypotheticalDeltaVelocity] = calculateCurrentVelocityCD(obj, orthogonalWallContact, wallContact, previousVelocity, previousAcceleration, particleForce, particleMass, timeSinceLastUpdate)            
+        function [velocity,acceleration,hypotheticalDeltaVelocity] = calculateCurrentVelocityCD(obj, orthogonalWallContact, wallContact, previousVelocity, previousAcceleration, particleForce, particleMass, timeSinceLastUpdate, magForce)            
             %using acceleration, give a velocity change
             currentAcceleration = obj.calculateAcceleration(particleForce, particleMass);
             hypotheticalDeltaVelocity = currentAcceleration .* timeSinceLastUpdate;
@@ -272,7 +272,15 @@ classdef ParticleFunctions
             rateOfChange = (hypotheticalDeltaVelocity - previousVelocity) ./ previousVelocity;
             %capRateofChangeAt = (1*10e3 .* abs(previousVelocity./10) + 0.1).^-2; 
           %  capRateofChangeAt = atan(abs(previousVelocity)) .* 10^9;
-            capRateofChangeAt = (1-2.^(abs(previousVelocity).*-10^-13)) .* 10^-13;
+%             ll = log10(abs(magForce));
+%             a = abs(previousVelocity);
+%             b = abs(previousVelocity).*-10^-13;
+%             c = -2.^(abs(previousVelocity).*-10^-13);
+%             d = -2.^(abs(previousVelocity));
+%             capRateofChangeAt = (1-2.^(abs(previousVelocity).*-10^-13)) .* 10^-13;
+           % capRateofChangeAt = repmat(0.1+2.^(0.1*log10(abs(magForce))),3,1);
+            capRateofChangeAt = 5.*1.25.^(-log10(abs(previousVelocity))); %%Size must be changed here
+           % capRateofChangeAt = (1-2.^(abs(magForce).*-10^-5)) .* 10^-5;
            % capRateofChangeAt(capRateofChangeAt < 0.1) = 0.1; %limit the lower end.
             rateOfChange(isinf(rateOfChange)) = intmax;
             rateOfChange(isnan(rateOfChange)) = 0;

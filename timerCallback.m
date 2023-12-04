@@ -34,7 +34,7 @@ function timerCallback(app)
     for smallerTMaxIndex = 1:smallerTMaxTotalSteps         
         magForce = magForce .* (1-magForceAlpha) + currentMagforce.* magForceAlpha;
         app.particleArrayForce = magForce;
-
+        
         %Check if particle is on wall. Store if it bounced last loop as
         %this is used to determine wether to draw the particle or not.
         app.bouncedVisualLastLoop = app.bouncedLastLoop;
@@ -57,7 +57,7 @@ function timerCallback(app)
         app.particleArrayLocation = app.particleFunctions.calculateCurrentLocationCD(app.particleArrayLocation, app.particleArrayVelocity, app.particleArrayPreviousAcceleration, smallerTMaxStepReduced);
         %Make sure that we have the correct data stored for the next loop.        
         %calculate the new velocity
-        [app.particleArrayVelocity,app.particleArrayPreviousAcceleration, app.previousDelta] = app.particleFunctions.calculateCurrentVelocityCD(orthogonalWallContact, wallContact, temporaryVelocity, app.particleArrayPreviousAcceleration, app.particleArrayForce, app.particleFunctions.particleMass, smallerTMaxStepReduced);
+        [app.particleArrayVelocity,app.particleArrayPreviousAcceleration, app.previousDelta] = app.particleFunctions.calculateCurrentVelocityCD(orthogonalWallContact, wallContact, temporaryVelocity, app.particleArrayPreviousAcceleration, app.particleArrayForce, app.particleFunctions.particleMass, smallerTMaxStepReduced, magForce);
 
         %Determine the end zone the particles are in
         particlesInEndZone = app.particleFunctions.isParticleInEndZone(app.polygon.currentEndZone,app.particleArrayLocation);
