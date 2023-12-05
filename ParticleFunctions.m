@@ -22,7 +22,7 @@ classdef ParticleFunctions
         end
         
         function obj = ChangeMetaValues(obj,permeabilityOfFreeSpace, particleDiameter, particleMass, fluidViscocity, staticFrictionCoefficient, motionFrictionCoefficient, workspaceSize)
-            obj.magneticForceConstant = double(permeabilityOfFreeSpace .* 58 .* 2.25 .* 10^3 .* 4/3.*pi.*(particleDiameter/2)^3) .* 22;
+            obj.magneticForceConstant = double(permeabilityOfFreeSpace .* 58 .* 2.25 .* 10^3 .* 4/3.*pi.*(particleDiameter/2)^3) .* 22; %The 2.25*10^3 is for the emu/g to A/m calculation
             obj.dragForceConstant = double(3*pi * fluidViscocity * particleDiameter);
             obj.dipoleForceConstant = double(3*permeabilityOfFreeSpace / 4*pi);
             obj.staticFrictionCoefficient = staticFrictionCoefficient;
@@ -148,7 +148,7 @@ classdef ParticleFunctions
             adjustment(isnan(adjustment)) = 0;
             adjustment(isinf(adjustment)) = 0;
             force = ((particleVelocity - flowVelocity) .* obj.dragForceConstant); %Stokes Drag Equation
-            force = force + force.*adjustment .* 1;
+            force = force + force.*adjustment .* 0.25;
         end
 
         %used to keep particles within the polygon. Does not include
@@ -269,7 +269,7 @@ classdef ParticleFunctions
             %checkForSign = (previousVelocity+hypotheticalDeltaVelocity).*previousVelocity;
 
             %determine the rate of change, it's useful in a second
-            rateOfChange = (hypotheticalDeltaVelocity - previousVelocity) ./ previousVelocity;
+            rateOfChange = (abs(hypotheticalDeltaVelocity) - abs(previousVelocity)) ./ abs(previousVelocity);
             %capRateofChangeAt = (1*10e3 .* abs(previousVelocity./10) + 0.1).^-2; 
           %  capRateofChangeAt = atan(abs(previousVelocity)) .* 10^9;
 %             ll = log10(abs(magForce));
@@ -278,21 +278,26 @@ classdef ParticleFunctions
 %             c = -2.^(abs(previousVelocity).*-10^-13);
 %             d = -2.^(abs(previousVelocity));
 %             capRateofChangeAt = (1-2.^(abs(previousVelocity).*-10^-13)) .* 10^-13;
-           % capRateofChangeAt = repmat(0.1+2.^(0.1*log10(abs(magForce))),3,1);
-            capRateofChangeAt = 5.*1.25.^(-log10(abs(previousVelocity))); %%Size must be changed here
+           % capRateofChangeAt = r epmat(0.1+2.^(0.1*log10(abs(magForce))),3,1);
+            %capRateofChangeAt = 5.*1.25.^(-log10(abs(previousVelocity))); %%Size must be changed here
+            capRateofChangeAt = 0.002.* 2.^(-1 .* log10(abs(previousVelocity))); %%Size must be changed here
+            capRateofChangeAt(capRateofChangeAt>1000) = 1000;
            % capRateofChangeAt = (1-2.^(abs(magForce).*-10^-5)) .* 10^-5;
            % capRateofChangeAt(capRateofChangeAt < 0.1) = 0.1; %limit the lower end.
             rateOfChange(isinf(rateOfChange)) = intmax;
             rateOfChange(isnan(rateOfChange)) = 0;
             %yes, this is aboslutely required, otherwise errors
             %Use a rate of change cap to damp any big oscillations.
-            if(any(any(abs(rateOfChange) > capRateofChangeAt)))
+            if(any(any(rateOfChange > capRateofChangeAt)))
                 cappedRateOfChange = rateOfChange;
                 capRateofChangeAt(capRateofChangeAt == 0) = abs(rateOfChange(capRateofChangeAt == 0)); %If there is no rate of change this is an error above. don't cap change.
-                cappedRateOfChange(abs(rateOfChange) > capRateofChangeAt) = capRateofChangeAt(abs(rateOfChange) > capRateofChangeAt); %cap it
-                cappedRateOfChange(rateOfChange < 0) = ((capRateofChangeAt(rateOfChange < 0))./10^2) .* -1; %replace any negative signs, halve negative rate of change
+                cappedRateOfChange(rateOfChange > capRateofChangeAt) = capRateofChangeAt(abs(rateOfChange) > capRateofChangeAt); %cap it
+                %cappedRateOfChange(rateOfChange < 0) = ((capRateofChangeAt(rateOfChange < 0))./10^2) .* -1; %replace any negative signs, halve negative rate of change
+             %   cappedRateOfChange(rateOfChange < 0) = ((capRateofChangeAt(rateOfChange < 0))) .* -1; %replace any negative signs, halve negative rate of change
                 %set the capped deltaVelocity
-                hypotheticalDeltaVelocity = obj.realNum((cappedRateOfChange./abs(rateOfChange)) .* hypotheticalDeltaVelocity);
+                checkChangeSign = previousAcceleration.*hypotheticalDeltaVelocity;
+                hypotheticalDeltaVelocity = obj.realNum((cappedRateOfChange./rateOfChange) .* hypotheticalDeltaVelocity);
+                hypotheticalDeltaVelocity(checkChangeSign<0) = hypotheticalDeltaVelocity(checkChangeSign<0)./50;
                 %Line above - just added abs to rateOfChange, as this is
                 %positive or negative.
                 %hypotheticalDeltaVelocity(hypotheticalDeltaVelocity>cappedRateOfChange) = cappedRateOfChange(hypotheticalDeltaVelocity>cappedRateOfChange);

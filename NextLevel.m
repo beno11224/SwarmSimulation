@@ -59,13 +59,13 @@ function NextLevel(app)
     %REMOVEME
     permeabilityOfFreeSpace = 1.25663706e-6;
     mSAT = 58;% + app.testNumber*5;
-    aggregateLength = 0;
+    % aggregateLength = 0;
     individualDiameter= 800 *10^-9;
     chainLength = 115;
 
-    if(aggregateLength~=0)
-        chainLength = aggregateLength/individualDiameter; 
-    end
+    % if(aggregateLength~=0)
+    %     chainLength = aggregateLength/individualDiameter;
+    % end
      
     density = 2.25 * 1000; %density in g/cm3, change to kg/m3 with the 1000
     %Equivalent Diameter = cubeRoot(3*chainLength) * individualDiameter
@@ -99,7 +99,7 @@ function NextLevel(app)
     %          app.MagForceRestrictMAM2EditField.Value = 0;
     % end    
 
-    app.particleFunctions.magneticForceConstant = double(permeabilityOfFreeSpace .* mSAT .* 4/3.*pi.*(particleDiameter/2)^3);% .* 22; %22 is conversion factor
+    app.particleFunctions.magneticForceConstant = double(permeabilityOfFreeSpace .* mSAT .* 2.25 .* 10^3 .* 4/3.*pi.*(particleDiameter/2)^3);% .* 22; %22 is conversion factor
     app.particleFunctions.dragForceConstant = double(3*pi * app.FluidViscocityEditField.Value * particleDiameter);
 
 
@@ -166,7 +166,7 @@ function NextLevel(app)
     app.magLine = plot(app.UIAxes,0,0);    
 
 
-    app.X1MAGauge.Value = 0.00001 .* 0.5+0.25*app.testNumber;
+    app.X1MAGauge.Value = 10^6.*( 0.5+0.25*app.testNumber);
     app.Y1MAGauge.Value = 0;
 
 
