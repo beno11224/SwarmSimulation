@@ -28,7 +28,8 @@ function timerCallback(app)
 
     % Each time timerCallback is called, this loop runs
     % 'smallerTMaxTotalSteps' number of times.
-    smallerTMaxTotalSteps = 25; %Any more speed comes from making the sim more efficient or slowing it down (not real time)
+   % smallerTMaxTotalSteps = 25; %Any more speed comes from making the sim more efficient or slowing it down (not real time)
+    smallerTMaxTotalSteps = 50;
     smallerTMaxStep = app.simTimerPeriod / smallerTMaxTotalSteps;
     smallerTMaxStepReduced = smallerTMaxStep / app.slowDown;
     for smallerTMaxIndex = 1:smallerTMaxTotalSteps         

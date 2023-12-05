@@ -281,7 +281,8 @@ classdef ParticleFunctions
            % capRateofChangeAt = r epmat(0.1+2.^(0.1*log10(abs(magForce))),3,1);
             %capRateofChangeAt = 5.*1.25.^(-log10(abs(previousVelocity))); %%Size must be changed here
             capRateofChangeAt = 0.002.* 2.^(-1 .* log10(abs(previousVelocity))); %%Size must be changed here
-            capRateofChangeAt(capRateofChangeAt>1000) = 1000;
+            % capRateofChangeAt = 0.5 .* 2.1.^(-0.5 .* log10(abs(previousVelocity))); %%Size must be changed here
+            capRateofChangeAt(capRateofChangeAt>1500) = 1500;
            % capRateofChangeAt = (1-2.^(abs(magForce).*-10^-5)) .* 10^-5;
            % capRateofChangeAt(capRateofChangeAt < 0.1) = 0.1; %limit the lower end.
             rateOfChange(isinf(rateOfChange)) = intmax;
@@ -291,7 +292,7 @@ classdef ParticleFunctions
             if(any(any(rateOfChange > capRateofChangeAt)))
                 cappedRateOfChange = rateOfChange;
                 capRateofChangeAt(capRateofChangeAt == 0) = abs(rateOfChange(capRateofChangeAt == 0)); %If there is no rate of change this is an error above. don't cap change.
-                cappedRateOfChange(rateOfChange > capRateofChangeAt) = capRateofChangeAt(abs(rateOfChange) > capRateofChangeAt); %cap it
+                cappedRateOfChange(rateOfChange > capRateofChangeAt) = capRateofChangeAt(rateOfChange > capRateofChangeAt); %cap it
                 %cappedRateOfChange(rateOfChange < 0) = ((capRateofChangeAt(rateOfChange < 0))./10^2) .* -1; %replace any negative signs, halve negative rate of change
              %   cappedRateOfChange(rateOfChange < 0) = ((capRateofChangeAt(rateOfChange < 0))) .* -1; %replace any negative signs, halve negative rate of change
                 %set the capped deltaVelocity
