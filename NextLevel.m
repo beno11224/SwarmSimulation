@@ -166,7 +166,7 @@ function NextLevel(app)
     app.magLine = plot(app.UIAxes,0,0);    
 
 
-    app.X1MAGauge.Value = 10^6.*( 0.5+0.25*app.testNumber);
+    app.X1MAGauge.Value = 22.* 10^6.*( 0.5+0.25*app.testNumber);
     app.Y1MAGauge.Value = 0;
 
 
