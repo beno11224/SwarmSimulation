@@ -42,13 +42,13 @@ function NextLevel(app)
     % mSAT = 58; 
     % particleDiameter = 0.000005769;
     permeabilityOfFreeSpace = 1.25663706e-6;
-    mSAT = 70;% + app.testNumber*5;
+    mSAT = 90;% + app.testNumber*5;
     aggregateLength = 0;
-    individualDiameter= 75 *10^-9;
-    chainLength = 15000;
+    individualDiameter= 50 *10^-9;
+    chainLength = 115;
 
     if(aggregateLength~=0)
-        chainLength = aggregateLength /individualDiameter; 
+        chainLength = aggregateLength/individualDiameter; 
     end
      
     density = 4.8 * 1000; %density in g/cm3, change to kg/m3 with the 1000
@@ -58,23 +58,22 @@ function NextLevel(app)
     app.FluidViscocityEditField.Value = 0.001; %water is 0.001
 
     %REMOVEME
-%     permeabilityOfFreeSpace = 1.25663706e-6;
-%     mSAT = 58;% + app.testNumber*5;
-%     % aggregateLength = 0;
-%     individualDiameter= 800 *10^-9;
-%     chainLength = 125;
-% 
-%     % if(aggregateLength~=0)
-%     %     chainLength = aggregateLength/individualDiameter;
-%     % end
-%      
-%     density = 2.25 * 1000; %density in g/cm3, change to kg/m3 with the 1000
-%     %Equivalent Diameter = cubeRoot(3*chainLength) * individualDiameter
-%     particleDiameter = (3*chainLength)^(1/3) * individualDiameter;
-%     particleMass = 4/3*pi*density * (particleDiameter/2)^3; %This is in kilograms
-%     app.FluidViscocityEditField.Value = 0.004;%35; %water is 0.001
+    permeabilityOfFreeSpace = 1.25663706e-6;
+    mSAT = 58;% + app.testNumber*5;
+    % aggregateLength = 0;
+    individualDiameter= 800 *10^-9;
+    chainLength = 125;
 
-%     app.ParticleDiametermEditField.Value = 5.6*10-6;%particleDiameter;
+    % if(aggregateLength~=0)
+    %     chainLength = aggregateLength/individualDiameter;
+    % end
+     
+    density = 2.25 * 1000; %density in g/cm3, change to kg/m3 with the 1000
+    %Equivalent Diameter = cubeRoot(3*chainLength) * individualDiameter
+    particleDiameter = (3*chainLength)^(1/3) * individualDiameter;
+    particleMass = 4/3*pi*density * (particleDiameter/2)^3; %This is in kilograms
+    app.FluidViscocityEditField.Value = 0.002; %water is 0.001
+
     app.ParticleDiametermEditField.Value = particleDiameter;
     app.ParticleMasskgEditField.Value = particleMass;
 
@@ -101,7 +100,7 @@ function NextLevel(app)
     %          app.MagForceRestrictMAM2EditField.Value = 0;
     % end    
 
-    app.particleFunctions.magneticForceConstant = double(permeabilityOfFreeSpace .* mSAT .* density .* 4/3.*pi.*(particleDiameter/2)^3);% .* 22; %22 is conversion factor
+    app.particleFunctions.magneticForceConstant = double(permeabilityOfFreeSpace .* mSAT .* 2.25 .* 10^3 .* 4/3.*pi.*(particleDiameter/2)^3);% .* 22; %22 is conversion factor
     app.particleFunctions.dragForceConstant = double(3*pi * app.FluidViscocityEditField.Value * individualDiameter);%particleDiameter);
 
 
@@ -168,8 +167,7 @@ function NextLevel(app)
     app.magLine = plot(app.UIAxes,0,0);    
 
 
-   % app.X1MAGauge.Value = 10^6 .* (0.25+0.25*app.testNumber).*1.2566;% .* 1.5;
-    app.X1MAGauge.Value = 10^6 .* (0.1*app.testNumber).*1.5;
+    app.X1MAGauge.Value = 10^6 .* (0.5+0.25*app.testNumber);
     app.Y1MAGauge.Value = 0;
 
 
