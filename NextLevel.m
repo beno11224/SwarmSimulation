@@ -23,17 +23,17 @@ function NextLevel(app)
     minTimeToTravel = 10;
     app.PercentageinGoalEditField.Value = 0;
  
-    %replace switch with this
+    %replace switch with this 
         %     app.fd = FlowData60(); %start at 30?
         %     app.polygon = app.polygon.change(4,app.fd);
-        % %    flowMultiplier = 1 + ((7/5)* (app.testNumber-1))
+        % %    flowMultiplier = 1 + ((7/5)* (app.testNumber-1)) 
         % %    app.FluidFlowmsEditField.Value = 1  +
         % ((7/5)*(app.testNumber-1)); 
         %     app.FluidFlowmsEditField.Value = 1;
         %     if(ndims(app.polygon.currentStartZone) > 2)
         %         app.polygon.currentStartZone = squeeze(app.polygon.currentStartZone(1,:,:));
-        %     end
-        %     app.goalIndex = 4;
+        %     end 
+        %     app.goalIndex = 4;  
         %     app.slowDown = 1;
         %     minTimeToTravel = 20;
 
@@ -42,10 +42,12 @@ function NextLevel(app)
     % mSAT = 58; 
     % particleDiameter = 0.000005769;
     permeabilityOfFreeSpace = 1.25663706e-6;
-    mSAT = 70;% + app.testNumber*5;
+    fieldInMT = 1.5; %2
+    mSAT = 1 + 19 * (fieldInMT .* 10).^(0.16);%70;% + app.testNumber*5; %2mt %31.687?
+    mSAT = 12;
     aggregateLength = 0;
-    individualDiameter= 75 *10^-9;
-    chainLength = 15000;
+    individualDiameter= 50 *10^-9;
+    chainLength = 13000;
 
     if(aggregateLength~=0)
         chainLength = aggregateLength /individualDiameter; 
@@ -169,7 +171,7 @@ function NextLevel(app)
 
 
    % app.X1MAGauge.Value = 10^6 .* (0.25+0.25*app.testNumber).*1.2566;% .* 1.5;
-    app.X1MAGauge.Value = 10^6 .* (0.1*app.testNumber).*1.5;
+    app.X1MAGauge.Value = 10^6 .* (0.1+0.1*app.testNumber);%.*1.5;
     app.Y1MAGauge.Value = 0;
 
 
