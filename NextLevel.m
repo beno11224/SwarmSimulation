@@ -37,27 +37,27 @@ function NextLevel(app)
         %     app.slowDown = 1;
         %     minTimeToTravel = 20;
 
-    % % defaults 
+    % % defaults  
     % permeabilityOfFreeSpace = 1.25663706e-6;
     % mSAT = 58; 
-    % particleDiameter = 0.000005769;
-    permeabilityOfFreeSpace = 1.25663706e-6;
-    fieldInMT = 1.5; %2
-    mSAT = 1 + 19 * (fieldInMT .* 10).^(0.16);%70;% + app.testNumber*5; %2mt %31.687?
-    mSAT = 12;
+    % particleDiameter = 0.000005769;  
+    permeabilityOfFreeSpace = 1.25663706e-6; 
+    fieldInMT = 1.5; %2 
+    mSAT = 1 + 19 * (fieldInMT .* 10).^(0.16);%70;% + app.testNumber*5;   %2mt %31.687?
+    mSAT = 40;
     aggregateLength = 0;
-    individualDiameter= 50 *10^-9;
-    chainLength = 13000;
+    individualDiameter= 100 *10^-9;
+    chainLength = 10000;
 
-    if(aggregateLength~=0)
+    if(aggregateLength~=0) 
         chainLength = aggregateLength /individualDiameter; 
     end
      
     density = 4.8 * 1000; %density in g/cm3, change to kg/m3 with the 1000
     %Equivalent Diameter = cubeRoot(3*chainLength) * individualDiameter
     particleDiameter = (3*chainLength)^(1/3) * individualDiameter;
-    particleMass = 4/3*pi*density * (particleDiameter/2)^3; %This is in kilograms
-    app.FluidViscocityEditField.Value = 0.001; %water is 0.001
+    particleMass = 4/3*pi*density * (particleDiameter/2)^3; %This is in kilograms 
+    app.FluidViscocityEditField.Value = 0.001; %water is 0.001 
 
     %REMOVEME
 %     permeabilityOfFreeSpace = 1.25663706e-6;
