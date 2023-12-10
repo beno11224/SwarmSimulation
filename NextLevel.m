@@ -25,10 +25,10 @@ function NextLevel(app)
  
     %replace switch with this 
         %     app.fd = FlowData60(); %start at 30?
-        %     app.polygon = app.polygon.change(4,app.fd);
+        %     app.polygon = app.polygon.change(4,app.fd); 
         % %    flowMultiplier = 1 + ((7/5)* (app.testNumber-1)) 
         % %    app.FluidFlowmsEditField.Value = 1  +
-        % ((7/5)*(app.testNumber-1)); 
+        % ((7/5)*(app.testNumber-1));  
         %     app.FluidFlowmsEditField.Value = 1;
         %     if(ndims(app.polygon.currentStartZone) > 2)
         %         app.polygon.currentStartZone = squeeze(app.polygon.currentStartZone(1,:,:));
@@ -36,30 +36,30 @@ function NextLevel(app)
         %     app.goalIndex = 4;  
         %     app.slowDown = 1;
         %     minTimeToTravel = 20;
-
+ 
     % % defaults  
     % permeabilityOfFreeSpace = 1.25663706e-6;
-    % mSAT = 58; 
+    % mSAT = 58;   
     % particleDiameter = 0.000005769;  
     permeabilityOfFreeSpace = 1.25663706e-6; 
     fieldInMT = 1.5; %2 
     mSAT = 1 + 19 * (fieldInMT .* 10).^(0.16);%70;% + app.testNumber*5;   %2mt %31.687?
-    mSAT = 40;
+    %mSAT = 40;
     aggregateLength = 0;
-    individualDiameter= 100 *10^-9;
-    chainLength = 10000;
+    individualDiameter= 75 *10^-9;
+    chainLength = 18000;
 
-    if(aggregateLength~=0) 
+    if(aggregateLength~=0)  
         chainLength = aggregateLength /individualDiameter; 
     end
      
-    density = 4.8 * 1000; %density in g/cm3, change to kg/m3 with the 1000
+    density = 5.1 * 1000; %density in g/cm3, change to kg/m3 with the 1000
     %Equivalent Diameter = cubeRoot(3*chainLength) * individualDiameter
     particleDiameter = (3*chainLength)^(1/3) * individualDiameter;
     particleMass = 4/3*pi*density * (particleDiameter/2)^3; %This is in kilograms 
-    app.FluidViscocityEditField.Value = 0.001; %water is 0.001 
-
-    %REMOVEME
+    app.FluidViscocityEditField.Value = 0.002; %water is 0.001 
+ 
+    %REMOVEME 
 %     permeabilityOfFreeSpace = 1.25663706e-6;
 %     mSAT = 58;% + app.testNumber*5;
 %     % aggregateLength = 0;
@@ -73,7 +73,7 @@ function NextLevel(app)
 %     density = 2.25 * 1000; %density in g/cm3, change to kg/m3 with the 1000
 %     %Equivalent Diameter = cubeRoot(3*chainLength) * individualDiameter
 %     particleDiameter = (3*chainLength)^(1/3) * individualDiameter;
-%     particleMass = 4/3*pi*density * (particleDiameter/2)^3; %This is in kilograms
+%     particleMass = 4/3*pi*densit y * (particleDiameter/2)^3; %This is in kilograms
 %     app.FluidViscocityEditField.Value = 0.004;%35; %water is 0.001
 
 %     app.ParticleDiametermEditField.Value = 5.6*10-6;%particleDiameter;
