@@ -42,12 +42,12 @@ function NextLevel(app)
     % mSAT = 58; 
     % particleDiameter = 0.000005769;
     permeabilityOfFreeSpace = 1.25663706e-6;
-    fieldInMT = 1.5; %2
+    fieldInMT = 2; %2
     mSAT = 1 + 19 * (fieldInMT .* 10).^(0.16);%70;% + app.testNumber*5; %2mt %31.687?
-    mSAT = 12;
+ %   mSAT = 12;
     aggregateLength = 0;
     individualDiameter= 50 *10^-9;
-    chainLength = 13000;
+    chainLength = 4777;%13000;
 
     if(aggregateLength~=0)
         chainLength = aggregateLength /individualDiameter; 
@@ -65,7 +65,7 @@ function NextLevel(app)
 %     % aggregateLength = 0;
 %     individualDiameter= 800 *10^-9;
 %     chainLength = 125;
-% 
+%  
 %     % if(aggregateLength~=0)
 %     %     chainLength = aggregateLength/individualDiameter;
 %     % end
