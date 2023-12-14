@@ -3,9 +3,9 @@
 %D = 'C:\Users\bj20907\Documents\301123\T30\image\raw\0';
 resultString = "";
 delteImage = rgb2gray(imread("C:\Users\bj20907\OneDrive - University of Essex\Ben\Work-in-Essex\Data & Code\ParticleExperiment\111223\image-000000.jpg"));
-for(i=200:100:200)
+for(i=100:100:200)
     %D = 'C:\Users\bj20907\OneDrive - University of Essex\Ben\Work-in-Essex\Data & Code\ParticleExperiment\071223\x2mtRaw\'+string(i)+'T11';
-    D = 'C:\Users\bj20907\OneDrive - University of Essex\Ben\Work-in-Essex\Data & Code\ParticleExperiment\111223\2mt\'+string(i)+'T2';
+    D = 'C:\Users\bj20907\OneDrive - University of Essex\Ben\Work-in-Essex\Data & Code\ParticleExperiment\111223\FAKEmt\'+string(i);
     dirs = dir(D);
     dirs(1:2)=[];
     dirFlags = [dirs.isdir];
@@ -27,10 +27,10 @@ for(i=200:100:200)
             continue
         end
 
-        startEndFiles = [1,1];
+        startEndFiles = [1000,1];
         startEndIndex = [1,1];
         for(j = 1:numel(S1))
-            FrameNumber = str2double(extract(S1(k).name, digitsPattern));
+            FrameNumber = str2double(extract(S1(j).name, digitsPattern));
             if(startEndFiles(1)>FrameNumber)
                 startEndFiles(1) = FrameNumber;
                 startEndIndex(1) = j;
@@ -45,7 +45,7 @@ for(i=200:100:200)
     
             % Fid = fopen(fullfile(D,'\',dirs(dirIndex).name,S1(k).name),'r');
             % FrameNumber = str2double(extract(S1(k).name, digitsPattern));
-            Fid = fopen(fullfile(D,'\',dirs(dirIndex).name,startEndIndex(k).name),'r');
+            Fid = fopen(fullfile(D,'\',dirs(dirIndex).name,S1(startEndIndex(k)).name),'r');
            % FrameNumber = str2double(extract(startEndIndex(k).name, digitsPattern));
 
             fileContents = fscanf(Fid,'%s');
@@ -54,7 +54,7 @@ for(i=200:100:200)
             dateTime = extractBetween(dateTime,15,20);
             
             %Read in the file
-            F = fullfile(D,'\',dirs(dirIndex).name,S(k).name);
+            F = fullfile(D,'\',dirs(dirIndex).name,S(startEndIndex(k)).name);
             start = k==1;
             image = rgb2gray(imread(F)); 
             %imshow(delteImage)
