@@ -26,10 +26,28 @@ for(i=200:100:200)
         if(length(S1)==0)
             continue
         end
+
+        startEndFiles = [1,1];
+        startEndIndex = [1,1];
+        for(j = 1:numel(S1))
+            FrameNumber = str2double(extract(S1(k).name, digitsPattern));
+            if(startEndFiles(1)>FrameNumber)
+                startEndFiles(1) = FrameNumber;
+                startEndIndex(1) = j;
+            end
+            if(startEndFiles(2)<FrameNumber)
+                startEndFiles(2) = FrameNumber;
+                startEndIndex(2) = j;
+            end
+        end
+
         for k = 1:2 %lowFile:numel(S)
     
-            Fid = fopen(fullfile(D,'\',dirs(dirIndex).name,S1(k).name),'r');
-            FrameNumber = str2double(extract(S1(k).name, digitsPattern));
+            % Fid = fopen(fullfile(D,'\',dirs(dirIndex).name,S1(k).name),'r');
+            % FrameNumber = str2double(extract(S1(k).name, digitsPattern));
+            Fid = fopen(fullfile(D,'\',dirs(dirIndex).name,startEndIndex(k).name),'r');
+           % FrameNumber = str2double(extract(startEndIndex(k).name, digitsPattern));
+
             fileContents = fscanf(Fid,'%s');
             fileContents = split(fileContents,'<');
             dateTime = fileContents(contains(fileContents,"hmsval"));
