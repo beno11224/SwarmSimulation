@@ -14,20 +14,20 @@ function NextLevel(app)
     app.ScenarioEditField.Value = "Test " + app.testNumber;
     app.polygon = app.polygon.change(4,app.fd);
     app.goalIndex = 5;
-    app.rotation = 0;
+    app.rotation = 0; 
     app.NumberofParticlesEditField.Value = 3; %just check they are the same times.
     app.FluidFlowmsEditField.Value = 0.00; %NO Flow for validation
     app.MagForceRestrictMAM2EditField.Value = 0;
     app.hapticFeedback = [0,0,0];
     app.slowDown = 1;
-    minTimeToTravel = 10;
+    minTimeToTravel = 10; 
     app.PercentageinGoalEditField.Value = 0;
  
     %replace switch with this 
         %     app.fd = FlowData60(); %start at 30?
         %     app.polygon = app.polygon.change(4,app.fd);
         % %    flowMultiplier = 1 + ((7/5)* (app.testNumber-1)) 
-        % %    app.FluidFlowmsEditField.Value = 1  +
+        % %    app.FluidFlowmsEditField.Value = 1  + 
         % ((7/5)*(app.testNumber-1)); 
         %     app.FluidFlowmsEditField.Value = 1;
         %     if(ndims(app.polygon.currentStartZone) > 2)
@@ -36,27 +36,30 @@ function NextLevel(app)
         %     app.goalIndex = 4;  
         %     app.slowDown = 1;
         %     minTimeToTravel = 20;
-
+  
     % % defaults 
-    % permeabilityOfFreeSpace = 1.25663706e-6;
+    % permeabilityOfFreeSpace = 1.25663706e-6; 
     % mSAT = 58; 
     % particleDiameter = 0.000005769;
     permeabilityOfFreeSpace = 1.25663706e-6;
     fieldInMT = 2; %2
     mSAT = 1 + 19 * (fieldInMT .* 10).^(0.16);%70;% + app.testNumber*5; %2mt %31.687?
- %   mSAT = 12;
+    %mSAT = 70;%12;
     aggregateLength = 0;
-    individualDiameter= 50 *10^-9;
-    chainLength = 4777;%13000;
-
+    individualDiameter= 75 *10^-9;
+    chainLength = 6800 %7500;%4777;%13000;
+ 
     if(aggregateLength~=0)
-        chainLength = aggregateLength /individualDiameter; 
+        chainLength = aggregateLength /individualDiameter;  
     end
-     
-    density = 4.8 * 1000; %density in g/cm3, change to kg/m3 with the 1000
+      
+    density = 4.8 * 1000; %density in g/cm3, change to  kg/m3 with the 1000
     %Equivalent Diameter = cubeRoot(3*chainLength) * individualDiameter
-    particleDiameter = (3*chainLength)^(1/3) * individualDiameter;
+    particleDiameter = (1.5*chainLength * individualDiameter^3 )^(1/3);
     particleMass = 4/3*pi*density * (particleDiameter/2)^3; %This is in kilograms
+  %  particleVolume = pi./4.*chainLength.*(individualDiameter)^3
+  %  pv1 = pi*((individualDiameter/2)^2) * chainLength * individualDiameter
+  %  pv2 = 4/3.*pi.*(particleDiameter/2)^3
     app.FluidViscocityEditField.Value = 0.001; %water is 0.001
 
     %REMOVEME
@@ -91,7 +94,7 @@ function NextLevel(app)
     %         % app.FluidFlowmsEditField.Value = 0.005;
     %         % generateNewParticles = false;
     %         % app.particleArrayLocation(1:app.numParticles/2,:) = app.particleFunctions.generateParticleLocations(squeeze(app.polygon.allStartZones(2,2,:,:)), app.numParticles/2);
-    %         % app.particleArrayLocation((app.numParticles/2+1):app.numParticles,:) = app.particleFunctions.generateParticleLocations(squeeze(app.polygon.allStartZones(2,4,:,:)), app.numParticles/2);
+    %         % app.particleArrayLocation((app.numParticles/2+1):app.numParticles,:) = app.particleFunctions.generate articleLocations(squeeze(app.polygon.allStartZones(2,4,:,:)), app.numParticles/2);
     %     case(1)
     % 
     %     otherwise
@@ -105,12 +108,12 @@ function NextLevel(app)
 
     app.particleFunctions.magneticForceConstant = double(permeabilityOfFreeSpace .* mSAT .* density .* 4/3.*pi.*(particleDiameter/2)^3);% .* 22; %22 is conversion factor
     app.particleFunctions.dragForceConstant = double(3*pi * app.FluidViscocityEditField.Value * individualDiameter);%particleDiameter);
-
+ 
 
  %   minTimeToTravel = 4 * (0.005 ./ app.FluidFlowmsEditField.Value); %4 paths, length, velocity
     minTimeToTravel = 1.7;
    % app.TimeRemainingsEditField.Value = minTimeToTravel .* 5;%2.5;TODO RESET ME
-    app.TimeRemainingsEditField.Value = 10;
+    app.TimeRemainingsEditField.Value = 12;
     app.timeLimit = app.TimeRemainingsEditField.Value;
    % app.numParticles = app.NumberofParticlesEditField.Value;
     app.previousMagforce = 0;
