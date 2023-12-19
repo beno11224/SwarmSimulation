@@ -1,6 +1,6 @@
 function timerCallback(app)
     %start by getting the magnetic force - this is the user input
-    currentMagforce = app.particleFunctions.calculateMagneticForce([app.X1TmGauge.Value app.Y1TmGauge.Value],app.joyStick, 1, 3, app.controlMethod, app.mousePosition, app.MagForceRestrictMAM2EditField.Value, app.rotation, app.maxForce);
+    currentMagforce = app.particleFunctions.calculateMagneticForce([app.X1TmGauge.Value app.Y1TmGauge.Value],app.joyStick, 1, 3, app.controlMethod, app.mousePosition, app.MagForceRestrictTmEditField.Value, app.rotation, app.maxForce);
     currentDial = currentMagforce ./10^6 ./ app.particleFunctions.magneticForceConstant;
     if(app.controlMethod == "Controller")
         %For shared control/Neural Network control

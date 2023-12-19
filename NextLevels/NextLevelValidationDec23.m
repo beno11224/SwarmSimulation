@@ -106,9 +106,7 @@ function NextLevel(app)
     %          app.MagForceRestrictMAM2EditField.Value = 0;
     % end    
 
-    app.particleFunctions.magneticForceConstant = double(permeabilityOfFreeSpace .* mSAT .* density .* 4/3.*pi.*(particleDiameter/2)^3);% .* 22; %22 is conversion factor
-    app.particleFunctions.dragForceConstant = double(3*pi * app.FluidViscocityEditField.Value * individualDiameter);%particleDiameter);
- 
+   
 
  %   minTimeToTravel = 4 * (0.005 ./ app.FluidFlowmsEditField.Value); %4 paths, length, velocity
     minTimeToTravel = 1.7;

@@ -18,13 +18,13 @@ function NextLevel(app)
   %  app.NumberofParticlesEditField.Value = 3; %just check they are the same times.
     app.numParticles = app.NumberofParticlesEditField.Value;
     app.FluidFlowmsEditField.Value = 0.00; %NO Flow for validation
-    app.MagForceRestrictMAM2EditField.Value = 0;
+    app.MagForceRestrictTmEditField.Value = 1;
     app.hapticFeedback = [0,0,0];
     app.slowDown = 1;
     minTimeToTravel = 10; 
     app.PercentageinGoalEditField.Value = 0;
 
-    app.FluidFlowmsEditField.Value = 1;
+    app.FluidFlowmsEditField.Value = 10;
 
     permeabilityOfFreeSpace = 1.25663706e-6;
     fieldInMT = 3;
@@ -65,7 +65,7 @@ function NextLevel(app)
     %          app.NumberofParticlesEditField.Value = 10;
     %          app.FluidFlowmsEditField.Value = 0;
     %          app.TimeRemainingsEditField.Value = 1200;
-    %          app.MagForceRestrictMAM2EditField.Value = 0;
+    %          app.MagForceRestrictTmEditField.Value = 0;
     % end    
 
     app.particleFunctions.magneticForceConstant = double(permeabilityOfFreeSpace .* mSAT .* density .* 4/3.*pi.*(particleDiameter/2)^3);% .* 22; %22 is conversion factor

@@ -22,8 +22,10 @@ classdef ParticleFunctions
         end
         
         function obj = ChangeMetaValues(obj,permeabilityOfFreeSpace, particleDiameter, particleMass, fluidViscocity, staticFrictionCoefficient, motionFrictionCoefficient, workspaceSize)
-            obj.magneticForceConstant = double(permeabilityOfFreeSpace .* 58 .* 2.25 .* 10^3 .* 4/3.*pi.*(particleDiameter/2)^3) .* 22; %The 2.25*10^3 is for the emu/g to A/m calculation
-            obj.dragForceConstant = double(3*pi * fluidViscocity * particleDiameter);
+         %   obj.magneticForceConstant = double(permeabilityOfFreeSpace .* 58 .* 2.25 .* 10^3 .* 4/3.*pi.*(particleDiameter/2)^3) .* 22; %The 2.25*10^3 is for the emu/g to A/m calculation
+         %   obj.dragForceConstant = double(3*pi * fluidViscocity * particleDiameter);
+            obj.magneticForceConstant = double(permeabilityOfFreeSpace .* mSAT .* density .* 4/3.*pi.*(particleDiameter/2)^3);% .* 22; %22 is conversion factor
+            obj.dragForceConstant = double(3*pi * fluidViscocity * individualDiameter);%particleDiameter);  
             obj.dipoleForceConstant = double(3*permeabilityOfFreeSpace / 4*pi);
             obj.staticFrictionCoefficient = staticFrictionCoefficient;
             obj.movingFrictionCoefficient = motionFrictionCoefficient;
