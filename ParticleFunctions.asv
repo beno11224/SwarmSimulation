@@ -140,26 +140,12 @@ classdef ParticleFunctions
             force = sumOfAllDipoleMoments .* distanceMultiplier; 
         end
 
-        function force = calculateDragForce(obj, particleVelocity, flowVelocity, magForce, previousDelta)
-            checkSign = previousDelta .* particleVelocity;
-            checkSign(checkSign<0) = -1;
-            checkSign(checkSign>=0) = 1;
-            adjustment = previousDelta./particleVelocity .* checkSign;
-            adjustment(isnan(adjustment)) = 0;
-            adjustment(isinf(adjustment)) = 0;
+        function force = calculateDragForce(obj, particleVelocity, flowVelocity)
             force = ((particleVelocity - flowVelocity) .* obj.dragForceConstant); %Stokes Drag Equation
-            force = force + force.*adjustment .* 0.25;
-        end
+         end
 
-        function force = calculateDragForce(obj, particleVelocity, flowVelocity, magForce, previousDelta)
-            checkSign = previousDelta .* particleVelocity;
-            checkSign(checkSign<0) = -1;
-            checkSign(checkSign>=0) = 1;
-            adjustment = previousDelta./particleVelocity .* checkSign;
-            adjustment(isnan(adjustment)) = 0;
-            adjustment(isinf(adjustment)) = 0;
-            force = ((particleVelocity - flowVelocity) .* obj.dragForceConstant); %Stokes Drag Equation
-            force = force + force.*adjustment .* 0.25;
+        function particleVelocity = calculateDragForceFromMagForce(obj, magForce, flowVelocity)
+            particleVelocity = (magForce ./ obj.dragForceConstant) + flowVelocity; %+ or -?
         end
 
         %used to keep particles within the polygon. Does not include

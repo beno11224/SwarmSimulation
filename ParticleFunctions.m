@@ -142,10 +142,10 @@ classdef ParticleFunctions
 
         function force = calculateDragForce(obj, particleVelocity, flowVelocity)
             force = ((particleVelocity - flowVelocity) .* obj.dragForceConstant); %Stokes Drag Equation
-        end
+         end
 
         function particleVelocity = calculateDragForceFromMagForce(obj, magForce, flowVelocity)
-            particleVelocity = magForce ./ obj.dragForceConstant - flowVelocity;
+            particleVelocity = (magForce ./ obj.dragForceConstant) + flowVelocity; %+ or -?
         end
 
         %used to keep particles within the polygon. Does not include
