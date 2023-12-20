@@ -23,6 +23,9 @@ function NextLevel(app)
     app.slowDown = 1;
     minTimeToTravel = 10; 
     app.PercentageinGoalEditField.Value = 0;
+    mSAT = 12;
+    app.ParticleDensitygmlEditField.Value = 4.8;
+    app.IndividualDiameterEditField.Value = 75 *10^-9;
 
     app.FluidFlowmsEditField.Value = 10;
 
