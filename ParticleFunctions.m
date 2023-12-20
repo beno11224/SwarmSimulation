@@ -23,7 +23,7 @@ classdef ParticleFunctions
 
             msat = 1 + 19 * (magneticField .* 10).^(0.16);
             obj.equivalentDiameter =  (1.5*chainLength * individualDiameter^3 )^(1/3);
-            obj.magneticForceConstant = double(permeabilityOfFreeSpace .* msat .* particleDensity .* 4/3.*pi.*(obj.equivalentDiameter/2)^3);% .* 22; %22 is conversion factor
+            obj.magneticForceConstant = double(permeabilityOfFreeSpace .* msat .* particleDensity .* 1000 .* 4/3.*pi.*(obj.equivalentDiameter/2)^3);% .* 22; %22 is conversion factor
             obj.dragForceConstant = double(3*pi * fluidViscocity * individualDiameter); 
             obj.dipoleForceConstant = double(3*permeabilityOfFreeSpace / 4*pi);
             obj.staticFrictionCoefficient = staticFrictionCoefficient;
@@ -352,7 +352,7 @@ classdef ParticleFunctions
             %set to true to not generate the locations, instead use the
             %locations stored at the top of this file. NumParticles MUST be
             %set to 50 or this will cause errors. Mainly used for testing.
-            if(true && particleLocationsLength==50)
+             if(true && particleLocationsLength==50)
                 particleLocations = obj.fiftyParticleStartLocations;
             else
                 loopMax = ndims(poly);

@@ -81,7 +81,7 @@ function timerCallback(app)
         else                
             app.timePassed = app.timePassed + app.timestep / smallerTMaxTotalSteps;        
         end
-        if(goalPercentage == 1)
+        if(all(app.haltParticlesInEndZone))
             break;
         end
     end
@@ -99,12 +99,12 @@ function timerCallback(app)
     end
 
     %Update fields for user
-    if(app.timeLimit > 0 && app.timePassed <= app.timeLimit && (goalPercentage ~= 1))
+    if(app.timeLimit > 0 && app.timePassed <= app.timeLimit && ~all(app.haltParticlesInEndZone))
         app.TimeRemainingsEditField.Value = round(app.timeLimit - app.timePassed);
         app.PercentageinGoalEditField.Value = round(goalPercentage .* 100);
     else
         %Out of time, so perform a reset
-        if(app.timeLimit > 0)
+        if(app.timeLimit > 0 || all(app.haltParticlesInEndZone))
             if(app.controlMethod ~= "TrainingModel")
                 stop(app.simulationTimerProperty);
                 stop(app.drawTimerProperty);

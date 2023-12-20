@@ -13,7 +13,7 @@ function NextLevel(app)
     fclose(app.fileID);
     app.ScenarioEditField.Value = "Test " + app.testNumber;
     app.polygon = app.polygon.change(4,app.fd);
-    app.goalIndex = 5;
+    app.goalIndex = 4;
     app.rotation = 0; 
   %  app.NumberofParticlesEditField.Value = 3; %just check they are the same times.
     app.numParticles = app.NumberofParticlesEditField.Value;
@@ -21,46 +21,41 @@ function NextLevel(app)
     app.MagForceRestrictTmEditField.Value = 1;
     app.hapticFeedback = [0,0,0];
     app.slowDown = 1;
-    minTimeToTravel = 10; 
+    minTimeToTravel = 15; 
     app.PercentageinGoalEditField.Value = 0;
-    mSAT = 12;
+   % mSAT = 12;
     app.ParticleDensitygmlEditField.Value = 4.8;
     app.IndividualDiameterEditField.Value = 75 *10^-9;
 
-    app.FluidFlowmsEditField.Value = 10;
-
-    permeabilityOfFreeSpace = 1.25663706e-6;
-    fieldInMT = 3;
-    mSAT = 1 + 19 * (fieldInMT .* 10).^(0.16); %2mt %31.687?
-    aggregateLength = 0;
-    individualDiameter= 75 *10^-9;
-    chainLength = 12000;
- 
-    if(aggregateLength~=0)
-        chainLength = aggregateLength /individualDiameter;  
-    end
-      
-    density = 4.8 * 1000; %density in g/cm3, change to  kg/m3 with the 1000
-    particleDiameter = (1.5*chainLength * individualDiameter^3 )^(1/3);
-    particleMass = 4/3*pi*density * (particleDiameter/2)^3; %This is in kilograms
+    app.FluidFlowmsEditField.Value = 50;
     app.FluidViscocityEditField.Value = 0.001; %water is 0.001
 
-    app.ParticleDiametermEditField.Value = particleDiameter;
-    app.ParticleMasskgEditField.Value = particleMass;
+    generateNewParticles = true; 
 
-
-
-    generateNewParticles = true;
-  %  app.particleArrayLocation = [-0.0094 -0.00325; -0.0094 -0.0035; -0.0094 -0.00375];
-  %  app.particleArrayVelocity = [0 0; 0 0; 0 0;];%[0.000223979975848616 0;0.000223979975848616 0;0.000223979975848616 0];
-
-    % switch(floor((app.testNumber-1)/10)) %Do n of each        
+    MaxForceThing = [0.5,0.25,0.125,0.125/2];
+    scenario = floor((app.testNumber-1)/10);
+    if(scenario>6)
+        fprintf("The experiment has now ended, thank you for your participation. Please close this window.\r\n");
+         app.polygon = app.polygon.change(1);
+         app.NumberofParticlesEditField.Value = 10;
+         app.FluidFlowmsEditField.Value = 0;
+         app.TimeRemainingsEditField.Value = 1200;
+         app.MagForceRestrictTmEditField.Value = 0;
+    else         
+         app.FluidFlowmsEditField.Value = 30;
+         app.MagForceRestrictTmEditField.Value = MaxForceThing(scenario+1);
+    end
+ 
+    % switch(scenario) %Do n of each        
     %     case(0)
-    %         % app.FluidFlowmsEditField.Value = 0.005;
-    %         % generateNewParticles = false;
-    %         % app.particleArrayLocation(1:app.numParticles/2,:) = app.particleFunctions.generateParticleLocations(squeeze(app.polygon.allStartZones(2,2,:,:)), app.numParticles/2);
-    %         % app.particleArrayLocation((app.numParticles/2+1):app.numParticles,:) = app.particleFunctions.generate articleLocations(squeeze(app.polygon.allStartZones(2,4,:,:)), app.numParticles/2);
+    %          app.FluidFlowmsEditField.Value = 30;
+    %          % generateNewParticles = false;
+    %          % app.particleArrayLocation(1:app.numParticles/2,:) = app.particleFunctions.generateParticleLocations(squeeze(app.polygon.allStartZones(2,2,:,:)), app.numParticles/2);
+    %          % app.particleArrayLocation((app.numParticles/2+1):app.numParticles,:) = app.particleFunctions.generateParticleLocations(squeeze(app.polygon.allStartZones(2,4,:,:)), app.numParticles/2);
     %     case(1)
+    %          app.FluidFlowmsEditField.Value = 60;
+    %     case(2)
+    %          app.FluidFlowmsEditField.Value = 70;
     % 
     %     otherwise
     %          fprintf("The experiment has now ended, thank you for your participation. Please close this window.\r\n");
@@ -71,12 +66,12 @@ function NextLevel(app)
     %          app.MagForceRestrictTmEditField.Value = 0;
     % end    
 
-    app.particleFunctions.magneticForceConstant = double(permeabilityOfFreeSpace .* mSAT .* density .* 4/3.*pi.*(particleDiameter/2)^3);% .* 22; %22 is conversion factor
-    app.particleFunctions.dragForceConstant = double(3*pi * app.FluidViscocityEditField.Value * individualDiameter);%particleDiameter);
+%    app.particleFunctions.magneticForceConstant = double(permeabilityOfFreeSpace .* mSAT .* density .* 4/3.*pi.*(particleDiameter/2)^3);% .* 22; %22 is conversion factor
+%    app.particleFunctions.dragForceConstant = double(3*pi * app.FluidViscoci tyEditField.Value * individualDiameter);%particleDiameter);
  
 
   %  minTimeToTravel = 4 * (0.005 ./ app.FluidFlowmsEditField.Value); %4 paths, length, velocity
-    minTimeToTravel = 2;
+    minTimeToTravel = 10;
     app.TimeRemainingsEditField.Value = minTimeToTravel .* 5;
     app.timeLimit = app.TimeRemainingsEditField.Value;    
     app.previousMagforce = 0;
@@ -84,13 +79,12 @@ function NextLevel(app)
     paddedTestNumber = sprintf( '%04d', app.testNumber);
     newFileName = "Test" + paddedTestNumber + "_" + app.lastUpdate(4) + "_" + app.lastUpdate(5) + "_results.csv";
     app.fileID = fopen(newFileName,'w');
-    app.loopComplete = true;            
-    app.particlePoints = plot(app.UIAxes,0,0);
+    app.loopComplete = true;             
     app.tMax = 1;
 
     app.mesh = delaunayTriangulation(app.polygon.currentFlowLocations);
     if(generateNewParticles)
-        app.particleArrayLocation = app.particleFunctions.generateParticleLocations(app.polygon.currentStartZone, app.numParticles);
+        app.particleArrayLocation = app.particleFunctions.generateParticleLocations(squeeze(app.polygon.allStartZones{3}), app.numParticles);
     end
     app.particleArrayVelocity = zeros(app.numParticles, 2);
     app.particleArrayForce = zeros(app.numParticles, 2);
@@ -111,9 +105,10 @@ function NextLevel(app)
 
 
     %set(app.UIAxes,'padded')
-     app.UIAxes.XLim = [min(app.polygon.currentPoly(:,1)) + (min(app.polygon.currentPoly(:,1))/20), max(app.polygon.currentPoly(:,1)) + (max(app.polygon.currentPoly(:,1))/20)];
+    app.UIAxes.XLim = [min(app.polygon.currentPoly(:,1)) + (min(app.polygon.currentPoly(:,1))/20), max(app.polygon.currentPoly(:,1)) + (max(app.polygon.currentPoly(:,1))/20)];
     app.UIAxes.YLim = [min(app.polygon.currentPoly(:,2)) + (min(app.polygon.currentPoly(:,2))/20), max(app.polygon.currentPoly(:,2)) + (max(app.polygon.currentPoly(:,2))/20)];
 
+    app.particleFunctions = app.particleFunctions.ChangeMetaValues(1.25663706e-6, app.MagneticFieldmTEditField.Value, app.IndividualDiameterEditField.Value, app.ParticleDensitygmlEditField.Value, app.ChainLengthEditField.Value, app.FluidViscocityEditField.Value, app.CeffStat, app.CeffMotion, app.UIAxes.XLim(2));
 
    % for(lineCount = 1:length(app.polygon.currentEndZone)-1)%??
     for(lineCount = 1:length(app.polygon.currentEndZone))
