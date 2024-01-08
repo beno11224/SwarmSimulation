@@ -25,7 +25,7 @@ function NextLevel(app)
     app.PercentageinGoalEditField.Value = 0;
    % mSAT = 12;
     app.ParticleDensitygmlEditField.Value = 4.8;
-    app.IndividualDiameterEditField.Value = 75 *10^-9;
+    app.IndividualDiameterEditField.Value = 90 *10^-9;
 
   % app.FluidFlowmsEditField.Value = 50;
     app.FluidViscocityEditField.Value = 0.001; %water is 0.001
@@ -54,8 +54,8 @@ function NextLevel(app)
         magGrad = 1000
     end
     app.MagneticFieldmTEditField.Value = scenario+1;
-   % cl = [6800,12000,15000];
-    cl = [12000,13000,14000];
+    cl = [6800,12000,15000];
+ %   cl = [12000,13000,14000];
     app.ChainLengthEditField.Value = cl(scenario+1);
     scenario+1 
     cl(scenario+1)
