@@ -22,7 +22,7 @@ function timerCallback(app)
 
     vFlow = app.particleFunctions.calculateFlow(real(app.particleArrayLocation), app.polygon.currentFlowValues, app.mesh);
     vFlow = vFlow .* app.FluidFlowmsEditField.Value;
- 
+  
     magForceAlpha = 0.05;
     magForce = app.previousMagforce;
  

@@ -99,8 +99,8 @@ classdef ParticleFunctions
             %before runtime.
             switch(controlMethod)      
                 case("Keyboard")
-                %    totalForce = aCoils.* 10^6;
-                    totalForce = aCoils;
+                    totalForce = aCoils.* 10^6;
+                %    totalForce = aCoils;
                 case("Mouse")
                     totalForce = mouseLocation .* maxuserForce*10^8; %Mouse Force is a bit lower than the others
                 case("Controller")
