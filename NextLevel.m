@@ -2,6 +2,10 @@ function NextLevel(app)
 
 %This file is for the validation DEC2023 %ParametricV2
 
+    if(app.testNumber > 30)
+        return
+    end
+    
     NUMOFEACH = 10; %120 total
     NUMOFEACH = 1;
     waitEvery = 100;
@@ -25,7 +29,7 @@ function NextLevel(app)
     app.PercentageinGoalEditField.Value = 0;
    % mSAT = 12;
     app.ParticleDensitygmlEditField.Value = 4.8;
-    app.IndividualDiameterEditField.Value = 90 *10^-9;
+    app.IndividualDiameterEditField.Value = 75 *10^-9;
 
   % app.FluidFlowmsEditField.Value = 50;
     app.FluidViscocityEditField.Value = 0.001; %water is 0.001
@@ -55,14 +59,12 @@ function NextLevel(app)
     end
     app.MagneticFieldmTEditField.Value = scenario+1;
     cl = [6800,12000,15000];
- %   cl = [12000,13000,14000];
-    app.ChainLengthEditField.Value = cl(scenario+1);
+   % cl = [10000, 12000,14000]; 
+   % cl = [20000,25000,30000];
+    newCL = cl(scenario+1)+1000-magGrad*2
+    app.ChainLengthEditField.Value = newCL;%cl(scenario+1)-500+magGrad; %try altering the chain length here...
     scenario+1 
-    cl(scenario+1)
     app.goalIndex = 5;
-    if(app.testNumber > 30)
-        return
-    end
 
     % switch(scenario) %Do n of each
     %     case(0)
