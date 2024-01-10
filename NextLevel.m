@@ -61,8 +61,8 @@ function NextLevel(app)
     cl = [6800,12000,15000];
    % cl = [10000, 12000,14000]; 
    % cl = [20000,25000,30000];
-    newCL = cl(scenario+1)+1000-magGrad*2
-    app.ChainLengthEditField.Value = newCL;%cl(scenario+1)-500+magGrad; %try altering the chain length here...
+    clNew = 3.54 .* magGrad .^ 1.4429
+    app.ChainLengthEditField.Value = clNew %cl(scenario+1);
     scenario+1 
     app.goalIndex = 5;
 
