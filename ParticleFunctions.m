@@ -22,7 +22,7 @@ classdef ParticleFunctions
          %   obj.dragForceConstant = double(3*pi * fluidViscocity * particleDiameter);
 
             msat = 1 + 19 * (magneticField .* 10).^(0.16);
-            obj.equivalentDiameter =  2*(3*chainLength * individualDiameter^3 )^(1/3);
+            obj.equivalentDiameter =  (3*chainLength * individualDiameter^3 )^(1/3);
             obj.magneticForceConstant = double(permeabilityOfFreeSpace .* msat .* particleDensity .* 1000 .* 4/3.*pi.*(obj.equivalentDiameter/2)^3);% .* 22; %22 is conversion factor
             obj.dragForceConstant = double(3*pi * fluidViscocity * individualDiameter); 
             obj.dipoleForceConstant = double(3*permeabilityOfFreeSpace / 4*pi);

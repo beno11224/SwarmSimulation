@@ -1,9 +1,8 @@
 function NextLevel(app)
 
-%This file is for the ParametricV2 (Jan2024), specifically the
-%smaller particles I collected the data on
+%This file is for the validation DEC2023 - SPECIFICALLY THE OLD PARTICLES
 
-    if(app.testNumber > 20)
+    if(app.testNumber > 10)
         return
     end
     
@@ -20,7 +19,7 @@ function NextLevel(app)
     app.polygon = app.polygon.change(4,app.fd);
     app.goalIndex = 4;
     app.rotation = 0; 
-    app.NumberofParticlesEditField.Value = 500; % just check they are the same times.
+    app.NumberofParticlesEditField.Value = 3; % just check they are the same times.
     app.numParticles = app.NumberofParticlesEditField.Value;
     app.FluidFlowmsEditField.Value = 0.00; %NO Flow for validation
     app.MagForceRestrictTmEditField.Value = 1;
@@ -29,41 +28,43 @@ function NextLevel(app)
     minTimeToTravel = 15; 
     app.PercentageinGoalEditField.Value = 0;
    % mSAT = 12;
-    app.ParticleDensitygmlEditField.Value = 4.8;
-    app.IndividualDiameterEditField.Value = 75 *10^-9;
+    app.ParticleDensitygmlEditField.Value = 2.25;
+    app.IndividualDiameterEditField.Value = 800 *10^-9;
 
   % app.FluidFlowmsEditField.Value = 50;
-    app.FluidViscocityEditField.Value = 0.001; %water is 0.001
+    app.FluidViscocityEditField.Value = 0.004; %water is 0.001
  
     % MaxForceThing = [0.5,0.25,0.125,0.125/2];
-    scenario = floor((app.testNumber-1)/10);
-    if(scenario>6)
-        fprintf("The experiment has now ended, thank you for your participation. Please close this window.\r\n");
-         app.polygon = app.polygon.change(1);
-         app.NumberofParticlesEditField.Value = 10;
-         app.FluidFlowmsEditField.Value = 0;
-         app.TimeRemainingsEditField.Value = 1200;
-         app.MagForceRestrictTmEditField.Value = 0;
-    else 
-        %
-         app.FluidFlowmsEditField.Value = 30;
-         app.MagForceRestrictTmEditField.Value = MaxForceThing(scenario+1);
-
-    end
+    % scenario = floor((app.testNumber-1)/10);
+    % if(scenario>6)
+    %     fprintf("The experiment has now ended, thank you for your participation. Please close this window.\r\n");
+    %      app.polygon = app.polygon.change(1);
+    %      app.NumberofParticlesEditField.Value = 10;
+    %      app.FluidFlowmsEditField.Value = 0;
+    %      app.TimeRemainingsEditField.Value = 1200;
+    %      app.MagForceRestrictTmEditField.Value = 0;
+    % else         
+    %      app.FluidFlowmsEditField.Value = 30;
+    %      app.MagFo ceRestrictTmEditField.Value = MaxForceThing(scenario+1);
+    % end
  
     generateNewParticles = false;
     app.particleArrayLocation = [-0.0094 -0.00325; -0.0094 -0.0035; -0.0094 -0.00375];
     app.particleArrayVelocity = [0 0; 0 0; 0 0;];%[0.000223979975848616 0;0.000223979975848616 0;0.000223979975848616 0];
 
     scenario = floor((app.testNumber-1)/10);
-    magGrad = mod(app.testNumber,10)*100 %check
-    if(magGrad == 0)
-        magGrad = 1000
-    end
-    app.MagneticFieldmTEditField.Value = scenario+2;
-
-    clNew = 12 .* magGrad + (scenario)*5000;
-     app.ChainLengthEditField.Value = clNew; %cl(scenario+1);
+    % magGrad = mod(app.testNumber,10)*100 %check
+    % if(magGrad == 0)
+    %     magGrad = 1000
+    % end
+    magGrad = 1.2566370614359172 .* app.testNumber./4 .*1000
+    app.MagneticFieldmTEditField.Value = scenario+1;
+    cl = [6800,12000,15000];
+   % cl = [10000, 12000,14000]; 
+   % cl = [20000,25000,30000];
+  %  clNew = 3.54 .* magGrad .^ 1.4429
+   % clNew = 11.238 .* magGrad +4985.5
+    app.ChainLengthEditField.Value = 125; %cl(scenario+1);
     scenario+1 
     app.goalIndex = 5;
 

@@ -1,6 +1,6 @@
 function NextLevel(app)
 
-%This file is for the ParametricV2 (Jan2024), specifically the
+%This file is for the parametric study JAN24 %ParametricV2, specifically the
 %smaller particles I collected the data on
 
     if(app.testNumber > 20)
@@ -36,20 +36,18 @@ function NextLevel(app)
     app.FluidViscocityEditField.Value = 0.001; %water is 0.001
  
     % MaxForceThing = [0.5,0.25,0.125,0.125/2];
-    scenario = floor((app.testNumber-1)/10);
-    if(scenario>6)
-        fprintf("The experiment has now ended, thank you for your participation. Please close this window.\r\n");
-         app.polygon = app.polygon.change(1);
-         app.NumberofParticlesEditField.Value = 10;
-         app.FluidFlowmsEditField.Value = 0;
-         app.TimeRemainingsEditField.Value = 1200;
-         app.MagForceRestrictTmEditField.Value = 0;
-    else 
-        %
-         app.FluidFlowmsEditField.Value = 30;
-         app.MagForceRestrictTmEditField.Value = MaxForceThing(scenario+1);
-
-    end
+    % scenario = floor((app.testNumber-1)/10);
+    % if(scenario>6)
+    %     fprintf("The experiment has now ended, thank you for your participation. Please close this window.\r\n");
+    %      app.polygon = app.polygon.change(1);
+    %      app.NumberofParticlesEditField.Value = 10;
+    %      app.FluidFlowmsEditField.Value = 0;
+    %      app.TimeRemainingsEditField.Value = 1200;
+    %      app.MagForceRestrictTmEditField.Value = 0;
+    % else         
+    %      app.FluidFlowmsEditField.Value = 30;
+    %      app.MagFo ceRestrictTmEditField.Value = MaxForceThing(scenario+1);
+    % end
  
     generateNewParticles = false;
     app.particleArrayLocation = [-0.0094 -0.00325; -0.0094 -0.0035; -0.0094 -0.00375];
