@@ -3,7 +3,7 @@ function NextLevel(app)
 %This file is for the ParametricV2 (Jan2024), specifically the
 %smaller particles I collected the data on
 
-    if(app.testNumber > 60)
+    if(app.testNumber > 120)
         return
     end
     
@@ -50,7 +50,7 @@ function NextLevel(app)
 
         %MagForceRestrict
         % case(0)
-        %     app.MagForceRestrictTmEditField.Value = 1;
+        %     app.MagForceRestrictTmEditField.Value = 1; 
         % case(1)
         %     app.MagForceRestrictTmEditField.Value = 0.5;
         % case(2)
@@ -88,9 +88,10 @@ function NextLevel(app)
         case(11)
             app.fd = FlowData60();
     end
-    app.fd = FlowData20();
+ %   app.fd = FlowData20();
     app.MagneticFieldmTEditField.Value = 3;
     app.FluidFlowmsEditField.Value = 10;
+    app.MagForceRestrictTmEditField.Value = 0.5;
     %app.MagForceRestrictTmEditField.Value = MaxForceThing(scenario+1); %0;
     
     app.ChainLengthEditField.Value = 12 .* app.MagForceRestrictTmEditField.Value.*1000 + 5000;
