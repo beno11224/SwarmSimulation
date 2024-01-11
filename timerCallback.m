@@ -108,6 +108,7 @@ function timerCallback(app)
             if(app.controlMethod ~= "TrainingModel")
                 stop(app.simulationTimerProperty);
                 stop(app.drawTimerProperty);
+                start(app.hapticFeedbackIdleProperty);
                 app.StartTrainingButton.Enable = true;
                 set(app.StartTrainingButton,'Text',"Start Next Level");
                 set(app.StartTrainingButton,'BackgroundColor',[1,0.7,0.7]);
@@ -115,7 +116,6 @@ function timerCallback(app)
                 delete(app.magLine);
                 app.testNumber = app.testNumber + 1;
                 NextLevel(app);
-             %   start(app.hapticFeedbackIdleProperty);
             end
         else
             app.timeLimit = 1;
