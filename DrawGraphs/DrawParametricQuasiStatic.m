@@ -33,8 +33,11 @@ yForceLimit = [99.64, 84.14, 54.62, 31.52, 28.88, 23.08];
 yErrForceLimit = [0.113841996,3.244496879,0.196061215,0.151789328,0.025298221,0.101192885];
 
 %Value for report to paper
-deviation = abs(ySIM(2,:) - yCentreMass(2,:))
-deviation = mean(deviation(2:end))
+ySIM(1,:)
+deviation = abs((ySIM(1,:) - yCentreMass(1,:))/yCentreMass(1,:))
+deviation(2:end)
+deviationa = abs((ySIM(2,:) - yCentreMass(2,:))/yCentreMass(2,:))
+deviationnn = mean([deviation(2:end),deviationa])
 
 %Figure 1 (CentreMass)
 figure1 = figure;
@@ -146,7 +149,7 @@ hold(axes4,'on');
 plot41 = errorbar(axes4,xForceLimit(1,:).*1000,yForceLimit(1,:), yErrForceLimit(1,:),'o-','MarkerEdgeColor','black','MarkerSize',4,'MarkerFaceColor','blue','color','blue');
 hold on
 
-xlim(axes4,[50,1050]);
+xlim(axes4,[0,1050]);
 xlabel("Limit of force user is permitted to apply (mT/m)");
 ylabel("Percentage of particles reaching the goal");
 box(axes4,'on');
