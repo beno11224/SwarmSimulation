@@ -62,6 +62,7 @@ grid(axes1,'on');
 % Create legend
 legend(axes1,'Measured at 2mT','Measured at 3mT','Simulated at 2mT','Simulated at 3mT','Location','northeast'); %Spread" formation','Particles start in a "Split Clump" formation','Particles start in a "Split Spread" formation','','','',''
 title(axes1,"Time taken to travel 1mm for differing magnetic gradients");
+fontname(axes1,"times new roman")
 
 %Figure 2 (Ali Data)
 figure2 = figure;
@@ -80,7 +81,7 @@ box(axes2,'on');
 grid(axes2,'on');
 legend(axes2,'Previous experimental data','New simulated data','Location','northeast'); %Spread" formation','Particles start in a "Split Clump" formation','Particles start in a "Split Spread" formation','','','',''
 title(axes2,"Time taken to travel 1mm for differing magnetic gradients");
-
+fontname(axes2,"times new roman")
 
 %Figure 1a (NewParticlesComparison)
 figure1a = figure;
@@ -100,7 +101,7 @@ box(axes1a,'on');
 grid(axes1a,'on');
 legend(axes1a,'2mt','3mt','Ideal Simulation','Location','southeast')
 title(axes1a,"Comparison of simulated vs recorded times to travel 1mm");
-
+fontname(axes1a,"times new roman")
 
 %Figure 2a (NewParticlesComparison)
 figure2a = figure;
@@ -120,6 +121,7 @@ box(axes2a,'on');
 grid(axes2a,'on');
 legend(axes2a,'Previous Experimental Data','Ideal Simulation','Location','southeast')
 title(axes2a,"Comparison of simulated vs recorded times to travel 1mm");
+fontname(axes2a,"times new roman")
 
 %Figure 3 (Flow Velocity)
 figure3 = figure;
@@ -140,6 +142,7 @@ grid(axes3,'on');
 %Create Title
 title(axes3,"Percentage of particles reaching the goal state for different fluid flow velocities");
 legend(axes3,'clump start','split start','Location','southwest')
+fontname(axes3,"times new roman")
 
 %Figure 4 (ForceLimit)
 figure4 = figure;
@@ -157,3 +160,4 @@ grid(axes4,'on');
 
 %Create Title
 title(axes4,"Percentage of particles reaching the goal for different limits applied to user input");
+fontname(axes4,"times new roman")
