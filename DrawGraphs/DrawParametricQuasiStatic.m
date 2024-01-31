@@ -38,10 +38,15 @@ yErrForceLimit = [0,6.502953175,2.50031998,2.464224016,2.498319435,0.996192752];
 
 %Value for report to paper
 ySIM(1,:)
-deviation = abs((ySIM(1,:) - yCentreMass(1,:))/yCentreMass(1,:))
-deviation(2:end)
-deviationa = abs((ySIM(2,:) - yCentreMass(2,:))/yCentreMass(2,:))
-deviationnn = mean([deviation(2:end),deviationa])
+(ySIM(1,2:end))
+deviation = abs(([ySIM(1,2:end)] - [yCentreMass(1,2:end)])./[yCentreMass(1,2:end)]);
+dev2mt = mean(deviation)%(2:end))
+deviationa = abs(([ySIM(2,2:end)] - [yCentreMass(2,2:end)])./[yCentreMass(2,2:end)]);
+deviationb = abs(([ySIM(2,:)] - [yCentreMass(2,:)])./[yCentreMass(2,:)]);
+dev3mt = mean(deviationa)
+dev3mtb = mean(deviationb)
+deviationbotha = mean([dev2mt,dev3mt])
+deviationbothb = mean([dev2mt.*9,dev3mtb.*10])./19
 
 %Figure 1 (CentreMass)
 figure1 = figure;
