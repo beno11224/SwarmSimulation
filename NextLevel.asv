@@ -4,7 +4,6 @@ function NextLevel(app)
 
     if(app.testNumber > 120) %confirm number of tests
         fprintf("The experiment has now ended, thank you for your participation. Please close this window.\r\n");
-        msgbox("The experiment has now ended, thank you for your participation. Please close the simulator. It would be appreciated if you could fill out the quality control questionaire","Information");
         app.polygon = app.polygon.change(1, app.fd);
         app.NumberofParticlesEditField.Value = 10;
         app.FluidFlowmsEditField.Value = 0;
@@ -14,7 +13,7 @@ function NextLevel(app)
     end
     
     NUMOFEACH = 10; %120 total
-    waitEvery = 40; %so for 120 tests that's 3 breaks
+    waitEvery = 3;% 40; %so for 120 tests that's 3 breaks
 
     %Reset the rng so it's deterministic
     rng(1000,"twister");
@@ -68,7 +67,7 @@ function NextLevel(app)
     generateNewParticles = true;
     %app.particleArrayLocation = [-0.0094 -0.00325; -0.0094 -0.0035; -0.0094 -0.00375];
     %app.particleArrayVelocity = [0 0; 0 0; 0 0;];%[0.000223979975848616 0;0.000223979975848616 0;0.000223979975848616 0];
-
+    
     minTimeToTravel = 10;
     app.TimeRemainingsEditField.Value = minTimeToTravel .* 5;
     app.timeLimit = app.TimeRemainingsEditField.Value;    
@@ -82,7 +81,6 @@ function NextLevel(app)
 
     app.mesh = delaunayTriangulation(app.polygon.currentFlowLocations);
     if(generateNewParticles)
-        % %This is for two locations (split start)
         % app.particleArrayLocation(1:app.numParticles/2,:) = app.particleFunctions.generateParticleLocations(squeeze(app.polygon.allStartZones{3}), app.numParticles/2);
         % app.particleArrayLocation((app.numParticles/2+1):app.numParticles,:) = app.particleFunctions.generateParticleLocations(squeeze(app.polygon.allStartZones{4}(2,:,:)), app.numParticles/2);
 
@@ -121,6 +119,8 @@ function NextLevel(app)
         end
     end 
     app.previousMagforce = 0;
+  %  app.X1TmGauge.Value = 0;
+  %  app.Y1TmGauge.Value = 0;
     app.haltParticlesInEndZone = zeros(app.numParticles,1);
     app.currentlyDoingWorkSemaphore = false;
     app.timePassed = 0;
@@ -129,16 +129,74 @@ function NextLevel(app)
     app.mousePosition = [0 0];
     app.magLine = plot(app.UIAxes,0,0);    
 
-   difficluty = 1;
-    if(app.testNumber > 1 && mod(app.testNumber,waitEvery) == 0)
-        msgbox("Time to take a break. When ready to start again press the spacebar twice. Next Level difficulty " + difficluty + "/6","Information");
-    else
-        messageToUser = msgbox("Difficulty " + difficluty + "/6","Information");
-        
-        % if(app.testNumber >= 1) %is there much point to this??
-        %     pause(2);
-        %     close(messageToUser);
+
+    %app.X1MAGauge.Value = 10^6 .* (0.25+0.25*app.testNumber).*1.2566;% .* 1.5;
+    %app.X1MAGauge.Value = 10^6 .* (0.1+0.1*app.testNumber);%.*1.5;
+   % app.X1TmGauge.Value = (magGrad/1000);%.*1.5;
+   % app.Y1TmGauge.Value = 0;
+   diff = 1;
+  if(app.testNumber > 1 && mod(app.testNumber,waitEvery) == 0)
+            msgbox("Time to take a break. When ready to start again press the spacebar twice. Next Level difficulty " + diff + "/6","Information");
+        % switch(floor(app.testNumber/NUMOFEACH)) %Do n of each
+        % 
+        %     case(0)
+        %         msgbox("Time to take a break. When ready to start again press the spacebar twice. Next Level difficulty 1/6","Information");
+        %     case(1) 
+        %         msgbox("Time to take a break. When ready to start again press the spacebar twice. Next Level difficulty 1/6","Information");
+        %     case(2)
+        %         msgbox("Time to take a break. When ready to start again press the spacebar twice. Next Level difficulty 2/6","Information");
+        %     case(3) 
+        %         msgbox("Time to take a break. When ready to start again press the spacebar twice. Next Level difficulty 2/6","Information");
+        %     case(4)
+        %         msgbox("Time to take a break. When ready to start again press the spacebar twice. Next Level difficulty 3/6","Information");
+        %     case(5) 
+        %         msgbox("Time to take a break. When ready to start again press the spacebar twice. Next Level difficulty 3/6","Information");
+        %     case(6)
+        %         msgbox("Time to take a break. When ready to start again press the spacebar twice. Next Level difficulty 4/6","Information");
+        %     case(7) 
+        %         msgbox("Time to take a break. When ready to start again press the spacebar twice. Next Level difficulty 4/6","Information");
+        %     case(8)
+        %         msgbox("Time to take a break. When ready to start again press the spacebar twice. Next Level difficulty 5/6","Information");
+        %     case(9) 
+        %         msgbox("Time to take a break. When ready to start again press the spacebar twice. Next Level difficulty 5/6","Information");
+        %     case(10)
+        %         msgbox("Time to take a break. When ready to start again press the spacebar twice. Next Level difficulty 6/6","Information");
+        %     case(11) 
+        %         msgbox("Time to take a break. When ready to start again press the spacebar twice. Next Level difficulty 6/6","Information");
         % end
+    else
+        messageToUser = msgbox("Difficulty " + diff + "/6","Information");
+        % switch(floor(app.testNumber/NUMOFEACH)) %Do n of each
+        %     case(0)
+        %         messageToUser = msgbox("Difficulty 1/6","Information");
+        %     case(1) 
+        %         messageToUser = msgbox("Difficulty 1/6","Information");
+        %     case(2)
+        %         messageToUser = msgbox("Difficulty 2/6","Information");
+        %     case(3) 
+        %         messageToUser = msgbox("Difficulty 2/6","Information");
+        %     case(4)
+        %         messageToUser = msgbox("Difficulty 3/6","Information");
+        %     case(5) 
+        %         messageToUser = msgbox("Difficulty 3/6","Information");
+        %     case(6)
+        %         messageToUser = msgbox("Difficulty 4/6","Information");
+        %     case(7) 
+        %         messageToUser = msgbox("Difficulty 4/6","Information");
+        %     case(8)
+        %         messageToUser = msgbox("Difficulty 5/6","Information");
+        %     case(9) 
+        %         messageToUser = msgbox("Difficulty 5/6","Information");
+        %     case(10)
+        %         messageToUser = msgbox("Difficulty 6/6","Information");
+        %     case(11) 
+        %         messageToUser = msgbox("Difficulty 6/6","Information");
+        % end
+        if(app.testNumber >= 1)
+            pause(2);
+            close(messageToUser);
+        end
+
         pause(0.5);
         import java.awt.*;
         import java.awt.event.*;
@@ -154,6 +212,14 @@ function NextLevel(app)
         % CONTROL + A : 
         rob.keyPress(KeyEvent.VK_SPACE)
         rob.keyRelease(KeyEvent.VK_SPACE)
-    end
+  end
+
+    %This is old I think - check and REMOVEME
+    % tr = triangulation(polyshape(app.polygon.currentPoly(:,1),app.polygon.currentPoly(:,2)));
+    % model = createpde(1);
+    % tnodes = tr.Points';
+    % telements = tr.ConnectivityList';
+    % g = model.geometryFromMesh(tnodes, telements);
+    % app.mesh = generateMesh(model, 'Hmax', 0.001);%was 0.000073 for old one.
 end
 

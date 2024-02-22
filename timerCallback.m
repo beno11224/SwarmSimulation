@@ -109,9 +109,9 @@ function timerCallback(app)
                 stop(app.simulationTimerProperty);
                 stop(app.drawTimerProperty);
                 start(app.hapticFeedbackIdleProperty);
-                app.StartTrainingButton.Enable = true;
-                set(app.StartTrainingButton,'Text',"Start Next Level");
-                set(app.StartTrainingButton,'BackgroundColor',[1,0.7,0.7]);
+                app.PausedButton.Enable = false;
+                set(app.PausedButton,'Text',"Paused");
+                set(app.PausedButton,'BackgroundColor',[1,0.7,0.7]);
                 fprintf("Time Up! You got: " + goalPercentage .* 100 + "/%% of the particles in the goal outlet\r\n");
                 delete(app.magLine);
                 app.testNumber = app.testNumber + 1;
