@@ -1,9 +1,8 @@
 function NextLevel(app)
 
-%This file is for the ParametricV2 (Jan2024), specifically the
-%smaller particles I collected the data on
+%This file is for the validation DEC2023 - SPECIFICALLY THE OLD PARTICLES
 
-    if(app.testNumber > 120)
+    if(app.testNumber > 10)
         return
     end
     
@@ -17,9 +16,10 @@ function NextLevel(app)
     delete(app.particlePoints);
     fclose(app.fileID);
     app.ScenarioEditField.Value = "Test " + app.testNumber;
+    app.polygon = app.polygon.change(4,app.fd);
     app.goalIndex = 4;
     app.rotation = 0; 
-    app.NumberofParticlesEditField.Value = 500; % just check they are the same times.
+    app.NumberofParticlesEditField.Value = 3; % just check they are the same times.
     app.numParticles = app.NumberofParticlesEditField.Value;
     app.FluidFlowmsEditField.Value = 0.00; %NO Flow for validation
     app.MagForceRestrictTmEditField.Value = 1;
@@ -28,95 +28,45 @@ function NextLevel(app)
     minTimeToTravel = 15; 
     app.PercentageinGoalEditField.Value = 0;
    % mSAT = 12;
-    app.ParticleDensitygmlEditField.Value = 4.8;
-    app.IndividualDiameterEditField.Value = 75 *10^-9;
+    app.ParticleDensitygmlEditField.Value = 2.25;
+    app.IndividualDiameterEditField.Value = 800 *10^-9;
 
   % app.FluidFlowmsEditField.Value = 50;
-    app.FluidViscocityEditField.Value = 0.001; %water is 0.001
+    app.FluidViscocityEditField.Value = 0.004; %water is 0.001
  
-    MaxForceThing = [0.5,0.25,0.125,0.125/2]; %limit force, this should now work.
-    FluidFlow = [10,20,30,40,50,60,70]; %just go through these flow velocities - make sure x values are correct on graph though
-    %SplitClump = remember to start split.
-    scenario = floor((app.testNumber-1)/10);
-    % if(scenario>length(MaxForceThing))
+    % MaxForceThing = [0.5,0.25,0.125,0.125/2];
+    % scenario = floor((app.testNumber-1)/10);
+    % if(scenario>6)
     %     fprintf("The experiment has now ended, thank you for your participation. Please close this window.\r\n");
-     %     app.polygon = app.polygon.change(1, app.fd);
-    %     app.NumberofParticlesEditField.Value = 10;
-    %     app.FluidFlowmsEditField.Value = 0;
-    %     app.TimeRemainingsEditField.Value = 1200;
-    %     app.MagForceRestrictTmEditField.Value = 0;
-    % else 
-    % switch(scenario)%mod(app.testNumber-1,10))
-    % 
-    %     %MagForceRestrict
-    %     % case(0)
-    %     %     app.MagForceRestrictTmEditField.Value = 1; 
-    %     % case(1)
-    %     %     app.MagForceRestrictTmEditField.Value = 0.5;
-    %     % case(2)
-    %     %     app.MagForceRestrictTmEditField.Value = 0.25;
-    %     % case(3)
-    %     %     app.MagForceRestrictTmEditField.Value = 0.125;
-    %     % case(4)
-    %     %     app.MagForceRestrictTmEditField.Value = 0.125/2;
-    %     % case(5)
-    %     %     app.MagForceRestrictTmEditField.Value = 0.125/4;
-    % 
-    %         %FluidFlow
-    %     case(0)
-    %         app.fd = FlowData05();
-    %     case(1)
-    %         app.fd = FlowData10();
-    %     case(2)
-    %         app.fd = FlowData15();
-    %     case(3)
-    %         app.fd = FlowData20();
-    %     case(4)
-    %         app.fd = FlowData25();
-    %     case(5)
-    %         app.fd = FlowData30();
-    %     case(6)
-    %         app.fd = FlowData35();
-    %     case(7)
-    %         app.fd = FlowData40();
-    %     case(8)
-    %         app.fd = FlowData45();
-    %     case(9) 
-    %         app.fd = FlowData50();
-    %     case(10)
-    %         app.fd = FlowData55();
-    %     case(11)
-    %         app.fd = FlowData60();
+    %      app.polygon = app.polygon.change(1);
+    %      app.NumberofParticlesEditField.Value = 10;
+    %      app.FluidFlowmsEditField.Value = 0;
+    %      app.TimeRemainingsEditField.Value = 1200;
+    %      app.MagForceRestrictTmEditField.Value = 0;
+    % else         
+    %      app.FluidFlowmsEditField.Value = 30;
+    %      app.MagFo ceRestrictTmEditField.Value = MaxForceThing(scenario+1);
     % end
-    app.fd = FlowData20();
-    app.MagneticFieldmTEditField.Value = 3;
-    app.FluidFlowmsEditField.Value = 10;
-    app.MagForceRestrictTmEditField.Value = 1-(scenario./10);
-    %app.MagForceRestrictTmEditField.Value = MaxForceThing(scenario+1); %0;
-    
-    app.ChainLengthEditField.Value = 12 .* app.MagForceRestrictTmEditField.Value.*1000 + 5000;
-   % end
-   % aaa = max(app.fd.FlowValues{4}(:,1))
-   % bbb = max(app.fd.FlowValues{4}(:,2))
-   % ccc = max(sqrt(app.fd.FlowValues{4}(:,1).^2+app.fd.FlowValues{4}(:,2).^2))
-
-    app.polygon = app.polygon.change(4,app.fd);
  
-    generateNewParticles = true;
-    %app.particleArrayLocation = [-0.0094 -0.00325; -0.0094 -0.0035; -0.0094 -0.00375];
-    %app.particleArrayVelocity = [0 0; 0 0; 0 0;];%[0.000223979975848616 0;0.000223979975848616 0;0.000223979975848616 0];
+    generateNewParticles = false;
+    app.particleArrayLocation = [-0.0094 -0.00325; -0.0094 -0.0035; -0.0094 -0.00375];
+    app.particleArrayVelocity = [0 0; 0 0; 0 0;];%[0.000223979975848616 0;0.000223979975848616 0;0.000223979975848616 0];
 
-  %  scenario = floor((app.testNumber-1)/10);
-  %  magGrad = mod(app.testNumber,10)*100 %check
-  %  if(magGrad == 0)
-  %      magGrad = 1000
-  %  end
-  %  app.MagneticFieldmTEditField.Value = scenario+2;
-
- %   clNew = 12 .* magGrad + (scenario)*5000;
- %    app.ChainLengthEditField.Value = clNew; %cl(scenario+1);
- %   scenario+1 
- %   app.goalIndex = 5;
+    scenario = floor((app.testNumber-1)/10);
+    % magGrad = mod(app.testNumber,10)*100 %check
+    % if(magGrad == 0)
+    %     magGrad = 1000
+    % end
+    magGrad = 1.2566370614359172 .* app.testNumber./4 .*1000
+    app.MagneticFieldmTEditField.Value = scenario+1;
+    cl = [6800,12000,15000];
+   % cl = [10000, 12000,14000]; 
+   % cl = [20000,25000,30000];
+  %  clNew = 3.54 .* magGrad .^ 1.4429
+   % clNew = 11.238 .* magGrad +4985.5
+    app.ChainLengthEditField.Value = 125; %cl(scenario+1);
+    scenario+1 
+    app.goalIndex = 5;
 
     % switch(scenario) %Do n of each
     %     case(0)
@@ -132,7 +82,7 @@ function NextLevel(app)
     %          app.NumberofParticlesEditField.Value = 10;
     %          app.FluidFlowmsEditField.Value = 0;
     %          app.TimeRemainingsEditField.Value = 1200;
-    %          app.MagForceRestrictTmEditField.Value = 0; 
+    %          app.MagForceRestrictTmEditField.Value = 0;
     % end    
 
 %    app.particleFunctions.magneticForceConstant = double(permeabilityOfFreeSpace .* mSAT .* density .* 4/3.*pi.*(particleDiameter/2)^3);% .* 22; %22 is conversion factor
@@ -153,10 +103,7 @@ function NextLevel(app)
 
     app.mesh = delaunayTriangulation(app.polygon.currentFlowLocations);
     if(generateNewParticles)
-        % app.particleArrayLocation(1:app.numParticles/2,:) = app.particleFunctions.generateParticleLocations(squeeze(app.polygon.allStartZones{3}), app.numParticles/2);
-        % app.particleArrayLocation((app.numParticles/2+1):app.numParticles,:) = app.particleFunctions.generateParticleLocations(squeeze(app.polygon.allStartZones{4}(2,:,:)), app.numParticles/2);
-
-       app.particleArrayLocation = app.particleFunctions.generateParticleLocations(squeeze(app.polygon.allStartZones{3}), app.numParticles);
+        app.particleArrayLocation = app.particleFunctions.generateParticleLocations(squeeze(app.polygon.allStartZones{3}), app.numParticles);
     end
     app.particleArrayVelocity = zeros(app.numParticles, 2);
     app.particleArrayForce = zeros(app.numParticles, 2);
@@ -169,7 +116,7 @@ function NextLevel(app)
     hold (app.UIAxes, 'on');
     delete(app.polyLine);
     delete(app.endLine);
-    delete(app.wrongEndLine);  
+    delete(app.wrongEndLine); 
     
     rotateMatrix = [cosd(app.rotation), sind(app.rotation); -sind(app.rotation), cos(app.rotation)];
     rotatedOutline = (rotateMatrix * app.polygon.currentPoly')';
@@ -193,6 +140,7 @@ function NextLevel(app)
     app.previousMagforce = 0;
   %  app.X1TmGauge.Value = 0;
   %  app.Y1TmGauge.Value = 0;
+    %app.fd = FlowData();
     app.haltParticlesInEndZone = zeros(app.numParticles,1);
     app.currentlyDoingWorkSemaphore = false;
     app.timePassed = 0;
@@ -204,11 +152,11 @@ function NextLevel(app)
 
     %app.X1MAGauge.Value = 10^6 .* (0.25+0.25*app.testNumber).*1.2566;% .* 1.5;
     %app.X1MAGauge.Value = 10^6 .* (0.1+0.1*app.testNumber);%.*1.5;
-   % app.X1TmGauge.Value = (magGrad/1000);%.*1.5;
-   % app.Y1TmGauge.Value = 0;
+    app.X1TmGauge.Value = (magGrad/1000);%.*1.5;
+    app.Y1TmGauge.Value = 0;
 
 
-    pause(0.5);
+    pause(0.3);
     import java.awt.*;
     import java.awt.event.*;
     %Create a Robot-object to do the key-pressing

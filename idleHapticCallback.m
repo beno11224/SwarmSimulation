@@ -4,8 +4,8 @@ function idleHapticCallback(app)
     %level.
     if(app.controlMethod == "Controller")
         newHapticValues = ReadHaptic() .* 30;
-        if app.MagForceRestrictMAM2EditField.Value ~= 0
-            newHapticValues = newHapticValues .* (magForceRestrict/2.25);
+        if app.MagForceRestrictTmEditField.Value ~= 0
+            newHapticValues = newHapticValues .* (app.MagForceRestrictTmEditField.Value/2.25);
         end
         totalForce = [newHapticValues(1)*10^6, newHapticValues(2)*10^6];
         if(norm(totalForce) > 2.25*10^6)
@@ -20,9 +20,9 @@ function idleHapticCallback(app)
         app.hapticFeedback = [1,currentDial(1),currentDial(2)];
         hapticForce = app.hapticFeedback .* hapticSpring + hapticVelocity .* hapticViscocity;
         %mex "drdms64.lib" "dhdms64.lib" WriteHaptic.cpp
-        WriteHaptic(-hapticForce(1), -hapticForce(2), -hapticForce(3));  
+        WriteHaptic(-hapticForce(1), -hapticForce(2), -hapticForce(3));   
 
-        app.X1MAGauge.Value = currentDial(1);
-        app.Y1MAGauge.Value = currentDial(2);
+        app.X1TmGauge.Value = currentDial(1);
+        app.Y1TmGauge.Value = currentDial(2); 
     end
-end
+ end

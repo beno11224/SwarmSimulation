@@ -1,9 +1,9 @@
 classdef ParticleFunctions
     properties
+        equivalentDiameter;
         magneticForceConstant;
         dragForceConstant;
         dipoleForceConstant;
-        particleDiameter; 
         staticFrictionCoefficient;
         movingFrictionCoefficient;
         particleMass;
@@ -13,22 +13,22 @@ classdef ParticleFunctions
     end
     methods (Access = public)
         %Constructor
-        function obj = ParticleFunctions(permeabilityOfFreeSpace, particleDiameter, particleMass, fluidViscocity, staticFrictionCoefficient, motionFrictionCoefficient, workspaceSize)
-            obj = obj.ChangeMetaValues(permeabilityOfFreeSpace, particleDiameter, particleMass, fluidViscocity, staticFrictionCoefficient, motionFrictionCoefficient, workspaceSize);
-        end
-        %So user can change parameters on the fly
-        function obj = ChangeMetaValue(obj, permeabilityOfFreeSpace, particleDiameter, particleMass, fluidViscocity, staticFrictionCoefficient, motionFrictionCoefficient, workspaceSize)
-            obj = obj.ChangeMetaValues(permeabilityOfFreeSpace, particleDiameter, particleMass, fluidViscocity, staticFrictionCoefficient, motionFrictionCoefficient, workspaceSize);
+        function obj = ParticleFunctions(permeabilityOfFreeSpace, magneticField, individualDiameter, particleDensity, chainLength, fluidViscocity, staticFrictionCoefficient, motionFrictionCoefficient, workspaceSize)
+            obj = obj.ChangeMetaValues(permeabilityOfFreeSpace, magneticField, individualDiameter, particleDensity, chainLength, fluidViscocity, staticFrictionCoefficient, motionFrictionCoefficient, workspaceSize);
         end
         
-        function obj = ChangeMetaValues(obj,permeabilityOfFreeSpace, particleDiameter, particleMass, fluidViscocity, staticFrictionCoefficient, motionFrictionCoefficient, workspaceSize)
-            obj.magneticForceConstant = double(permeabilityOfFreeSpace .* 58 .* 2.25 .* 10^3 .* 4/3.*pi.*(particleDiameter/2)^3) .* 22; %The 2.25*10^3 is for the emu/g to A/m calculation
-            obj.dragForceConstant = double(3*pi * fluidViscocity * particleDiameter);
+        function obj = ChangeMetaValues(obj,permeabilityOfFreeSpace, magneticField, individualDiameter, particleDensity, chainLength, fluidViscocity, staticFrictionCoefficient, motionFrictionCoefficient, workspaceSize)
+         %   obj.magneticForceConstant = double(permeabilityOfFreeSpace .* 58 .* 2.25 .* 10^3 .* 4/3.*pi.*(particleDiameter/2)^3) .* 22; %The 2.25*10^3 is for the emu/g to A/m calculation
+         %   obj.dragForceConstant = double(3*pi * fluidViscocity * particleDiameter);
+
+            msat = 1 + 19 * (magneticField .* 10).^(0.16);
+            obj.equivalentDiameter =  (3*chainLength * individualDiameter^3 )^(1/3);
+            vol = 4/3.*pi.*(obj.equivalentDiameter/2)^3;
+            obj.magneticForceConstant = double(permeabilityOfFreeSpace .* msat.* particleDensity .* 1000 .* 4/3.*pi.*(obj.equivalentDiameter/2)^3);% .* 22; %22 is conversion factor
+            obj.dragForceConstant = double(3*pi * fluidViscocity * individualDiameter); 
             obj.dipoleForceConstant = double(3*permeabilityOfFreeSpace / 4*pi);
             obj.staticFrictionCoefficient = staticFrictionCoefficient;
             obj.movingFrictionCoefficient = motionFrictionCoefficient;
-            obj.particleMass = particleMass;
-            obj.particleDiameter = particleDiameter;
             obj.workspaceSizePositive = workspaceSize;
             obj.workspaceSizeMinus = -1 * workspaceSize;
             obj.fiftyParticleStartLocations = [-0.00949, -0.00398;
@@ -100,8 +100,8 @@ classdef ParticleFunctions
             %before runtime.
             switch(controlMethod)      
                 case("Keyboard")
-                %    totalForce = aCoils.* 10^6;
-                    totalForce = aCoils;
+                    totalForce = aCoils.* 10^6;
+                %    totalForce = aCoils;
                 case("Mouse")
                     totalForce = mouseLocation .* maxuserForce*10^8; %Mouse Force is a bit lower than the others
                 case("Controller")
@@ -111,7 +111,7 @@ classdef ParticleFunctions
                     end
                     totalForce = [newHapticValues(1)*10^6, newHapticValues(2)*10^6];
                 case("TrainingModel")
-                    totalForce = aCoils .* 2.25*10^6;
+                    totalForce = aCoils * 10^6;
                 otherwise
                     totalForce = [0 0];
             end
@@ -140,15 +140,12 @@ classdef ParticleFunctions
             force = sumOfAllDipoleMoments .* distanceMultiplier; 
         end
 
-        function force = calculateDragForce(obj, particleVelocity, flowVelocity, magForce, previousDelta)
-            checkSign = previousDelta .* particleVelocity;
-            checkSign(checkSign<0) = -1;
-            checkSign(checkSign>=0) = 1;
-            adjustment = previousDelta./particleVelocity .* checkSign;
-            adjustment(isnan(adjustment)) = 0;
-            adjustment(isinf(adjustment)) = 0;
+        function force = calculateDragForce(obj, particleVelocity, flowVelocity)
             force = ((particleVelocity - flowVelocity) .* obj.dragForceConstant); %Stokes Drag Equation
-            force = force + force.*adjustment .* 0.25;
+         end
+
+        function particleVelocity = calculateDragForceFromMagForce(obj, magForce, flowVelocity)
+            particleVelocity = (magForce ./ obj.dragForceConstant) + flowVelocity; %+ or -?
         end
 
         %used to keep particles within the polygon. Does not include
@@ -356,7 +353,7 @@ classdef ParticleFunctions
             %set to true to not generate the locations, instead use the
             %locations stored at the top of this file. NumParticles MUST be
             %set to 50 or this will cause errors. Mainly used for testing.
-            if(true && particleLocationsLength==50)
+             if(true && particleLocationsLength==50)
                 particleLocations = obj.fiftyParticleStartLocations;
             else
                 loopMax = ndims(poly);
