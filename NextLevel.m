@@ -2,7 +2,7 @@ function NextLevel(app)
 
 %This file is for the Participant Experiment V2 (Mar/2024)
 
-    if(app.testNumber > 120) %confirm number of tests
+    if(app.testNumber > length(app.testOrder)) %confirm number of tests
         fprintf("The experiment has now ended, thank you for your participation. Please close this window.\r\n");
         msgbox("The experiment has now ended, thank you for your participation. Please close the simulator. It would be appreciated if you could fill out the quality control questionaire","Information");
         app.polygon = app.polygon.change(1, app.fd);
@@ -13,14 +13,16 @@ function NextLevel(app)
         return
     end
     
-    NUMOFEACH = 10; %120 total
+    NUMOFEACH = 10;
     waitEvery = 40; %so for 120 tests that's 3 breaks
 
     %Reset the rng so it's deterministic
     rng(1000,"twister");
 
     delete(app.particlePoints);
-    fclose(app.fileID);
+    if(app.fileID ~= -1)
+        fclose(app.fileID);
+    end
     app.ScenarioEditField.Value = "Test " + app.testNumber;
     app.goalIndex = 4;
     app.rotation = 0; 
@@ -32,7 +34,8 @@ function NextLevel(app)
     minTimeToTravel = 15; 
     app.PercentageinGoalEditField.Value = 0;
 
-    scenario = floor((app.testNumber-1)/10);   
+    %scenario = floor((app.testNumber-1)/10);   %In order
+    scenario = floor((app.testOrder(app.testNumber)-1)/10); %Randomised order
     switch(scenario)       
         case(0)
             app.fd = FlowData05();
@@ -63,11 +66,8 @@ function NextLevel(app)
     app.FluidFlowmsEditField.Value = 10;
     app.MagForceRestrictTmEditField.Value = 0.5;%1-(scenario./10);    
     app.ChainLengthEditField.Value = 12 .* app.MagForceRestrictTmEditField.Value.*1000 + 5000;
-    app.polygon = app.polygon.change(4,app.fd);
- 
+    app.polygon = app.polygon.change(4,app.fd); 
     generateNewParticles = true;
-    %app.particleArrayLocation = [-0.0094 -0.00325; -0.0094 -0.0035; -0.0094 -0.00375];
-    %app.particleArrayVelocity = [0 0; 0 0; 0 0;];%[0.000223979975848616 0;0.000223979975848616 0;0.000223979975848616 0];
 
     minTimeToTravel = 10;
     app.TimeRemainingsEditField.Value = minTimeToTravel .* 5;
@@ -112,7 +112,6 @@ function NextLevel(app)
 
     app.particleFunctions = app.particleFunctions.ChangeMetaValues(1.25663706e-6, app.MagneticFieldmTEditField.Value, app.IndividualDiameterEditField.Value, app.ParticleDensitygmlEditField.Value, app.ChainLengthEditField.Value, app.FluidViscocityEditField.Value, app.CeffStat, app.CeffMotion, app.UIAxes.XLim(2));
 
-   % for(lineCount = 1:length(app.polygon.currentEndZone)-1)%??
     for(lineCount = 1:length(app.polygon.currentEndZone))
         rotatedEndZone = (rotateMatrix * squeeze(app.polygon.currentEndZone(lineCount,:,:))')';
         app.wrongEndLine(lineCount) = plot(app.UIAxes, rotatedEndZone(:,1), rotatedEndZone(:,2), 'Color','r');
@@ -129,17 +128,12 @@ function NextLevel(app)
     app.mousePosition = [0 0];
     app.magLine = plot(app.UIAxes,0,0);    
 
-   difficluty = 1;
     if(app.testNumber > 1 && mod(app.testNumber,waitEvery) == 0)
-        msgbox("Time to take a break. When ready to start again press the spacebar twice. Next Level difficulty " + difficluty + "/6","Information");
+        msgbox("Time to take a break. When ready to start again press the spacebar twice. Next Level difficulty " + (scenario+1) + "/12","Information");
     else
-        messageToUser = msgbox("Difficulty " + difficluty + "/6","Information");
-        
-        % if(app.testNumber >= 1) %is there much point to this??
-        %     pause(2);
-        %     close(messageToUser);
-        % end
-        pause(0.5);
+        messageToUser = msgbox("Difficulty " + (scenario+1) + "/12","Information");
+        pause(2);
+        close(messageToUser);
         import java.awt.*;
         import java.awt.event.*;
         %Create a Robot-object to do the key-pressing
