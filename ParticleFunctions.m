@@ -103,7 +103,7 @@ classdef ParticleFunctions
                     totalForce = aCoils.* 10^6;
                 %    totalForce = aCoils;
                 case("Mouse")
-                    totalForce = mouseLocation .* maxuserForce*10^8; %Mouse Force is a bit lower than the others
+                    totalForce = mouseLocation .* maxUserForce*10^8; %Mouse Force is a bit lower than the others
                 case("Controller")
                     newHapticValues = ReadHaptic() .* (1/0.077);
                     if magForceRestrict ~= 0

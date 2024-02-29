@@ -19,7 +19,11 @@ function NextLevel(app)
     app.ScenarioEditField.Value = "Test " + app.testNumber;
     app.goalIndex = 4;
     app.rotation = 0; 
-    app.NumberofParticlesEditField.Value = 500; % just check they are the same times.
+
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%
+    app.NumberofParticlesEditField.Value = 10;%500; % just check they are the same times.
+
+
     app.numParticles = app.NumberofParticlesEditField.Value;
     app.FluidFlowmsEditField.Value = 0.00; %NO Flow for validation
     app.MagForceRestrictTmEditField.Value = 1;
@@ -176,13 +180,11 @@ function NextLevel(app)
     app.polyLine = plot(app.UIAxes, rotatedOutline(:,1), rotatedOutline(:,2), 'Color','b');
 
 
-    %set(app.UIAxes,'padded')
     app.UIAxes.XLim = [min(app.polygon.currentPoly(:,1)) + (min(app.polygon.currentPoly(:,1))/20), max(app.polygon.currentPoly(:,1)) + (max(app.polygon.currentPoly(:,1))/20)];
     app.UIAxes.YLim = [min(app.polygon.currentPoly(:,2)) + (min(app.polygon.currentPoly(:,2))/20), max(app.polygon.currentPoly(:,2)) + (max(app.polygon.currentPoly(:,2))/20)];
 
     app.particleFunctions = app.particleFunctions.ChangeMetaValues(1.25663706e-6, app.MagneticFieldmTEditField.Value, app.IndividualDiameterEditField.Value, app.ParticleDensitygmlEditField.Value, app.ChainLengthEditField.Value, app.FluidViscocityEditField.Value, app.CeffStat, app.CeffMotion, app.UIAxes.XLim(2));
 
-   % for(lineCount = 1:length(app.polygon.currentEndZone)-1)%??
     for(lineCount = 1:length(app.polygon.currentEndZone))
         rotatedEndZone = (rotateMatrix * squeeze(app.polygon.currentEndZone(lineCount,:,:))')';
         app.wrongEndLine(lineCount) = plot(app.UIAxes, rotatedEndZone(:,1), rotatedEndZone(:,2), 'Color','r');
@@ -191,8 +193,6 @@ function NextLevel(app)
         end
     end 
     app.previousMagforce = 0;
-  %  app.X1TmGauge.Value = 0;
-  %  app.Y1TmGauge.Value = 0;
     app.haltParticlesInEndZone = zeros(app.numParticles,1);
     app.currentlyDoingWorkSemaphore = false;
     app.timePassed = 0;
@@ -200,12 +200,6 @@ function NextLevel(app)
     app.timeLag = 0; 
     app.mousePosition = [0 0];
     app.magLine = plot(app.UIAxes,0,0);    
-
-
-    %app.X1MAGauge.Value = 10^6 .* (0.25+0.25*app.testNumber).*1.2566;% .* 1.5;
-    %app.X1MAGauge.Value = 10^6 .* (0.1+0.1*app.testNumber);%.*1.5;
-   % app.X1TmGauge.Value = (magGrad/1000);%.*1.5;
-   % app.Y1TmGauge.Value = 0;
 
 
     pause(0.5);
