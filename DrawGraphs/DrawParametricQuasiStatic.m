@@ -85,10 +85,10 @@ hold on
 
 xlim(axes2,[500,3000]);
 xlabel("Limit of force user is permitted to apply (mT/m)");
-ylabel("Percentage of particles reaching the goal");
+ylabel("Time taken for particles to travel 1mm for differing magnetic gradients");
 box(axes2,'on');
 grid(axes2,'on');
-legend(axes2,'Previous experimental data','New simulated data','Location','northeast'); %Spread" formation','Particles start in a "Split Clump" formation','Particles start in a "Split Spread" formation','','','',''
+legend(axes2,'Experimental data','Simulated data','Location','northeast'); %Spread" formation','Particles start in a "Split Clump" formation','Particles start in a "Split Spread" formation','','','',''
 title(axes2,"Time taken to travel 1mm for differing magnetic gradients");
 fontname(axes2,"times new roman")
 
