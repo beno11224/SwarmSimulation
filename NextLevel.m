@@ -46,7 +46,7 @@ function NextLevel(app)
     %     app.TimeRemainingsEditField.Value = 1200;
     %     app.MagForceRestrictTmEditField.Value = 0;
     % else 
-    % switch(scenario)%mod(app.testNumber-1,10))
+    % % switch(scenario)%mod(app.testNumber-1,10))
     % 
     %     %MagForceRestrict
     %     % case(0)
@@ -62,36 +62,44 @@ function NextLevel(app)
     %     % case(5)
     %     %     app.MagForceRestrictTmEditField.Value = 0.125/4;
     % 
-    %         %FluidFlow
-    %     case(0)
-    %         app.fd = FlowData05();
-    %     case(1)
-    %         app.fd = FlowData10();
-    %     case(2)
-    %         app.fd = FlowData15();
-    %     case(3)
-    %         app.fd = FlowData20();
-    %     case(4)
-    %         app.fd = FlowData25();
-    %     case(5)
-    %         app.fd = FlowData30();
-    %     case(6)
-    %         app.fd = FlowData35();
-    %     case(7)
-    %         app.fd = FlowData40();
-    %     case(8)
-    %         app.fd = FlowData45();
-    %     case(9) 
-    %         app.fd = FlowData50();
-    %     case(10)
-    %         app.fd = FlowData55();
-    %     case(11)
-    %         app.fd = FlowData60();
-    % end
-    app.fd = FlowData20();
+    app.MagForceRestrictTmEditField.Value = 1;
+    splitDist = false;
+    switch(app.testNumber-1)
+            %FluidFlow
+        case(0)
+            app.fd = FlowData20();
+        case(1)
+            app.fd = FlowData20();
+            app.MagForceRestrictTmEditField.Value = 0.5;
+        case(2)
+            app.fd = FlowData20();
+            app.MagForceRestrictTmEditField.Value = 0.2;
+        case(3)
+            app.fd = FlowData20();
+            app.MagForceRestrictTmEditField.Value = 0.5;
+            splitDist = true;
+        case(4)
+            app.fd = FlowData40();
+        case(5)
+            app.fd = FlowData60();
+            
+        % case(6)
+        %     app.fd = FlowData35();
+        % case(7)
+        %     app.fd = FlowData40();
+        % case(8)
+        %     app.fd = FlowData45();
+        % case(9) 
+        %     app.fd = FlowData50();
+        % case(10)
+        %     app.fd = FlowData55();
+        % case(11)
+        %     app.fd = FlowData60();
+    end
+   % app.fd = FlowData20();
     app.MagneticFieldmTEditField.Value = 3;
     app.FluidFlowmsEditField.Value = 10;
-    app.MagForceRestrictTmEditField.Value = 1-(scenario./10);
+   % app.MagForceRestrictTmEditField.Value = 1-(scenario./10);
     %app.MagForceRestrictTmEditField.Value = MaxForceThing(scenario+1); %0;
     
     app.ChainLengthEditField.Value = 12 .* app.MagForceRestrictTmEditField.Value.*1000 + 5000;
@@ -152,11 +160,14 @@ function NextLevel(app)
     app.tMax = 1;
 
     app.mesh = delaunayTriangulation(app.polygon.currentFlowLocations);
-    if(generateNewParticles)
-        % app.particleArrayLocation(1:app.numParticles/2,:) = app.particleFunctions.generateParticleLocations(squeeze(app.polygon.allStartZones{3}), app.numParticles/2);
-        % app.particleArrayLocation((app.numParticles/2+1):app.numParticles,:) = app.particleFunctions.generateParticleLocations(squeeze(app.polygon.allStartZones{4}(2,:,:)), app.numParticles/2);
+    if(generateNewParticles && splitDist)
+         app.particleArrayLocation(1:app.numParticles/2,:) = app.particleFunctions.generateParticleLocations(squeeze(app.polygon.allStartZones{3}), app.numParticles/2);
+         app.particleArrayLocation((app.numParticles/2+1):app.numParticles,:) = app.particleFunctions.generateParticleLocations(squeeze(app.polygon.allStartZones{4}(2,:,:)), app.numParticles/2);
 
-       app.particleArrayLocation = app.particleFunctions.generateParticleLocations(squeeze(app.polygon.allStartZones{3}), app.numParticles);
+     else
+        if(generateNewParticles)
+            app.particleArrayLocation = app.particleFunctions.generateParticleLocations(squeeze(app.polygon.allStartZones{3}), app.numParticles);
+        end
     end
     app.particleArrayVelocity = zeros(app.numParticles, 2);
     app.particleArrayForce = zeros(app.numParticles, 2);
