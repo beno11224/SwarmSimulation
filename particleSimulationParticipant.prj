@@ -1,5 +1,5 @@
 <deployment-project plugin="plugin.webdeploy" plugin-version="1.0">
-  <configuration file="D:\Uni\Simulations\SwarmSimulation\particleSimulationParticipant.prj" location="D:\Uni\Simulations\SwarmSimulation" name="particleSimulationParticipant" target="target.webdeploy" target-name="Web App Compiler">
+  <configuration file="E:\SwarmSimulation\particleSimulationParticipant.prj" location="E:\SwarmSimulation" name="particleSimulationParticipant" target="target.webdeploy" target-name="Web App Compiler">
     <param.appname>particleSimulationParticipant</param.appname>
     <param.intermediate>${PROJECT_ROOT}\particleSimulationParticipant</param.intermediate>
     <param.files.only>${PROJECT_ROOT}\particleSimulationParticipant</param.files.only>
@@ -34,12 +34,25 @@
     </fileset.depfun>
     <fileset.package />
     <build-deliverables>
-      <file location="${PROJECT_ROOT}\particleSimulationParticipant" name="particleSimulationParticipant.ctf" optional="false">D:\Uni\Simulations\SwarmSimulation\particleSimulationParticipant\particleSimulationParticipant.ctf</file>
+      <file location="${PROJECT_ROOT}\particleSimulationParticipant" name="particleSimulationParticipant.ctf" optional="false">E:\SwarmSimulation\particleSimulationParticipant\particleSimulationParticipant.ctf</file>
     </build-deliverables>
     <workflow />
     <matlab>
-      <root>C:\Program Files\MATLAB\R2022a</root>
-      <toolboxes />
+      <root>C:\Program Files\MATLAB\R2023a</root>
+      <toolboxes>
+        <toolbox name="matlabcoder" />
+        <toolbox name="neuralnetwork" />
+      </toolboxes>
+      <toolbox>
+        <matlabcoder>
+          <enabled>true</enabled>
+        </matlabcoder>
+      </toolbox>
+      <toolbox>
+        <neuralnetwork>
+          <enabled>true</enabled>
+        </neuralnetwork>
+      </toolbox>
     </matlab>
     <platform>
       <unix>false</unix>
