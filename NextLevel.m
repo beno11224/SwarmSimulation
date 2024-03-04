@@ -94,7 +94,7 @@ function NextLevel(app)
     % end
     app.fd = FlowData20();
     app.MagneticFieldmTEditField.Value = 3;
-    app.FluidFlowmsEditField.Value = 10;
+    app.FluidFlowmsEditField.Value = 0.0010;
     app.MagForceRestrictTmEditField.Value = 1-(scenario./10);
     %app.MagForceRestrictTmEditField.Value = MaxForceThing(scenario+1); %0;
     
