@@ -1,7 +1,7 @@
 function NextLevel(app)
 
-%This file is for the ParametricV2 (Jan2024), specifically the
-%smaller particles I collected the data on
+%This file is for MOBILE BASED interaction with the simulator (being run
+%from MWAS only)
 
     if(app.testNumber > 120)
         return
