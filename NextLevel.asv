@@ -34,10 +34,9 @@ function NextLevel(app)
     app.slowDown = 1;
     app.PercentageinGoalEditField.Value = 0;
 
-    %Set up each test 'scenario' here
     %scenario = floor((app.testNumber-1)/10);   %In order - probably don't use this.
     scenario = floor((app.testOrder(app.testNumber)-1)/10); %Randomised order
-    switch(scenario) 
+    switch(scenario)       
         case(0)
             app.fd = FlowData05();
         case(1)
@@ -70,7 +69,6 @@ function NextLevel(app)
     app.polygon = app.polygon.change(4,app.fd); 
     generateNewParticles = true;
 
-    %file operations and reset runtime vars
     minTimeToTravel = 10;
     app.TimeRemainingsEditField.Value = minTimeToTravel .* 5;
     app.timeLimit = app.TimeRemainingsEditField.Value;    
@@ -87,9 +85,8 @@ function NextLevel(app)
         % %This is for two locations (split start)
         % app.particleArrayLocation(1:app.numParticles/2,:) = app.particleFunctions.generateParticleLocations(squeeze(app.polygon.allStartZones{3}), app.numParticles/2);
         % app.particleArrayLocation((app.numParticles/2+1):app.numParticles,:) = app.particleFunctions.generateParticleLocations(squeeze(app.polygon.allStartZones{4}(2,:,:)), app.numParticles/2);
-        
-        %This is for one start location (clump start)
-        app.particleArrayLocation = app.particleFunctions.generateParticleLocations(squeeze(app.polygon.allStartZones{3}), app.numParticles);
+
+       app.particleArrayLocation = app.particleFunctions.generateParticleLocations(squeeze(app.polygon.allStartZones{3}), app.numParticles);
     end
     app.particleArrayVelocity = zeros(app.numParticles, 2);
     app.particleArrayForce = zeros(app.numParticles, 2);

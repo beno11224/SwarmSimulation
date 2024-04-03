@@ -7,6 +7,7 @@ function timerCallback(app)
         if(app.UseNetworkForHaptic)
             currentDial = -1 .* double(pyrun("pred = NNet.predict(np.array([state]),verbose=0, batch_size=1)","pred", state = app.particleFunctions.getState(app.particleArrayLocation, app.FluidFlowmsEditField.Value./6)));%,t,goalLocation)));
         end
+        %Use these to tune haptic response - spring and damper setup here
         hapticSpring = app.HapticForceSlider.Value;
         hapticViscocity = 0.3;
         hapticVelocity = [1,currentDial(1),currentDial(2)] - app.hapticFeedback;
@@ -16,6 +17,7 @@ function timerCallback(app)
         %mex "drdms64.lib" "dhdms64.lib" WriteHaptic.cpp
         WriteHaptic(-hapticForce(1), -hapticForce(2), -hapticForce(3));
 
+        %use the 'current dial' value to set the value of the visible dials
         app.X1TmGauge.Value = currentDial(1);
         app.Y1TmGauge.Value = currentDial(2);
     end 
@@ -23,13 +25,11 @@ function timerCallback(app)
     vFlow = app.particleFunctions.calculateFlow(real(app.particleArrayLocation), app.polygon.currentFlowValues, app.mesh);
     vFlow = vFlow .* app.FluidFlowmsEditField.Value;
   
-    magForceAlpha = 0.05;
-    magForce = app.previousMagforce;
+%    magForce = app.previousMagforce;
  
     % Each time timerCallback is called, this loop runs
     % 'smallerTMaxTotalSteps' number of times.
-   % smallerTMaxTotalSteps = 25; %Any more speed comes from making the sim more efficient or slowing it down (not real time)
-    smallerTMaxTotalSteps = 25;
+    smallerTMaxTotalSteps = 25; %Any more speed comes from making the sim more efficient or slowing it down (not real time)
     smallerTMaxStep = app.simTimerPeriod / smallerTMaxTotalSteps;
     smallerTMaxStepReduced = smallerTMaxStep / app.slowDown;
     for smallerTMaxIndex = 1:smallerTMaxTotalSteps        
@@ -38,40 +38,30 @@ function timerCallback(app)
         app.bouncedVisualLastLoop = app.bouncedLastLoop;
         [wallContact, orthogonalWallContact, app.particleArrayLocation, app.particleArrayVelocity, app.bouncedLastLoop] = app.particleFunctions.isParticleOnWallPIP(app.particleArrayLocation, app.particleArrayVelocity, app.particleArrayForce, app.polygon, smallerTMaxStepReduced,app,app.bouncedLastLoop);
 
-       % magForce = magForce .* (1-magForceAlpha) + currentMagforce.* magForceAlpha;
+%       % magForce = magForce .* (1-magForceAlpha) + currentMagforce.* magForceAlpha;
         magForce = repmat(currentMagforce,app.NumberofParticlesEditField.Value,1);
         %friction
         ffric = app.particleFunctions.calculateFrictionForce(app.particleArrayVelocity, app.particleArrayForce, orthogonalWallContact);
         app.particleArrayForce = magForce - ffric;
 
+        %drag
         velocityFromMagForce = app.particleFunctions.calculateDragForceFromMagForce(app.particleArrayForce, vFlow); %Assuming instant acceleration up to the point where drag = mag
         app.particleArrayVelocity = velocityFromMagForce;
 
-        %app.particleArrayForce = magForce;
-        %drag (using last iterations velocity)
-        %dragForce = app.particleFunctions.calculateDragForce(app.particleArrayVelocity, vFlow);
-        %app.particleArrayForce = app.particleArrayForce - dragForce;
-
         %Prevent movement of particles that have reached the end of any of
         %the bifurcations
-        %app.particleArrayForce = app.particleArrayForce .* ~app.haltParticlesInEndZone;
         app.particleArrayVelocity = app.particleArrayVelocity .* ~app.haltParticlesInEndZone;
-        %temporaryVelocity = app.particleArrayVelocity;        
            
-        %calculate the new locations 
-      %  app.particleArrayLocation = app.particleFunctions.calculateCurrentLocationCD(app.particleArrayLocation, app.particleArrayVelocity, app.particleArrayPreviousAcceleration, smallerTMaxStepReduced);
+        %calculate the new locations
         app.particleArrayLocation = app.particleArrayLocation + app.particleArrayVelocity .* smallerTMaxStepReduced;
-        %Make sure that we have the correct data stored for the next loop.        
-        %calculate the new velocity
-     %   [app.particleArrayVelocity,app.particleArrayPreviousAcceleration, app.previousDelta] = app.particleFunctions.calculateCurrentVelocityCD(orthogonalWallContact, wallContact, temporaryVelocity, app.particleArrayPreviousAcceleration, app.particleArrayForce, app.particleFunctions.particleMass, smallerTMaxStepReduced, magForce);
-
+        
         %Determine the end zone the particles are in
         particlesInEndZone = app.particleFunctions.isParticleInEndZone(app.polygon.currentEndZone,app.particleArrayLocation);
         app.haltParticlesInEndZone = any(particlesInEndZone,2);
         %Tell the user how well they're doing
         goalPercentage = sum(particlesInEndZone,1) ./ app.numParticles;
         goalPercentage = goalPercentage(app.goalIndex);        
-        app.previousMagforce = magForce;
+%        app.previousMagforce = magForce;
         
         %increment time - if no lag occurs this should be a good indicator
         %for how much time has passed. If lag occurs, this means that the
@@ -91,8 +81,7 @@ function timerCallback(app)
     rotVel = (rotMat * app.particleArrayVelocity')';
     rotLoc = (rotMat * app.particleArrayLocation')';
  
-    %print the data in a readable format - this is critical for retrieving
-    %data!
+    %print the data in a readable format - this is critical for retrieving data!
     if(app.writeToFile)
         fprintf(app.fileID, app.timePassed + "," + mat2str(rotForce) + "," + goalPercentage + "," + mat2str(rotVel)+ "," + mat2str(rotLoc) + "," + mat2str(particlesInEndZone) + "\r\n");
           app.printCounter = app.printCounter + 1;
@@ -122,6 +111,6 @@ function timerCallback(app)
         end
     end
 
-    app.previousMagforce = magForce;
+%    app.previousMagforce = magForce;
     app.currentlyDoingWorkSemaphore = false;
 end
