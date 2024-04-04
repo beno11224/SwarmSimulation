@@ -37,7 +37,7 @@ function NextLevel(app)
     %Set up each test 'scenario' here
     %scenario = floor((app.testNumber-1)/10);   %In order - probably don't use this.
     scenario = floor((app.testOrder(app.testNumber)-1)/10); %Randomised order
-    switch(scenario) 
+    switch(scenario)
         case(0)
             app.fd = FlowData05();
         case(1)
@@ -132,11 +132,21 @@ function NextLevel(app)
     app.magLine = plot(app.UIAxes,0,0);    
 
     if(app.testNumber > 1 && mod(app.testNumber,waitEvery) == 0)
-        msgbox("Time to take a break. When ready to start again press the spacebar twice. Next Level difficulty " + (scenario+1) + "/12","Information");
+        handle = msgbox("Time to take a break. When ready to start again press the spacebar. Next Level difficulty " + (scenario+1) + "/12","Information");
+        set(handle, 'DeleteFcn', @msgBoxCloseCallback)
     else
-        messageToUser = msgbox("Difficulty " + (scenario+1) + "/12","Information");
+        handle = msgbox("Difficulty " + (scenario+1) + "/12","Information");
+        set(handle, 'DeleteFcn', @msgBoxCloseCallback)
         pause(2);
-        close(messageToUser);
+        if ishandle(handle) && ~isempty(handle)
+            close(handle);
+        end
+    end 
+end
+
+%callback to allow for better functionality with displaying message to
+%user and carrying on with test
+function msgBoxCloseCallback(~,~)
         import java.awt.*;
         import java.awt.event.*;
         %Create a Robot-object to do the key-pressing
@@ -151,6 +161,5 @@ function NextLevel(app)
         % CONTROL + A : 
         rob.keyPress(KeyEvent.VK_SPACE)
         rob.keyRelease(KeyEvent.VK_SPACE)
-    end
 end
 

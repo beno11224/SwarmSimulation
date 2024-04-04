@@ -23,7 +23,7 @@ function NextLevel(app)
     end
 
     %Set up environment
-    waitEvery = 40; %so for 120 tests that's 3 breaks
+    waitEvery = 4; %so for 120 tests that's 3 breaks
     app.ScenarioEditField.Value = "Test " + app.testNumber;
     app.goalIndex = 4;
     app.rotation = 0; 
@@ -34,9 +34,10 @@ function NextLevel(app)
     app.slowDown = 1;
     app.PercentageinGoalEditField.Value = 0;
 
+    %Set up each test 'scenario' here
     %scenario = floor((app.testNumber-1)/10);   %In order - probably don't use this.
     scenario = floor((app.testOrder(app.testNumber)-1)/10); %Randomised order
-    switch(scenario)       
+    switch(scenario) 
         case(0)
             app.fd = FlowData05();
         case(1)
@@ -69,6 +70,7 @@ function NextLevel(app)
     app.polygon = app.polygon.change(4,app.fd); 
     generateNewParticles = true;
 
+    %file operations and reset runtime vars
     minTimeToTravel = 10;
     app.TimeRemainingsEditField.Value = minTimeToTravel .* 5;
     app.timeLimit = app.TimeRemainingsEditField.Value;    
@@ -85,8 +87,9 @@ function NextLevel(app)
         % %This is for two locations (split start)
         % app.particleArrayLocation(1:app.numParticles/2,:) = app.particleFunctions.generateParticleLocations(squeeze(app.polygon.allStartZones{3}), app.numParticles/2);
         % app.particleArrayLocation((app.numParticles/2+1):app.numParticles,:) = app.particleFunctions.generateParticleLocations(squeeze(app.polygon.allStartZones{4}(2,:,:)), app.numParticles/2);
-
-       app.particleArrayLocation = app.particleFunctions.generateParticleLocations(squeeze(app.polygon.allStartZones{3}), app.numParticles);
+        
+        %This is for one start location (clump start)
+        app.particleArrayLocation = app.particleFunctions.generateParticleLocations(squeeze(app.polygon.allStartZones{3}), app.numParticles);
     end
     app.particleArrayVelocity = zeros(app.numParticles, 2);
     app.particleArrayForce = zeros(app.numParticles, 2);
@@ -129,11 +132,23 @@ function NextLevel(app)
     app.magLine = plot(app.UIAxes,0,0);    
 
     if(app.testNumber > 1 && mod(app.testNumber,waitEvery) == 0)
-        msgbox("Time to take a break. When ready to start again press the spacebar twice. Next Level difficulty " + (scenario+1) + "/12","Information");
+        handle = msgbox("Time to take a break. When ready to start again press the spacebar. Next Level difficulty " + (scenario+1) + "/12","Information");
+        set(handle, 'DeleteFcn', @msgBoxCloseCallback)
     else
-        messageToUser = msgbox("Difficulty " + (scenario+1) + "/12","Information");
+        handle = msgbox("Difficulty " + (scenario+1) + "/12","Information");
+        set(handle, 'DeleteFcn', @msgBoxCloseCallback)
         pause(2);
-        close(messageToUser);
+        if ~isempty(handle)
+            delete(handle);
+        end
+        close(handle);
+    end
+end
+
+%callback to allow for better functionality with displaying message to
+%usesr and carrying on with test
+function msgBoxCloseCallback(~,~)
+        handle = [];
         import java.awt.*;
         import java.awt.event.*;
         %Create a Robot-object to do the key-pressing
@@ -148,6 +163,8 @@ function NextLevel(app)
         % CONTROL + A : 
         rob.keyPress(KeyEvent.VK_SPACE)
         rob.keyRelease(KeyEvent.VK_SPACE)
-    end
+        if ~isempty(handle)
+            delete(handle);
+        end
 end
 
