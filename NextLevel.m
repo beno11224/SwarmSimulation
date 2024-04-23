@@ -23,7 +23,7 @@ function NextLevel(app)
     end
 
     %Set up environment
-    waitEvery = 40; %so for 120 tests that's 3 breaks
+    waitEvery = 61; %so for 240 tests that's 3 breaks
     app.ScenarioEditField.Value = "Test " + app.testNumber;
     app.goalIndex = 4;
     app.rotation = 0; 
@@ -36,32 +36,62 @@ function NextLevel(app)
 
     %Set up each test 'scenario' here
     %scenario = floor((app.testNumber-1)/10);   %In order - probably don't use this.
-    scenario = floor((app.testOrder(app.testNumber)-1)/10); %Randomised order
+    scenario = floor((app.testOrder(app.testNumber)-1)/20); %Randomised order
     switch(scenario)
         case(0)
-            app.fd = FlowData05();
-        case(1)
             app.fd = FlowData10();
-        case(2)
-            app.fd = FlowData15();
-        case(3)
+        case(1)
             app.fd = FlowData20();
-        case(4)
-            app.fd = FlowData25();
-        case(5)
-            app.fd = FlowData30();
-        case(6)
+        case(2)
             app.fd = FlowData35();
-        case(7)
+        case(3)
             app.fd = FlowData40();
-        case(8)
-            app.fd = FlowData45();
-        case(9) 
+        case(4)
             app.fd = FlowData50();
-        case(10)
-            app.fd = FlowData55();
-        case(11)
+        case(5)
             app.fd = FlowData60();
+        case(6)
+            app.rotation = 180;
+            app.fd = FlowData10();
+        case(7)
+            app.rotation = 180;
+            app.fd = FlowData20();
+        case(8)
+            app.rotation = 180;
+            app.fd = FlowData35();
+        case(9)
+            app.rotation = 180;
+            app.fd = FlowData40();
+        case(10)
+            app.rotation = 180;
+            app.fd = FlowData50();
+        case(11)
+            app.rotation = 180;
+            app.fd = FlowData60();
+        % case(0)
+        %     app.fd = FlowData05();
+        % case(1)
+        %     app.fd = FlowData10();
+        % case(2)
+        %     app.fd = FlowData15();
+        % case(3)
+        %     app.fd = FlowData20();
+        % case(4)
+        %     app.fd = FlowData25();
+        % case(5)
+        %     app.fd = FlowData30();
+        % case(6)
+        %     app.fd = FlowData35();
+        % case(7)
+        %     app.fd = FlowData40();
+        % case(8)
+        %     app.fd = FlowData45();
+        % case(9) 
+        %     app.fd = FlowData50();
+        % case(10)
+        %     app.fd = FlowData55();
+        % case(11)
+        %     app.fd = FlowData60();
     end
     app.MagneticFieldmTEditField.Value = 3;
     app.FluidFlowmsEditField.Value = 10;
@@ -110,8 +140,10 @@ function NextLevel(app)
 
 
     %set(app.UIAxes,'padded')
-    app.UIAxes.XLim = [min(app.polygon.currentPoly(:,1)) + (min(app.polygon.currentPoly(:,1))/20), max(app.polygon.currentPoly(:,1)) + (max(app.polygon.currentPoly(:,1))/20)];
-    app.UIAxes.YLim = [min(app.polygon.currentPoly(:,2)) + (min(app.polygon.currentPoly(:,2))/20), max(app.polygon.currentPoly(:,2)) + (max(app.polygon.currentPoly(:,2))/20)];
+  %  app.UIAxes.XLim = [min(app.polygon.currentPoly(:,1)) + (min(app.polygon.currentPoly(:,1))/20), max(app.polygon.currentPoly(:,1)) + (max(app.polygon.currentPoly(:,1))/20)];
+  %  app.UIAxes.YLim = [min(app.polygon.currentPoly(:,2)) + (min(app.polygon.currentPoly(:,2))/20), max(app.polygon.currentPoly(:,2)) + (max(app.polygon.currentPoly(:,2))/20)];
+    app.UIAxes.XLim = [min(rotatedOutline(:,1)) + (min(rotatedOutline(:,1))/20), max(rotatedOutline(:,1)) + (max(rotatedOutline(:,1))/20)];
+    app.UIAxes.YLim = [min(rotatedOutline(:,2)) + (min(rotatedOutline(:,2))/20), max(rotatedOutline(:,2)) + (max(rotatedOutline(:,2))/20)];
 
     app.particleFunctions = app.particleFunctions.ChangeMetaValues(1.25663706e-6, app.MagneticFieldmTEditField.Value, app.IndividualDiameterEditField.Value, app.ParticleDensitygmlEditField.Value, app.ChainLengthEditField.Value, app.FluidViscocityEditField.Value, app.CeffStat, app.CeffMotion, app.UIAxes.XLim(2));
 
@@ -131,11 +163,12 @@ function NextLevel(app)
     app.mousePosition = [0 0];
     app.magLine = plot(app.UIAxes,0,0);    
 
+    difficultyRating = mod(scenario,6);
     if(app.testNumber > 1 && mod(app.testNumber,waitEvery) == 0)
-        handle = msgbox("Time to take a break. When ready to start again press the spacebar. Next Level difficulty " + (scenario+1) + "/12","Information");
+        handle = msgbox("Time to take a break. When ready to start again press the spacebar. Next Level difficulty " + (difficultyRating+1) + "/6","Information");
         set(handle, 'DeleteFcn', @msgBoxCloseCallback)
     else
-        handle = msgbox("Difficulty " + (scenario+1) + "/12","Information");
+        handle = msgbox("Difficulty " + (difficultyRating+1) + "/6","Information");
         set(handle, 'DeleteFcn', @msgBoxCloseCallback)
         pause(2);
         if ishandle(handle) && ~isempty(handle)
