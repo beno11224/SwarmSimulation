@@ -170,7 +170,7 @@ function NextLevel(app)
     else
         handle = msgbox("Difficulty " + (difficultyRating+1) + "/6","Information");
         set(handle, 'DeleteFcn', @msgBoxCloseCallback)
-        pause(2);
+        pause(3);
         if ishandle(handle) && ~isempty(handle)
             close(handle);
         end
