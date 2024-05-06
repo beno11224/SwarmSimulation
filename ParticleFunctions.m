@@ -82,12 +82,28 @@ classdef ParticleFunctions
         %public functions
 
         %Only used for NN control, the state needs to be known.
-        function matState = getState(obj, particleArrayLocation, FlowRate, xOffset, yOffset)
-            xLoc = (particleArrayLocation(:,1) + xOffset).*100;
-            yLoc = (particleArrayLocation(:,2) + yOffset).*100;
+        % function matState = getState(obj, particleArrayLocation, FlowRate, xOffset, yOffset)
+        %     xLoc = (particleArrayLocation(:,1) + xOffset).*100;
+        %     yLoc = (particleArrayLocation(:,2) + yOffset).*100;
+        %     covar = cov(xLoc,yLoc);
+        %     covar = covar(1,2);
+        %     matState = [std(xLoc), std(yLoc),covar, sum(xLoc)./size(xLoc,1), sum(yLoc)./size(yLoc,1), FlowRate, xOffset, yOffset];
+        % end
+        %Only used for NN control, the state needs to be known.
+        function matState = getState(obj, particleArrayLocation, FlowRate, xOffset, yOffset, currentEndZone)
+
+            allEndZones = sum(isParticleInEndZone(obj,currentEndZone,particleArrayLocation),2);%This should be 1 or 0
+            
+            OnlyParticlesInPlay = particleArrayLocation(allEndZones==0,:);
+            if(size(OnlyParticlesInPlay,1) == 0)
+                matState = [0,0,0,0,0,0];
+                return;
+            end
+            xLoc = (OnlyParticlesInPlay(:,1) + xOffset).*100;
+            yLoc = (OnlyParticlesInPlay(:,2) + yOffset).*100;
             covar = cov(xLoc,yLoc);
             covar = covar(1,2);
-            matState = [std(xLoc), std(yLoc),covar, sum(xLoc)./size(xLoc,1), sum(yLoc)./size(yLoc,1), FlowRate, xOffset, yOffset];
+            matState = [std(xLoc), std(yLoc), covar, sum(xLoc)./size(xLoc,1), sum(yLoc)./size(yLoc,1), FlowRate];
         end
 
         function force = calculateMagneticForce(obj, aCoils,joyStick, h, v, controlMethod, mouseLocation, magForceRestrict, rotation, maxUserForce)
