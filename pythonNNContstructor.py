@@ -39,7 +39,7 @@ class NNClass:
         model.add(Dense(n_actions, bias_initializer='lecun_uniform', kernel_initializer='lecun_uniform'))
         #Choose the optimiser and compile the model
         #metrics allow us to graph the statistical performance of the network later - loss is recorded automatically, accuracy is used as an example and is not required.
-        rms=Adam(lr=0.00001)
+        rms=Adam()
         model.compile(loss='mse', optimizer=rms,metrics=['accuracy'])
 
         print("Done")
