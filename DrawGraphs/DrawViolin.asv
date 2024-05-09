@@ -251,7 +251,7 @@ function DrawViolin()%polygon)
             end
             legend(["x input","y input"])
             xlabel('Bifurcation position');
-            ylabel('User input (T/m)');
+            ylabel('User input (Ma/m)');
         end
 
 
