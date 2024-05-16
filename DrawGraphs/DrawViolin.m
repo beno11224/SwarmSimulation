@@ -169,8 +169,8 @@ function DrawViolin(loadedfileslocation)
  % %   m.FaceColor = 'flat';
  %    %m = mesh(mesh.Nodes(1,:), mesh.Nodes(2,:), meshValues)
  %  %  colorbar (axMesh);
-    useFile = input("Press any key to exit","s");
-    close all;
+ %   useFile = input("Press any key to exit","s");
+ %   close all;
 end
 
 
