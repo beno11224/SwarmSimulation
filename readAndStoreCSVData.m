@@ -132,10 +132,11 @@ function readAndStoreCSVData(asState, folderPath)
         "File" + fileCount + "/" + length(dataFileNameList) + " Read"
     end
     if(asState)
-        save("storedTrainingVariables.mat","IMPORTEDexpertStates", "IMPORTEDexpertActions", "IMPORTEDFILEDELIMITERS", "flowRates");
+        saveName = "storedTrainingVariables.mat"
     else
-        save("storedAllDataVariables.mat","IMPORTEDexpertStates", "IMPORTEDexpertActions", "IMPORTEDFILEDELIMITERS", "flowRates");
+        saveName = "storedAllDataVariables.mat"
     end
+    save(saveName,"IMPORTEDexpertStates", "IMPORTEDexpertActions", "IMPORTEDFILEDELIMITERS", "flowRates");
     "Complete"
 end
 

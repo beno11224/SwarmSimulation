@@ -16,10 +16,6 @@ function readAndStoreCSVData(asState, folderPath)
     IMPORTEDexpertStates = [];
     IMPORTEDexpertActions = [];
     IMPORTEDFILEDELIMITERS = [];
-    expertStates = [];
-    expertActions = [];
-    valExpertStates = [];
-    valExpertActions = [];
     flowRates = [];
     dataFileNameList = [];
 
@@ -67,6 +63,7 @@ function readAndStoreCSVData(asState, folderPath)
         lineCount=0;
         LastPercentage = 0;
         StatesToAdd = [];
+        AllDataToAdd = [];
         ActionsToAdd = [];
         while(ischar(tline) && ~finished) %(app.timePassed <= app.timeLimit)
             lineCount = lineCount + 1;
@@ -91,6 +88,7 @@ function readAndStoreCSVData(asState, folderPath)
             positions = strip(positions,']');
             allPositions = split(positions,';');
             positionArray = [];
+            allDataArray = [];
             goalPositions = strip(goalPositions,'[');
             goalPositions = strip(goalPositions,']');
             allGoalPositions = split(goalPositions,';');
@@ -100,11 +98,12 @@ function readAndStoreCSVData(asState, folderPath)
                 yPos = str2double(yPos(2));
                 gPos = split(allGoalPositions(lineIndex)," ");
                 gp1 = str2double(gPos(1));
-                gp1 = str2double(gPos(1));
-                gp1 = str2double(gPos(1));
-                gp1 = str2double(gPos(1));
-                positionArray(end+1,:) = [xPos.*100, yPos.*100,flowRateNormalised,gpos(0)];
-                allDataArray(end+1,:) = [xPos.*100, yPos.*100,flowRateNormalised,time,gpos];
+                gp2 = str2double(gPos(2));
+                gp3 = str2double(gPos(3));
+                gp4 = str2double(gPos(4));
+                gp5 = str2double(gPos(5));
+                positionArray(end+1,:) = [xPos.*100, yPos.*100,flowRateNormalised];
+                allDataArray(end+1,:) = [xPos.*100, yPos.*100,flowRateNormalised,gp1,gp2,gp3,gp4,gp5,time];
             end
             ActionsToAdd(end+1,:) = [magx,magy];
             % if(lineCount==1)                            
@@ -112,7 +111,7 @@ function readAndStoreCSVData(asState, folderPath)
             %     %IMPORTEDexpertActions(end,:) = [-100,-100];
             % end
             StatesToAdd(end+1,:,:) = positionArray;
-            AllDataToAdd(end+1,:,:) = [];
+            AllDataToAdd(end+1,:,:) = allDataArray;
             % if(any(positionArray(:,1)>0)) %??
             %     finished = true;
             % end
@@ -124,7 +123,7 @@ function readAndStoreCSVData(asState, folderPath)
             IMPORTEDFILEDELIMITERS(end+1) = lineCount;
         else 
             if(~asState)
-                IMPORTEDexpertStates(end+1:end+size(StatesToAdd,1),:,:) = AllDataToAdd;
+                IMPORTEDexpertStates(end+1:end+size(AllDataToAdd,1),:,:) = AllDataToAdd;
                 IMPORTEDexpertActions(end+1:end+size(ActionsToAdd,1),:) = ActionsToAdd;
                 IMPORTEDFILEDELIMITERS(end+1) = lineCount;
             end
@@ -133,10 +132,12 @@ function readAndStoreCSVData(asState, folderPath)
         "File" + fileCount + "/" + length(dataFileNameList) + " Read"
     end
     if(asState)
+        saveName = "storedTrainingVariables.mat"
         save("storedTrainingVariables.mat","IMPORTEDexpertStates", "IMPORTEDexpertActions", "IMPORTEDFILEDELIMITERS", "flowRates");
     else
         save("storedAllDataVariables.mat","IMPORTEDexpertStates", "IMPORTEDexpertActions", "IMPORTEDFILEDELIMITERS", "flowRates");
     end
+    "Complete"
 end
 
  %Used for reading state from csv files. This is currently unused,

@@ -92,18 +92,45 @@ classdef ParticleFunctions
         %Only used for NN control, the state needs to be known.
         function matState = getState(obj, particleArrayLocation, FlowRate, xOffset, yOffset, currentEndZone)
 
-            allEndZones = sum(isParticleInEndZone(obj,currentEndZone,particleArrayLocation),2);%This should be 1 or 0
-            
-            OnlyParticlesInPlay = particleArrayLocation(allEndZones==0,:);
-            if(size(OnlyParticlesInPlay,1) == 0)
-                matState = [0,0,0,0,0,0];
-                return;
+            if(true)
+                allEndZones = sum(isParticleInEndZone(obj,currentEndZone,particleArrayLocation),2);%This should be 1 or 0
+                OnlyParticlesInPlay = particleArrayLocation(allEndZones==0,:);
+                if(size(OnlyParticlesInPlay,1) == 0)
+                    matState = [0,0,0,0,0,0];
+                    return;
+                end
+                neuronsPerSide = 20; %This MUST match the number of states within the network
+                histxMin = -0.0095;
+                histxMax = 0.012959844;
+                histyMin = -0.008502081;
+                histyMax = 0.008576092;
+                xhistWidth = histxMax - histxMin + histxMax*0.0001; %add a small extra in order that we don't reach exactly 1, as using floor function
+                yhistWidth = histyMax - histyMin + histyMax*0.0001;
+                scaleLocationsX = (OnlyParticlesInPlay(:,1) + histxMin) ./ xhistWidth; %Scale location of particle from -1 to 1
+                scaleLocationsY = (OnlyParticlesInPlay(:,2) + histyMin) ./ yhistWidth;
+                indexX = floor((scaleLocationsX + 1)./ (1/((neuronsPerSide)/2))) + 1; %+1 to scaleLoc to scale always greater tha 0 (hopefully)
+                indexY = floor((scaleLocationsY + 1)./ (1/((neuronsPerSide)/2))) + 1;
+                sumIndexX = zeros(neuronsPerSide,1);
+                sumIndexY = zeros(neuronsPerSide,1);
+                for(neuronIndexCount = 1:neuronsPerSide)
+                    sumIndexX(neuronIndexCount) = sum(indexX == neuronIndexCount);
+                    sumIndexY(neuronIndexCount) = sum(indexY == neuronIndexCount);
+                end
+                matState = [sumIndexX; sumIndexY]';
+            else
+                allEndZones = sum(isParticleInEndZone(obj,currentEndZone,particleArrayLocation),2);%This should be 1 or 0
+                
+                OnlyParticlesInPlay = particleArrayLocation(allEndZones==0,:);
+                if(size(OnlyParticlesInPlay,1) == 0)
+                    matState = [0,0,0,0,0,0];
+                    return;
+                end
+                xLoc = (OnlyParticlesInPlay(:,1) + xOffset).*100;
+                yLoc = (OnlyParticlesInPlay(:,2) + yOffset).*100;
+                covar = cov(xLoc,yLoc);
+                covar = covar(1,2);
+                matState = [std(xLoc), std(yLoc), covar, sum(xLoc)./size(xLoc,1), sum(yLoc)./size(yLoc,1), FlowRate];
             end
-            xLoc = (OnlyParticlesInPlay(:,1) + xOffset).*100;
-            yLoc = (OnlyParticlesInPlay(:,2) + yOffset).*100;
-            covar = cov(xLoc,yLoc);
-            covar = covar(1,2);
-            matState = [std(xLoc), std(yLoc), covar, sum(xLoc)./size(xLoc,1), sum(yLoc)./size(yLoc,1), FlowRate];
         end
 
         function force = calculateMagneticForce(obj, aCoils,joyStick, h, v, controlMethod, mouseLocation, magForceRestrict, rotation, maxUserForce)
