@@ -146,7 +146,7 @@ function DrawViolin(loadedfileslocation)
                 end
             end
     
-            DoPlot(bifurcationInputs)
+        DoPlot(bifurcationInputs)
         
         end
     end
@@ -230,20 +230,26 @@ function DoPlot(bifurcationInputs)
             [fy, uy, bby]=ksdensity(Y{i});
         % end
         
-        fx=fx/max(fx)*0.3; %normalize
+     %   fx=fx/max(fx)*0.3; %normalize
         Fx(:,i)=fx;
         Ux(:,i)=ux;
         MEDx(:,i)=nanmedian(Xx{i});
         MXx(:,i)=nanmean(Xx{i});
         bwx(:,i)=bbx;  
 
-        fy=fy/max(fy)*0.3; %normalize
+     %   fy=fy/max(fy)*0.3; %normalize
         Fy(:,i)=fy;
         Uy(:,i)=uy;
         MEDy(:,i)=nanmedian(Y{i});
         MXy(:,i)=nanmean(Y{i});
         bwy(:,i)=bby;     
     end
+
+    %normalise: 
+    maxMax = max(max(max(Fx),max(Fy)));
+    Fx=Fx./maxMax.*0.3; %normalize
+    Fy=Fy./maxMax.*0.3; %normalize
+
     %Check x-value options
     if isempty(x)
         x = zeros(size(Y,2));
@@ -313,6 +319,7 @@ function DoPlot(bifurcationInputs)
     legend(["x input","y input"])
     xlabel('Bifurcation position');
     ylabel('User input (T/m)');
+    ylim([-1.5,1.5]);
 end
 
 %copied DIRECTLY from particleSimulationTrainModeFFPlayFirstHomePC, line 546 ish
