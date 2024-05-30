@@ -36,10 +36,10 @@ class NNClass:
             #else there's only one hidden layer and the [] cause errors
             model.add(Dense(params, activation='tanh', bias_initializer='lecun_uniform', kernel_initializer='lecun_uniform', input_shape=(previous_layer_size,)))
         # Output layer.
-        model.add(Dense(n_actions, bias_initializer='lecun_uniform', kernel_initializer='lecun_uniform'))
+        model.add(Dense(n_actions, activation='tanh', bias_initializer='lecun_uniform', kernel_initializer='lecun_uniform')) # Might want to add this to tanh
         #Choose the optimiser and compile the model
         #metrics allow us to graph the statistical performance of the network later - loss is recorded automatically, accuracy is used as an example and is not required.
-        rms=Adam(lr=0.00001)
+        rms=Adam()
         model.compile(loss='mse', optimizer=rms,metrics=['accuracy'])
 
         print("Done")

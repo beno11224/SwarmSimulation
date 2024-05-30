@@ -18,13 +18,9 @@ classdef ParticleFunctions
         end
         
         function obj = ChangeMetaValues(obj,permeabilityOfFreeSpace, magneticField, individualDiameter, particleDensity, chainLength, fluidViscocity, staticFrictionCoefficient, motionFrictionCoefficient, workspaceSize)
-         %   obj.magneticForceConstant = double(permeabilityOfFreeSpace .* 58 .* 2.25 .* 10^3 .* 4/3.*pi.*(particleDiameter/2)^3) .* 22; %The 2.25*10^3 is for the emu/g to A/m calculation
-         %   obj.dragForceConstant = double(3*pi * fluidViscocity * particleDiameter);
-
             msat = 1 + 19 * (magneticField .* 10).^(0.16);
             obj.equivalentDiameter =  (3*chainLength * individualDiameter^3 )^(1/3);
-            vol = 4/3.*pi.*(obj.equivalentDiameter/2)^3;
-            obj.magneticForceConstant = double(permeabilityOfFreeSpace .* msat.* particleDensity .* 1000 .* 4/3.*pi.*(obj.equivalentDiameter/2)^3);% .* 22; %22 is conversion factor
+            obj.magneticForceConstant = double(permeabilityOfFreeSpace .* msat.* particleDensity .* 1000 .* 4/3.*pi.*(obj.equivalentDiameter/2)^3);
             obj.dragForceConstant = double(3*pi * fluidViscocity * individualDiameter); 
             obj.dipoleForceConstant = double(3*permeabilityOfFreeSpace / 4*pi);
             obj.staticFrictionCoefficient = staticFrictionCoefficient;
@@ -86,12 +82,82 @@ classdef ParticleFunctions
         %public functions
 
         %Only used for NN control, the state needs to be known.
-        function matState = getState(obj, particleArrayLocation, FlowRate, xOffset, yOffset)
-            xLoc = (particleArrayLocation(:,1) + xOffset).*100;
-            yLoc = (particleArrayLocation(:,2) + yOffset).*100;
-            covar = cov(xLoc,yLoc);
-            covar = covar(1,2);
-            matState = [std(xLoc), std(yLoc),covar, sum(xLoc)./size(xLoc,1), sum(yLoc)./size(yLoc,1), FlowRate, xOffset, yOffset];
+        % function matState = getState(obj, particleArrayLocation, FlowRate, xOffset, yOffset)
+        %     xLoc = (particleArrayLocation(:,1) + xOffset).*100;
+        %     yLoc = (particleArrayLocation(:,2) + yOffset).*100;
+        %     covar = cov(xLoc,yLoc);
+        %     covar = covar(1,2);
+        %     matState = [std(xLoc), std(yLoc),covar, sum(xLoc)./size(xLoc,1), sum(yLoc)./size(yLoc,1), FlowRate, xOffset, yOffset];
+        % end
+        %Only used for NN control, the state needs to be known.
+        function matState = getState(obj, particleArrayLocation, FlowRate, xOffset, yOffset, currentEndZone, mesh)
+            if(nargin<7)
+                warning("No mesh provided (ParticleFunctions)");
+                mesh = "";
+            end
+            if(true)
+                matState = [zeros(1,size(mesh,1))];
+                allEndZones = sum(isParticleInEndZone(obj,currentEndZone,particleArrayLocation),2);%This should be 1 or 0
+                OnlyParticlesInPlay = particleArrayLocation(allEndZones==0,:); %Use all particle locations for now...
+                if(size(OnlyParticlesInPlay,1) == 0)
+                    return;
+                end
+
+             %   closestNode = nearestNeighbor(mesh,OnlyParticlesInPlay);
+                tenPercent = size(particleArrayLocation,1) * 0.1;
+                closestNode = knnsearch(mesh.Points,OnlyParticlesInPlay,'K',5,'Distance','euclidean');
+                for(neuronIndex = 1:size(mesh,1))
+                    valueToUse = sum(closestNode(:,1) == neuronIndex)./2; 
+                    valueToUse = valueToUse + sum(closestNode(:,2) == neuronIndex)./4; 
+                    valueToUse = valueToUse + sum(closestNode(:,3) == neuronIndex)./6; 
+                    valueToUse = valueToUse + sum(closestNode(:,4) == neuronIndex)./8; 
+                    valueToUse = valueToUse + sum(closestNode(:,5) == neuronIndex)./16; 
+                    if(valueToUse > (tenPercent))
+                        valueToUse = tenPercent;
+                    end
+                    matState(neuronIndex) = valueToUse./(tenPercent);%sum(closestNode == neuronIndex);
+                end                
+            else
+                if(true)
+                    allEndZones = sum(isParticleInEndZone(obj,currentEndZone,particleArrayLocation),2);%This should be 1 or 0
+                    OnlyParticlesInPlay = particleArrayLocation;%(allEndZones==0,:); %Use all particle locations for now...
+                    if(size(OnlyParticlesInPlay,1) == 0)
+                        matState = [0,0,0,0,0,0];
+                        return;
+                    end
+                    neuronsPerSide = 20; %This MUST match the number of states within the network
+                    histxMin = -0.0095;
+                    histxMax = 0.012959844;
+                    histyMin = -0.008502081;
+                    histyMax = 0.008576092;
+                    xhistWidth = histxMax - histxMin + histxMax*0.0001; %add a small extra in order that we don't reach exactly 1, as using floor function
+                    yhistWidth = histyMax - histyMin + histyMax*0.0001;
+                    scaleLocationsX = (OnlyParticlesInPlay(:,1) + histxMin) ./ xhistWidth; %Scale location of particle from -1 to 1
+                    scaleLocationsY = (OnlyParticlesInPlay(:,2) + histyMin) ./ yhistWidth;
+                    indexX = floor((scaleLocationsX + 1)./ (1/((neuronsPerSide)/2))) + 1; %+1 to scaleLoc to scale always greater tha 0 (hopefully)
+                    indexY = floor((scaleLocationsY + 1)./ (1/((neuronsPerSide)/2))) + 1;
+                    sumIndexX = zeros(neuronsPerSide,1);
+                    sumIndexY = zeros(neuronsPerSide,1);
+                    for(neuronIndexCount = 1:neuronsPerSide)
+                        sumIndexX(neuronIndexCount) = sum(indexX == neuronIndexCount);
+                        sumIndexY(neuronIndexCount) = sum(indexY == neuronIndexCount);
+                    end
+                    matState = [sumIndexX; sumIndexY]';
+                else
+                    allEndZones = sum(isParticleInEndZone(obj,currentEndZone,particleArrayLocation),2);%This should be 1 or 0
+                    
+                    OnlyParticlesInPlay = particleArrayLocation(allEndZones==0,:);
+                    if(size(OnlyParticlesInPlay,1) == 0)
+                        matState = [0,0,0,0,0,0];
+                        return;
+                    end
+                    xLoc = (OnlyParticlesInPlay(:,1) + xOffset).*100;
+                    yLoc = (OnlyParticlesInPlay(:,2) + yOffset).*100;
+                    covar = cov(xLoc,yLoc);
+                    covar = covar(1,2);
+                    matState = [std(xLoc), std(yLoc), covar, sum(xLoc)./size(xLoc,1), sum(yLoc)./size(yLoc,1), FlowRate];
+                end
+            end
         end
 
         function force = calculateMagneticForce(obj, aCoils,joyStick, h, v, controlMethod, mouseLocation, magForceRestrict, rotation, maxUserForce)
@@ -101,7 +167,6 @@ classdef ParticleFunctions
             switch(controlMethod)      
                 case("Keyboard")
                     totalForce = aCoils.* 10^6;
-                %    totalForce = aCoils;
                 case("Mouse")
                     totalForce = mouseLocation .* maxuserForce*10^8; %Mouse Force is a bit lower than the others
                 case("Controller")
@@ -123,26 +188,6 @@ classdef ParticleFunctions
             %in construction.
             force = ([cosd(-rotation), sind(-rotation); -sind(-rotation), cos(-rotation)] * (obj.magneticForceConstant .* totalForce)')' ;
         end
-        
-        %not in use - 
-        % provides the force on each particle from other particles
-        function force = calculateDipoleForce(obj, particleLocation, particleTorque)
-
-            xYdistanceBetweenAllParticles = particleLocation - permute(particleLocation,[3,2,1]);
-            distanceBetweenAllParticles = permute(sqrt(abs(xYdistanceBetweenAllParticles(:,1,:).^2 + xYdistanceBetweenAllParticles(:,2,:).^2)),[1,3,2]);
-            distanceBetweenAllParticles(isnan(distanceBetweenAllParticles)) = 0;
-            dipoleMoments = double(sum(particleTorque,2) .* distanceBetweenAllParticles);
-            dipoleMoments = dipoleMoments .* dipoleMoments.';
-            normalisedDipoleMoment = dipoleMoments ./ distanceBetweenAllParticles.^-4;
-            sumOfAllDipoleMoments = obj.dipoleForceConstant .* sum(normalisedDipoleMoment,2); %sum along '2'axis to make it 5x1
-            %now convert back to 5x2, x & y for the final result
-            distanceMultiplier = permute(sum(xYdistanceBetweenAllParticles,1),[3,2,1]);
-            force = sumOfAllDipoleMoments .* distanceMultiplier; 
-        end
-
-        function force = calculateDragForce(obj, particleVelocity, flowVelocity)
-            force = ((particleVelocity - flowVelocity) .* obj.dragForceConstant); %Stokes Drag Equation
-         end
 
         function particleVelocity = calculateDragForceFromMagForce(obj, magForce, flowVelocity)
             particleVelocity = (magForce ./ obj.dragForceConstant) + flowVelocity; %+ or -?
@@ -241,110 +286,59 @@ classdef ParticleFunctions
             force(:,2) = tempForce;
         end
                 
-        function acceleration = calculateAcceleration(obj,particleForce, particleMass)
-            acceleration = particleForce ./ particleMass;
-        end
+        % function acceleration = calculateAcceleration(obj,particleForce, particleMass)
+        %     acceleration = particleForce ./ particleMass;
+        % end
         
-        function velocity = calculateDeltaVelocity(obj,particleForce, particleMass, timeSinceLastUpdate)
-            velocity = obj.calculateAcceleration(particleForce, particleMass) ./ timeSinceLastUpdate;
-        end
+        % function velocity = calculateDeltaVelocity(obj,particleForce, particleMass, timeSinceLastUpdate)
+        %     velocity = obj.calculateAcceleration(particleForce, particleMass) ./ timeSinceLastUpdate;
+        % end
         
         %Turn the forces applied into a velocity
-        function [velocity,acceleration,hypotheticalDeltaVelocity] = calculateCurrentVelocityCD(obj, orthogonalWallContact, wallContact, previousVelocity, previousAcceleration, particleForce, particleMass, timeSinceLastUpdate, magForce)            
-            %using acceleration, give a velocity change
-            currentAcceleration = obj.calculateAcceleration(particleForce, particleMass);
-            hypotheticalDeltaVelocity = currentAcceleration .* timeSinceLastUpdate;
-
-            %Now make sure that any particles that go out of bounds are
-            %bounced back into the play area
-            velocityOrthogonalToWallContact = obj.matrixVectorProjection(hypotheticalDeltaVelocity,orthogonalWallContact);
-            testForSign = velocityOrthogonalToWallContact .* orthogonalWallContact;
-            velocityOrthogonalToWallContact(testForSign < 0) = 0;
-            wallContactVelocity = obj.matrixVectorProjection(hypotheticalDeltaVelocity,wallContact) + velocityOrthogonalToWallContact;
-            hypotheticalDeltaVelocity = hypotheticalDeltaVelocity .* isnan(wallContact) + wallContactVelocity;
-             
-            %checkForSign = (previousVelocity+hypotheticalDeltaVelocity).*previousVelocity;
-
-            %determine the rate of change, it's useful in a second
-            rateOfChange = (abs(hypotheticalDeltaVelocity) - abs(previousVelocity)) ./ abs(previousVelocity);
-            %capRateofChangeAt = (1*10e3 .* abs(previousVelocity./10) + 0.1).^-2; 
-          %  capRateofChangeAt = atan(abs(previousVelocity)) .* 10^9;
-%             ll = log10(abs(magForce));
-%             a = abs(previousVelocity);
-%             b = abs(previousVelocity).*-10^-13;
-%             c = -2.^(abs(previousVelocity).*-10^-13);
-%             d = -2.^(abs(previousVelocity));
-%             capRateofChangeAt = (1-2.^(abs(previousVelocity).*-10^-13)) .* 10^-13;
-           % capRateofChangeAt = r epmat(0.1+2.^(0.1*log10(abs(magForce))),3,1);
-            %capRateofChangeAt = 5.*1.25.^(-log10(abs(previousVelocity))); %%Size must be changed here
-            capRateofChangeAt = 0.002.* 2.^(-1 .* log10(abs(previousVelocity))); %%Size must be changed here
-            % capRateofChangeAt = 0.5 .* 2.1.^(-0.5 .* log10(abs(previousVelocity))); %%Size must be changed here
-            capRateofChangeAt(capRateofChangeAt>1500) = 1500;
-           % capRateofChangeAt = (1-2.^(abs(magForce).*-10^-5)) .* 10^-5;
-           % capRateofChangeAt(capRateofChangeAt < 0.1) = 0.1; %limit the lower end.
-            rateOfChange(isinf(rateOfChange)) = intmax;
-            rateOfChange(isnan(rateOfChange)) = 0;
-            %yes, this is aboslutely required, otherwise errors
-            %Use a rate of change cap to damp any big oscillations.
-            if(any(any(rateOfChange > capRateofChangeAt)))
-                cappedRateOfChange = rateOfChange;
-                capRateofChangeAt(capRateofChangeAt == 0) = abs(rateOfChange(capRateofChangeAt == 0)); %If there is no rate of change this is an error above. don't cap change.
-                cappedRateOfChange(rateOfChange > capRateofChangeAt) = capRateofChangeAt(rateOfChange > capRateofChangeAt); %cap it
-                %cappedRateOfChange(rateOfChange < 0) = ((capRateofChangeAt(rateOfChange < 0))./10^2) .* -1; %replace any negative signs, halve negative rate of change
-             %   cappedRateOfChange(rateOfChange < 0) = ((capRateofChangeAt(rateOfChange < 0))) .* -1; %replace any negative signs, halve negative rate of change
-                %set the capped deltaVelocity
-                checkChangeSign = previousAcceleration.*hypotheticalDeltaVelocity;
-                hypotheticalDeltaVelocity = obj.realNum((cappedRateOfChange./rateOfChange) .* hypotheticalDeltaVelocity);
-                hypotheticalDeltaVelocity(checkChangeSign<0) = hypotheticalDeltaVelocity(checkChangeSign<0)./50;
-                %Line above - just added abs to rateOfChange, as this is
-                %positive or negative.
-                %hypotheticalDeltaVelocity(hypotheticalDeltaVelocity>cappedRateOfChange) = cappedRateOfChange(hypotheticalDeltaVelocity>cappedRateOfChange);
-                %set the capped acceleration
-                acceleration = hypotheticalDeltaVelocity / timeSinceLastUpdate;  
-            else
-                acceleration = currentAcceleration;
-            end            
-            velocity = (previousVelocity + hypotheticalDeltaVelocity);
-        end
+        % function [velocity,acceleration,hypotheticalDeltaVelocity] = calculateCurrentVelocityCD(obj, orthogonalWallContact, wallContact, previousVelocity, previousAcceleration, particleForce, particleMass, timeSinceLastUpdate, magForce)            
+        %     %using acceleration, give a velocity change
+        %     currentAcceleration = obj.calculateAcceleration(particleForce, particleMass);
+        %     hypotheticalDeltaVelocity = currentAcceleration .* timeSinceLastUpdate;
+        % 
+        %     %Now make sure that any particles that go out of bounds are
+        %     %bounced back into the play area
+        %     velocityOrthogonalToWallContact = obj.matrixVectorProjection(hypotheticalDeltaVelocity,orthogonalWallContact);
+        %     testForSign = velocityOrthogonalToWallContact .* orthogonalWallContact;
+        %     velocityOrthogonalToWallContact(testForSign < 0) = 0;
+        %     wallContactVelocity = obj.matrixVectorProjection(hypotheticalDeltaVelocity,wallContact) + velocityOrthogonalToWallContact;
+        %     hypotheticalDeltaVelocity = hypotheticalDeltaVelocity .* isnan(wallContact) + wallContactVelocity;
+        % 
+        %     %checkForSign = (previousVelocity+hypotheticalDeltaVelocity).*previousVelocity;
+        % 
+        %     %determine the rate of change, it's useful in a second
+        %     rateOfChange = (abs(hypotheticalDeltaVelocity) - abs(previousVelocity)) ./ abs(previousVelocity);
+        %     capRateofChangeAt = 0.002.* 2.^(-1 .* log10(abs(previousVelocity))); %%Size must be changed here
+        %     capRateofChangeAt(capRateofChangeAt>1500) = 1500;
+        %     rateOfChange(isinf(rateOfChange)) = intmax;
+        %     rateOfChange(isnan(rateOfChange)) = 0;
+        %     %yes, this is aboslutely required, otherwise errors
+        %     %Use a rate of change cap to damp any big oscillations.
+        %     if(any(any(rateOfChange > capRateofChangeAt)))
+        %         cappedRateOfChange = rateOfChange;
+        %         capRateofChangeAt(capRateofChangeAt == 0) = abs(rateOfChange(capRateofChangeAt == 0)); %If there is no rate of change this is an error above. don't cap change.
+        %         cappedRateOfChange(rateOfChange > capRateofChangeAt) = capRateofChangeAt(rateOfChange > capRateofChangeAt); %cap it
+        %         %set the capped deltaVelocity
+        %         checkChangeSign = previousAcceleration.*hypotheticalDeltaVelocity;
+        %         hypotheticalDeltaVelocity = obj.realNum((cappedRateOfChange./rateOfChange) .* hypotheticalDeltaVelocity);
+        %         hypotheticalDeltaVelocity(checkChangeSign<0) = hypotheticalDeltaVelocity(checkChangeSign<0)./50;
+        %         %set the capped acceleration
+        %         acceleration = hypotheticalDeltaVelocity / timeSinceLastUpdate;  
+        %     else
+        %         acceleration = currentAcceleration;
+        %     end            
+        %     velocity = (previousVelocity + hypotheticalDeltaVelocity);
+        % end
         
         %using a variant of suvat, determine th new location: 
         % s= ut + 1/2(at^2)
-        function location = calculateCurrentLocationCD(obj,previousLocation, previousVelocity, previousAcceleration, timeSinceLastUpdate)
-            location = previousLocation + previousVelocity .* timeSinceLastUpdate + 0.5.*previousAcceleration.*timeSinceLastUpdate^2;
-        end
-        
-        % function velocity = calculateCumulativeParticleVelocityComponentFromForce(obj, particleForce, oldVelocity, haltTheseParticles, wallContact, timeSinceLastUpdate)
-        %     velocity = oldVelocity + calculatePointVelocityUpdate(obj,particleForce, obj.particleMass, timeSinceLastUpdate);
-        %     for i = 1:length(velocity)
-        %         if(any(~isnan(wallContact(i,:))))
-        %             velocity(i,:) = obj.vectorProjection(velocity(i,:),wallContact(i,:));
-        %         end 
-        %     end
-        %     %prevent these particles from moving
-        %     velocity = velocity .* ~haltTheseParticles;
-        % end   
-
-        % function [newLocations, newVelocity] = calculateCollisionsAfter(obj, oldParticleLocation, newParticleLocation, particleVelocity, timeModifier)
-        %     positionsOfAnyParticleCollisions = obj.multiplierOfLineVectorOfIntersectionOfTwoLines(oldParticleLocation, particleVelocity, newParticleLocation, particleVelocity.*-1);
-        %     positionsOfAnyParticleCollisions = positionsOfAnyParticleCollisions(:,:,3);
-        %     positionsOfAnyParticleCollisions(isnan(positionsOfAnyParticleCollisions)) = 0;
-        %     %set limits for back-movement of particle (-1<=x<0)
-        %     positionsOfAnyParticleCollisions(positionsOfAnyParticleCollisions >= 0) = 0;
-        %     positionsOfAnyParticleCollisions(positionsOfAnyParticleCollisions < -1) = 0;
-        %     vectoredResetParticlesToCorrectLocations = particleVelocity .* -1 .* obj.realNum(positionsOfAnyParticleCollisions);
-        %     newLocations = newParticleLocation + obj.realNum(vectoredResetParticlesToCorrectLocations);            
-        %     %Now allow only velocity perpendicular to the contact                       
-        %     newVelocity = particleVelocity;
-        % end
-
-        % function [location, newVelocity] = moveParticle(obj, particleLocation, particleVelocity, timeModifier)
-        %     %TODO THIS DOESN'T WORK!
-        %   %  unCheckedLocation = particleLocation + obj.realNum(particleVelocity .* timeModifier);
-        %   %  [location,newVelocity] = calculateCollisionsAfter(obj, particleLocation, unCheckedLocation, particleVelocity, timeModifier);
-        %     %Comment above and Uncomment below to prevent particleCollisions
-        %     location = particleLocation + obj.realNum(particleVelocity);
-        %     newVelocity = particleVelocity;
-        % end
+     %   function location = calculateCurrentLocationCD(obj,previousLocation, previousVelocity, previousAcceleration, timeSinceLastUpdate)
+     %       location = previousLocation + previousVelocity .* timeSinceLastUpdate + 0.5.*previousAcceleration.*timeSinceLastUpdate^2;
+     %   end
         
         %Random generation in the start zone for particle locations.
         %locations are generated in a bounding box, and then tested to see
@@ -411,13 +405,13 @@ classdef ParticleFunctions
         %Result references the magnitude of the line1vector to get to the
         %intersection point. To get the same for line2, swap the parameters
         %round when calling.
-        function [line1Multiplier] = multiplierOfLineVectorOfIntersectionOfTwoLines(obj, line1StartQ, line1VectorS, line2StartP, line2VectorR)
-           
-            startDistanceQP = (line1StartQ - line2StartP);
-            startDistanceLine2VectorCrossProductQPR = obj.crossProduct(startDistanceQP(:,1,:), startDistanceQP(:,2,:), line2VectorR(:,1,:), line2VectorR(:,2,:));
-            vectorCrossProductRS = obj.crossProduct(line2VectorR(:,1,:), line2VectorR(:,2,:), line1VectorS(:,1,:), line1VectorS(:,2,:));
-            line1Multiplier = obj.realNum(startDistanceLine2VectorCrossProductQPR./vectorCrossProductRS);
-        end
+        % function [line1Multiplier] = multiplierOfLineVectorOfIntersectionOfTwoLines(obj, line1StartQ, line1VectorS, line2StartP, line2VectorR)
+        % 
+        %     startDistanceQP = (line1StartQ - line2StartP);
+        %     startDistanceLine2VectorCrossProductQPR = obj.crossProduct(startDistanceQP(:,1,:), startDistanceQP(:,2,:), line2VectorR(:,1,:), line2VectorR(:,2,:));
+        %     vectorCrossProductRS = obj.crossProduct(line2VectorR(:,1,:), line2VectorR(:,2,:), line1VectorS(:,1,:), line1VectorS(:,2,:));
+        %     line1Multiplier = obj.realNum(startDistanceLine2VectorCrossProductQPR./vectorCrossProductRS);
+        % end
 
         %A helper function to create a mesh of the playspace, then write
         %those locations to a csv file for data manipulation.
