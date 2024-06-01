@@ -22,10 +22,7 @@ startFrom = 2;
 % legendUnits = " ("+char(176)+")";
 % fileName = "EDistandTime.mat";
 
-% Title = "Distance travelled by swarm over time for " + Title;
-%YLIMES = [0,5]
-Title = "Relative ratio pixels occupied by particles for " + Title;
-YLIMES = [0.01,0.2]
+
 load(fileName,"allDists","allTimes","allFileValues","allPix","allwPix","allMPix","allMwPix","allRadius");
 
 legendNames = string(sort(allFileValues)) + legendUnits;
@@ -34,7 +31,7 @@ for(i = startFrom:size(allDists,1))
     maxX = 0;
     numPoints = 1000; % Whatever resolution you want.
     xCommon = linspace(0, 100, numPoints);
-    ySum = zeros(1, numPoints);
+    yVals = [];
     circleRadius = 0;
 
     for(j = 1:size(allDists,2))
@@ -42,21 +39,12 @@ for(i = startFrom:size(allDists,1))
         if(maxX< max(allTimeValues))
             maxX = max(allTimeValues);
         end
-        % if(~isempty(allRadius(i,j)))
-        %     circleRadius = cell2mat(allRadius(i,j));
-        % end
     end
-    % if(circleRadius == 0)
-    %     %Provide circle radius
-    %     circleRadius = 262;
-    % end
-    %This method is a bit sketchy. Just use 262 for the time being, if it
-    %seems very wrong later then fix it.
+
     circleRadius = 262;
     mmPerPixel = 10/(circleRadius*2);
     lineAverage = [];
 
-    yVals = [];
     for(j = 1:size(allDists,2))
         allDistValues = cell2mat(allDists(i,j));
         allTimeValues = cell2mat(allTimes(i,j));
@@ -65,55 +53,47 @@ for(i = startFrom:size(allDists,1))
         allMwPixValues = cell2mat(allMwPix(i,j));
         allMPixValue = cell2mat(allMPix(i,j));
         
-        %yCom = interp1(allTimeValues, allDistValues, xCommon);
-        %ySum = ySum + interp1(allTimeValues, allDistValues, xCommon);
-        %yCom = interp1(allTimeValues, allwPixValues./allPixValues, xCommon);
-        yCom = interp1(allTimeValues, allMwPixValues./allMPixValue, xCommon);
-        ySum = ySum + yCom;
-        yVals(j,:) = yCom;
-
-        % plot(allTimeValues,allDistValues);
-        % hold on
+        % yVals(j,:) = interp1(allTimeValues, allDistValues, xCommon); %For Distance 
+        yVals(j,:) = interp1(allTimeValues, allMwPixValues./allMPixValue, xCommon);  %For spread
     end
 
+    avgVal = mean(yVals,1);
+    stdVal = std(yVals,1,1);
+    xCommon(isnan(avgVal)) = [];
+    stdVal(isnan(avgVal)) = [];
+    avgVal(isnan(avgVal)) = [];
+
+    %Plot only start/end comparison
+    if(true)
+    end
+
+    %Plot Whole data
     %Plot Distance
     if(false)
-        plot(xCommon,(ySum./size(allDists,2))*mmPerPixel);
+        Title = "Distance travelled by swarm for " + Title;
+        YLIMS = [0,5];
+        plot(xCommon,(avgVal)*mmPerPixel);
         ylabel("Distance travelled from original location (mm)")
-        xlabel("Time(s)")
+        xlabel("Time(s)") %No...
         legend(legendNames)
         title(Title)
         hold on
-        ylim(YLIMES)
+        ylim(YLIMS)
     end
     %Plot Relative Density (Image proportion)
     if(true)
-        aaa = isnan(yVals);
-        avgVal = mean(yVals,1);
-        stdVal = std(yVals,1,1);
-        xCommon(isnan(avgVal)) = [];
-        stdVal(isnan(avgVal)) = [];
-        avgVal(isnan(avgVal)) = [];
+        Title = "Swarm area spread in ratio of pixels for " + Title;
+        YLIMS = [0.01,0.2];
         avgLine = plot(xCommon,avgVal);
         patchLine = patch([xCommon fliplr(xCommon)], [(avgVal + stdVal) fliplr((avgVal - stdVal))],avgLine.Color, 'FaceAlpha', .3 ,'LineStyle','none');
-        ylabel("Relative pixel density as a proportion of the image over time")
+        ylabel("Relative change in particle spread when measured as a ratio in pixels")
         xlabel("Time(s)")
         legendNamesdupe = sort([legendNames(startFrom:size(allDists,1)) (insertAfter(legendNames(startFrom:size(allDists,1)),1," STD"))]);
         legend(legendNamesdupe)
         title(Title)
         hold on
-        ylim(YLIMES)
-    end
-    %Plot Relative Density (Percentage of initial Density)
-    if(false)
-        plot(xCommon,(ySum./size(allDists,2))*mmPerPixel);
-        ylabel("Relative pixel density difference from the initial relative pixel density over time")
-        xlabel("Time(s)")
-        legend(legendNames)
-        title(Title)
-        hold on
-        ylim(YLIMES)
+        ylim(YLIMS)
     end
 end
 Title = erase(erase(Title," "),"\")
-savefig(Title+"OpticalFlow.fig")
+savefig(Title+".fig")

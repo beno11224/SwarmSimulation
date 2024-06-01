@@ -5,7 +5,7 @@ resultString = "";
 for(i=200:100:200)
    % D = 'F:\OneDrive - University of Essex\Ben\Work-in-Essex\Data & Code\ParticleExperiment\111223\2mt\'+string(i);
    % D = 'C:\Users\beno1\Desktop\A';
-    D = 'C:\Users\beno1\Desktop\May24(RotSwarm)\A';
+    D = 'C:\Users\beno1\Desktop\May24(RotSwarm)\E';
     dirs = dir(D);
     dirs(1:2)=[];
     dirFlags = [dirs.isdir];
@@ -60,8 +60,8 @@ for(i=200:100:200)
         whitePixels = [];
         maskPixels = [];
         maskWhitePixels = [];
-        initialLoc = [];
-        initialTime = 0;
+        initialLocation = [];
+        initialTime = NaN;
         initialSpread = []; %TODO work out a way of determining distribution of particles (a percentage? an area?)
 
         CircleCenter = [];
@@ -74,6 +74,9 @@ for(i=200:100:200)
             fileContents = split(fileContents,'<');
             dateTime = fileContents(contains(fileContents,"hmsval"));
             dateTime = str2double(extractBetween(dateTime,15,20));
+            % if(k == 0)
+            %     initialTime = dateTime;
+            % end
             
             %Read in the image file
             F = fullfile(D,'\',dirs(dirIndex).name,S(k).name);
@@ -104,7 +107,8 @@ for(i=200:100:200)
             % Center = [340,220]; %Think this is a good split for A.
             % Radius = 262;
             
-            maskedImage = imageSGL; % Initialize with the entire image.
+            maskedFlow = imageSGL; % Initialize with the entire image.
+            maskedImage = image;
             if(length(CircleCenter)>0)
                 angles = linspace(0, 2*pi, 10000);
                 x = cos(angles) * CircleRadius + CircleCenter(1);
@@ -114,17 +118,19 @@ for(i=200:100:200)
                     pause(1)
                 end
                 mask = poly2mask(x, y, rows, columns);
+                maskedFlow(~mask) = 0;
                 maskedImage(~mask) = 0;
             end
+            
 
             % figure
             % imshow(maskedImage./max(max(maskedImage)))
             % pause(0.05);
 
-            th = graythresh(maskedImage);
-            maskedBinary = imbinarize(maskedImage,th);
-            thi = graythresh(image); 
-            imageBinary = ~imbinarize(image,thi);
+            th = graythresh(maskedFlow);
+            maskedBinary = imbinarize(maskedFlow,th);
+            thi = graythresh(maskedImage); 
+            imageBinary = ~imbinarize(maskedImage,thi);
 
             % imshow(maskedBinary);
             % imshow(imageBinary);
@@ -148,16 +154,20 @@ for(i=200:100:200)
 
             [r, c] = find(imageNegative2 >= 1); %Average Location (so centre mass) - this accounts for all particles, including edge cases.
             rowcolCoordinates = [mean(c), mean(r)]; %Had to swap round to match 1,2 notation
-            if(~useMaskedFlow && k > 1)
-                %Don't do this onthe first loop as coords havent been set
-                rowcolCoordinates = initialLocation;
+            if(~useMaskedFlow)
+                if(size(initialLocation) > 0)
+                    %Don't do this onthe first loop as coords havent been set
+                    rowcolCoordinates = initialLocation;
+                else
+                    rowcolCoordinates = NaN;
+                end
             end
             plot(rowcolCoordinates(1),rowcolCoordinates(2),'r-x')
             pause(0.01);
 
-            if(k==1) %Setup the initials
-                initialTime = dateTime;
+            if(size(initialLocation) == 0) %Setup the initials
                 initialLocation = rowcolCoordinates;
+                initialTime = dateTime;
             end
             if(dateTime<initialTime)
                dateTime = dateTime+60;
