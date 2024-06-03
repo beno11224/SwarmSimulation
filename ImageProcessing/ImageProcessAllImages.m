@@ -82,6 +82,10 @@ for(i=200:100:200)
             F = fullfile(D,'\',dirs(dirIndex).name,S(k).name);
             start = k==1;
             image = rgb2gray(imread(F)); 
+            imshow(image);
+
+            imadjusted = imadjust(image);
+            imshow(imadjusted);
 
 
             flow = estimateFlow(opticFlow,image);
@@ -132,7 +136,7 @@ for(i=200:100:200)
             thi = graythresh(maskedImage); 
             imageBinary = ~imbinarize(maskedImage,thi);
 
-            % imshow(maskedBinary);
+             imshow(maskedBinary);
             % imshow(imageBinary);
 
             %Check for masked image being totally white (indicates no flow)
@@ -204,7 +208,7 @@ for(i=200:100:200)
     end
     %figure
     %plot(allTimes,allDists)
-    save(fileExperimentLetter+"DistandTime.mat","allTimes","allDists","allFileValues","allPix","allwPix","allMPix","allMwPix");
+    save(fileExperimentLetter+"TESTDistandTime.mat","allTimes","allDists","allFileValues","allPix","allwPix","allMPix","allMwPix");
 end
 close all
 %resultString
