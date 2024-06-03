@@ -104,7 +104,7 @@ classdef ParticleFunctions
                 end
 
              %   closestNode = nearestNeighbor(mesh,OnlyParticlesInPlay);
-                tenPercent = size(particleArrayLocation,1) * 0.1;
+                twentyPercent = size(particleArrayLocation,1) * 0.2;
                 closestNode = knnsearch(mesh.Points,OnlyParticlesInPlay,'K',5,'Distance','euclidean');
                 for(neuronIndex = 1:size(mesh,1))
                     valueToUse = sum(closestNode(:,1) == neuronIndex)./2; 
@@ -112,10 +112,10 @@ classdef ParticleFunctions
                     valueToUse = valueToUse + sum(closestNode(:,3) == neuronIndex)./6; 
                     valueToUse = valueToUse + sum(closestNode(:,4) == neuronIndex)./8; 
                     valueToUse = valueToUse + sum(closestNode(:,5) == neuronIndex)./16; 
-                    if(valueToUse > (tenPercent))
-                        valueToUse = tenPercent;
+                    if(valueToUse > (twentyPercent))
+                        valueToUse = twentyPercent;
                     end
-                    matState(neuronIndex) = valueToUse./(tenPercent);%sum(closestNode == neuronIndex);
+                    matState(neuronIndex) = valueToUse./(twentyPercent);%sum(closestNode == neuronIndex);
                 end                
             else
                 if(true)
