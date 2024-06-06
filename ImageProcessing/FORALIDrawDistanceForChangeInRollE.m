@@ -34,9 +34,10 @@ for(i = startFrom:size(allDists,1))
         allTimeValues(isnan(allDistValues)) = [];
         allDistValues(isnan(allDistValues)) = [];      
 
-        if(size(allTimeValues)>0)        
+        if(size(allTimeValues)>0)
             yVals(j,:) = interp1(allTimeValues, allDistValues, xCommon); %For Distance 
         end
+        
     end
     avgVal = mean(yVals,1);
     stdVal = std(yVals,1,1);
