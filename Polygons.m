@@ -316,11 +316,11 @@ classdef Polygons
 0.01214254 0.0034908;
 0.012459844 0.002481477;
 0.012959844 0.002681477];
-%             allEndZones4bif(4,:,:) = [0.009749227 -0.003355274;
-% 0.010644161 -0.002909076;
-% 0.010444161 -0.002409076;
-% 0.009449227 -0.002855274;
-% 0.009749227 -0.003355274];
+            allEndZones4bif(4,:,:) = [0.009749227 -0.003355274;
+0.010644161 -0.002909076;
+0.010444161 -0.002409076;
+0.009449227 -0.002855274;
+0.009749227 -0.003355274];
             allEndZones4bif(5,:,:) = [-0.002644437 -0.008502081;
 -0.001720557 -0.008119398;
 -0.001920557 -0.007519398;
@@ -331,11 +331,11 @@ classdef Polygons
 %                -0.0020 -0.003;
 %                -0.0084 -0.003;
 %                -0.0084 -0.004];
-allEndZones4bif(4,:,:) = [-0.002644437 0.001502081; %end of first bifurcation (upper)
-                -0.0016 0.001;
-                -0.0018 0.0007;
-                -0.003 0.001;
-                -0.002644437 0.001502081];
+% allEndZones4bif(4,:,:) = [-0.002644437 0.001502081; %end of first bifurcation (upper)
+%                 -0.0016 0.001;
+%                 -0.0018 0.0007;
+%                 -0.003 0.001;
+%                 -0.002644437 0.001502081];
  
            obj.allEndZones{4} = allEndZones4bif;
 
@@ -660,7 +660,8 @@ allEndZones4bif(4,:,:) = [-0.002644437 0.001502081; %end of first bifurcation (u
             obj.currentEndZone = squeeze(obj.allEndZones{num});
             obj.currentOutOfBoundsPolys = squeeze(obj.outOfBoundsPolys{num});
             obj.currentHardCodedOrthogonalWallContacts = squeeze(obj.hardCodedOrthogonalWallContacts{num});
-             obj.currentFlowValues = fd.FlowValues{num};
+            obj.currentFlowValues = [];
+            obj.currentFlowValues = fd.FlowValues{num};
             obj.currentFlowLocations = fd.FlowLocations{num};
         end
 

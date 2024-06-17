@@ -2,16 +2,16 @@ function DrawInputAngle(particlePaths, stopDrawAtGoal, drawCorrectOutlet, drawIn
 
     if ~exist('particlePaths','var')
      % parameter does not exist, so default it to something
-      ReadAllResults();
+      particlePaths = ReadAllResults();
     end
     if ~exist('stopDrawAtGoal','var')
-      drawIncomplete = 1;
+      stopDrawAtGoal = 1;
     end
     if ~exist('drawCorrectOutlet','var')
-      drawIncomplete = 1;
+      drawCorrectOutlet = 1;
     end
     if ~exist('drawIncorrectOutlet','var')
-      drawIncomplete = 1;
+      drawIncorrectOutlet = 1;
     end
     if ~exist('drawIncomplete','var')
       drawIncomplete = 1;
@@ -49,6 +49,7 @@ function DrawInputAngle(particlePaths, stopDrawAtGoal, drawCorrectOutlet, drawIn
         angleSum = 0;
        % magnitudeSum = 0;
         timeStepCount = 1;
+        angleArr = [];
         for timeStepCount = 1:size(particlePaths(fileIndex,quickestIndex).InputForces,1)
             if(stopDrawAtGoal && quickestTime < particlePaths(fileIndex,quickestIndex).TimeSteps(timeStepCount))
                 break;
