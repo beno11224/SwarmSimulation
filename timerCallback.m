@@ -5,7 +5,10 @@ function timerCallback(app)
     if(app.controlMethod == "Controller")
         %For shared control/Neural Network control
         if(app.UseNetworkForHaptic)
-            currentDial = -1 .* double(pyrun("pred = NNet.predict(np.array([state]),verbose=0, batch_size=1)","pred", state = app.particleFunctions.getState(app.particleArrayLocation, app.FluidFlowmsEditField.Value./6)));%,t,goalLocation)));
+            scenario = floor((app.testOrder(app.testNumber)-1)/20); %Randomised order
+            scenario = mod(scenario,6);
+            flowRate = scenario/6;
+            currentDial = -1 .* double(pyrun("pred = NNet.predict(np.array([state]),verbose=0, batch_size=1)","pred", state=app.particleFunctions.getState(app.particleArrayLocation, flowRate, xShift, yShift, app.polygon.currentEndZone, app.ParticleLocationMesh)));
         end
         %Use these to tune haptic response - spring and damper setup here
         hapticSpring = app.HapticForceSlider.Value;
