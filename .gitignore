@@ -42,3 +42,39 @@ storedTrainingVariablesBEN25.mat
 storedTrainingVariablesFIRSTHALF.mat
 ImageProcessing/Graphs1_6_24.zip
 PythonLog.txt
+BestModel-PreviousWork/saved_model.pb
+BestModel - 10Particles5-6-23/BestModel/keras_metadata.pb
+BestModel - 10Particles5-6-23/BestModel/saved_model.pb
+BestModel - 10Particles5-6-23/BestModel/variables/variables.data-00000-of-00001
+BestModel - 10Particles5-6-23/BestModel/variables/variables.index
+BestModel-BENONLY/keras_metadata.pb
+BestModel-BENONLY/saved_model.pb
+BestModel-BENONLY/variables/variables.data-00000-of-00001
+BestModel-BENONLY/variables/variables.index
+BestModel-OLDBUTWORKS/keras_metadata.pb
+BestModel-OLDBUTWORKS/saved_model.pb
+BestModel-OLDBUTWORKS/variables/variables.data-00000-of-00001
+BestModel-OLDBUTWORKS/variables/variables.index
+BestModel-PreviousWork/keras_metadata.pb
+BestModel-PreviousWork/variables/variables.data-00000-of-00001
+BestModel-PreviousWork/variables/variables.index
+BestModel/keras_metadata.pb
+BestModel/saved_model.pb
+BestModel/variables/variables.data-00000-of-00001
+BestModel/variables/variables.index
+dt.mat
+ExampleTunedDataFile.mat
+particlePAthsAll.mat
+storedAllDataVariablesOLD.mat
+BestModel/keras_metadata.pb
+BestModel/saved_model.pb
+BestModel/variables/variables.data-00000-of-00001
+BestModel/variables/variables.index
+dt.mat
+ExampleTunedDataFile.mat
+BestModel/keras_metadata.pb
+BestModel/saved_model.pb
+BestModel/variables/variables.data-00000-of-00001
+BestModel/variables/variables.index
+dt.mat
+ExampleTunedDataFile.mat
