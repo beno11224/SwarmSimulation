@@ -10,6 +10,7 @@ import random
 from keras.models import Sequential
 from keras.layers import Input, Dense, Activation, Dropout
 from keras.optimizers import Adam, SGD
+import mat73
 #Thanks this guy:https://github.com/jangirrishabh/toyCarIRL/tree/a5f76ab162740905269d8b9f7bd24eb161276cad
 
 class NNClass:    
@@ -51,13 +52,21 @@ def runTraining():
 
     import scipy.io as sio
 
-    dataset = sio.loadmat('ExampleTunedDataFile.mat')
-    X = np.concatenate((dataset['expertStates'],dataset['valExpertStates']))
-    y = np.concatenate((dataset['expertActions'],dataset['valExpertActions']))
-    #print(dataset['expertActions'])
-    #X = dataset['expertStates']
-    #y = dataset['expertActions']
-    print(X)
+    #dataset = sio.loadmat('ExampleTunedDataFile.mat')
+    dataset = mat73.loadmat('ExampleTunedDataFile.mat')
+    print(dataset['expertStates'])
+    print(":")
+    print(dataset['valExpertStates'])
+    if dataset['valExpertStates'] is not None:
+        X = np.concatenate((dataset['expertStates'],dataset['valExpertStates']))
+        y = np.concatenate((dataset['expertActions'],dataset['valExpertActions']))
+        #print(dataset['expertActions'])
+        print("WithVAL")
+    else:
+        X = dataset['expertStates']
+        y = dataset['expertActions']
+        #print(X)
+        print("NoVAL")
     #numStates=102
     numStates=34
     numActions=2
