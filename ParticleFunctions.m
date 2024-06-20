@@ -96,7 +96,7 @@ classdef ParticleFunctions
                 mesh = "";
             end
             if(true)
-                matState = [zeros(1,size(mesh,1))];
+                matState = [zeros(1,size(mesh.Points,1))];
                 allEndZones = sum(isParticleInEndZone(obj,currentEndZone,particleArrayLocation),2);%This should be 1 or 0
                 OnlyParticlesInPlay = particleArrayLocation(allEndZones==0,:); %Use all particle locations for now...
                 if(size(OnlyParticlesInPlay,1) == 0)
@@ -104,18 +104,21 @@ classdef ParticleFunctions
                 end
 
              %   closestNode = nearestNeighbor(mesh,OnlyParticlesInPlay);
-                twentyPercent = size(particleArrayLocation,1) * 0.2;
-                closestNode = knnsearch(mesh.Points,OnlyParticlesInPlay,'K',5,'Distance','euclidean');
-                for(neuronIndex = 1:size(mesh,1))
+               % twentyPercent = size(OnlyParticlesInPlay,1) * 0.2;
+                % closestNode = knnsearch(mesh.Points,OnlyParticlesInPlay,'K',5,'Distance','euclidean');
+                closestNode = knnsearch(mesh.Points,particleArrayLocation,'K',5,'Distance','euclidean');
+                
+                for(neuronIndex = 1:size(mesh.Points,1))
                     valueToUse = sum(closestNode(:,1) == neuronIndex)./2; 
                     valueToUse = valueToUse + sum(closestNode(:,2) == neuronIndex)./4; 
                     valueToUse = valueToUse + sum(closestNode(:,3) == neuronIndex)./6; 
                     valueToUse = valueToUse + sum(closestNode(:,4) == neuronIndex)./8; 
                     valueToUse = valueToUse + sum(closestNode(:,5) == neuronIndex)./16; 
-                    if(valueToUse > (twentyPercent))
-                        valueToUse = twentyPercent;
-                    end
-                    matState(neuronIndex) = valueToUse./(twentyPercent);%sum(closestNode == neuronIndex);
+                    % if(valueToUse > (twentyPercent))
+                    %     valueToUse = twentyPercent;
+                    % end
+                    % matState(neuronIndex) = valueToUse./(twentyPercent);%sum(closestNode == neuronIndex);
+                    matState(neuronIndex) = valueToUse./size(OnlyParticlesInPlay,1);
                 end                
             else
                 if(true)

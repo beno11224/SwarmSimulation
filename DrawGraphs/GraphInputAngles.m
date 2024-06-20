@@ -17,8 +17,8 @@ function GraphInputAngles()
         if(IMPORTEDLastPercentages(traceCount) > 0.99)
             xvals = IMPORTEDexpertActions(DelimSum+1 : DelimSum + IMPORTEDFILEDELIMITERS(traceCount),1);
             yvals = IMPORTEDexpertActions(DelimSum+1 : DelimSum + IMPORTEDFILEDELIMITERS(traceCount),2);
-            atanvals = atan2d(xvals,yvals);
-            atanvals(atanvals < 0) = atanvals(atanvals < 0) + 360;
+            atanvals = atan2d(yvals,xvals);
+            %atanvals(atanvals < 0) = atanvals(atanvals < 0);% + 360;
             xs = 0.05:0.05:0.05*size(atanvals,1);
             plot(ax1, xs, atanvals);
             hold on

@@ -67,14 +67,16 @@ def runTraining():
         y = dataset['expertActions']
         #print(X)
         print("NoVAL")
-    #numStates=102
-    numStates=34
+    numStates=58
+    ###numStates=34
+   # numStates=24
     numActions=2
     hiddenLayers=[200,100,50,20]
     model = NNClass(numStates,numActions,hiddenLayers)
     model.model.summary()
-    history = model.model.fit(X, y, epochs = 200,batch_size = 256)
+    history = model.model.fit(X, y, epochs = 50,batch_size = 256)
 
     print('RMSE on outputs', model.model.evaluate(X,y,batch_size=len(X)) ** 0.5)
 
     model.model.save("BestModel")
+    return history
